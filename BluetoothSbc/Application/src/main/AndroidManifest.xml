@@ -52,24 +52,6 @@
             android:label="@string/select_device"
             android:theme="@android:style/Theme.Holo.Dialog"/>
 
-        <activity
-            android:name=".DateListActivity"
-            android:label="@string/title_activity_date_list"
-            android:screenOrientation="landscape" >
-        </activity>
-        <activity
-            android:name=".ContentsGridActivity"
-            android:label="@string/title_activity_contents_grid"
-            android:screenOrientation="landscape" >
-        </activity>
-        <activity
-            android:name=".StillContentActivity"
-            android:label="@string/title_activity_still_content">
-        </activity>
-        <activity
-            android:name=".MovieContentActivity"
-            android:label="@string/title_activity_movie_content">
-        </activity>
     </application>
 
 </manifest>

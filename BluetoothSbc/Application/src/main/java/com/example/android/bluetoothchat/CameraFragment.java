@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -116,14 +117,17 @@ public class CameraFragment extends Fragment {
 
         mEventObserver = new SimpleCameraEventObserver(activity.getApplicationContext(), mRemoteApi);
 
-        mImagePictureWipe = (ImageView) activity.findViewById(R.id.image_picture_wipe);
-        mSpinnerShootMode = (Spinner) activity.findViewById(R.id.spinner_shoot_mode);
-        mButtonTakePicture = (Button) activity.findViewById(R.id.button_take_picture);
-        mButtonRecStartStop = (Button) activity.findViewById(R.id.button_rec_start_stop);
-        mButtonZoomIn = (Button) activity.findViewById(R.id.button_zoom_in);
-        mButtonZoomOut = (Button) activity.findViewById(R.id.button_zoom_out);
-        mButtonContentsListMode = (Button) activity.findViewById(R.id.button_contents_list);
-        mTextCameraStatus = (TextView) activity.findViewById(R.id.text_camera_status);
+        mImagePictureWipe = (ImageView) getView().findViewById(R.id.image_picture_wipe);
+        mSpinnerShootMode = (Spinner) getView().findViewById(R.id.spinner_shoot_mode);
+
+        // Spinner shootMode = (Spinner) getView().findViewById(R.id.spinner_shoot_mode);
+
+        mButtonTakePicture = (Button) getView().findViewById(R.id.button_take_picture);
+        mButtonRecStartStop = (Button) getView().findViewById(R.id.button_rec_start_stop);
+        mButtonZoomIn = (Button) getView().findViewById(R.id.button_zoom_in);
+        mButtonZoomOut = (Button) getView().findViewById(R.id.button_zoom_out);
+        mButtonContentsListMode = (Button) getView().findViewById(R.id.button_contents_list);
+        mTextCameraStatus = (TextView) getView().findViewById(R.id.text_camera_status);
 
         mSpinnerShootMode.setEnabled(false);
 
@@ -195,14 +199,51 @@ public class CameraFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        /*
+        FragmentActivity activity = getActivity();
+        mSpinnerShootMode = (Spinner) getView().findViewById(R.id.spinner_shoot_mode);
+
+        String[] s = {"shoot", "movie"};
+        ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter(getActivity(), //
+                android.R.layout.simple_spinner_item, s);
+        adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        mSpinnerShootMode.setAdapter(adapter);
+        // mSpinnerShootMode.setPrompt(getString(R.string.prompt_shoot_mode));
+        selectionShootModeSpinner(mSpinnerShootMode, "shoot");
+
+        mSpinnerShootMode.setOnItemSelectedListener(new OnItemSelectedListener() {
+            // selected Spinner dropdown item
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getActivity(), mSpinnerShootMode.getSelectedItem().toString(),
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            // not selected Spinner dropdown item
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        */
+
+    }
+
+
+    @Override
     public void onResume() {
         super.onResume();
+
+        final FragmentActivity activity = getActivity();
+
         boolean settingResult = doSettingRemoteApi();
         if (settingResult == false) {
             return;
         }
 
-        final FragmentActivity activity = getActivity();
+        // final FragmentActivity activity = getActivity();
         mEventObserver.activate();
         mLiveviewSurface = (SimpleStreamSurfaceView) activity.findViewById(R.id.surfaceview_liveview);
         mSpinnerShootMode.setFocusable(false);
@@ -312,7 +353,7 @@ public class CameraFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Clicked contents list mode button");
-                prepareToStartContentsListMode();
+                // prepareToStartContentsListMode();
             }
         });
 
@@ -1081,59 +1122,6 @@ public class CameraFragment extends Fragment {
                 }
             }
         }.start();
-    }
-
-    private void prepareToStartContentsListMode() {
-        Log.d(TAG, "prepareToStartContentsListMode() exec");
-        final FragmentActivity activity = getActivity();
-        new Thread() {
-
-            @Override
-            public void run() {
-                try {
-                    // set Listener
-                    moveToDateListAfterChangeCameraState();
-
-                    // set camera function to Contents Transfer
-                    Log.d(TAG, "call setCameraFunction");
-                    JSONObject replyJson = mRemoteApi.setCameraFunction("Contents Transfer");
-                    if (SimpleRemoteApi.isErrorReply(replyJson)) {
-                        Log.w(TAG, "prepareToStartContentsListMode: set CameraFunction error: ");
-                        DisplayHelper.toast(activity.getApplicationContext(), R.string.msg_error_content);
-                        mEventObserver.setEventChangeListener(mEventListener);
-                    }
-
-                } catch (IOException e) {
-                    Log.w(TAG, "prepareToStartContentsListMode: IOException: " + e.getMessage());
-                }
-            }
-        }.start();
-
-    }
-
-    private void moveToDateListAfterChangeCameraState() {
-        Log.d(TAG, "moveToDateListAfterChangeCameraState() exec");
-        final FragmentActivity activity = getActivity();
-        // set Listener
-        mEventObserver.setEventChangeListener(new SimpleCameraEventObserver.ChangeListenerTmpl() {
-
-            @Override
-            public void onCameraStatusChanged(String status) {
-                Log.d(TAG, "onCameraStatusChanged:" + status);
-                if ("ContentsTransfer".equals(status)) {
-                    // start ContentsList mode
-                    Intent intent = new Intent(activity.getApplicationContext(), DateListActivity.class);
-                    startActivity(intent);
-                }
-
-                refreshUi();
-            }
-
-            @Override
-            public void onShootModeChanged(String shootMode) {
-                refreshUi();
-            }
-        });
     }
 
     private void startLiveview() {
