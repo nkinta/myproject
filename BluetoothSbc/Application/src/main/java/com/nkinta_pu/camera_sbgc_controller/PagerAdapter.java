@@ -19,17 +19,18 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 // CameraFragment fragment = new CameraFragment();
                 // transaction.replace(R.id.sample_content_fragment, fragment);
                 // transaction.commit();
-                return new Fragment();
+                // return new CameraRemoteFragment();
+                return new MessageFragment();
             case 1:
-                return new CameraRemoteFragment();
+                return new HeadTrackFragment();
             default:
-                return new BluetoothChatFragment();
+                return null;
         }
     }
 
     @Override
     public int getCount() {
-        return 3;
+        return 2;
     }
 
     @Override

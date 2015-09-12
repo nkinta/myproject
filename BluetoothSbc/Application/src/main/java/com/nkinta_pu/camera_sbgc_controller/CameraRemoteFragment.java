@@ -61,7 +61,7 @@ public class CameraRemoteFragment extends Fragment {
         final MainActivity activity = (MainActivity)getActivity();
 
         mActivityActive = true;
-        ListView listView = (ListView) activity.findViewById(R.id.list_device);
+        ListView listView = (ListView) getView().findViewById(R.id.list_device);
         listView.setAdapter(mListAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -73,7 +73,7 @@ public class CameraRemoteFragment extends Fragment {
             }
         });
 
-        activity.findViewById(R.id.button_search).setOnClickListener(new View.OnClickListener() {
+        getView().findViewById(R.id.button_search).setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -86,7 +86,7 @@ public class CameraRemoteFragment extends Fragment {
         });
 
         // Show Wi-Fi SSID.
-        TextView textWifiSsid = (TextView) activity.findViewById(R.id.text_wifi_ssid);
+        TextView textWifiSsid = (TextView)  getView().findViewById(R.id.text_wifi_ssid);
         WifiManager wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
         if (wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();

@@ -114,7 +114,6 @@ public class MainActivity extends SampleActivityBase {
         MenuItem logToggle = menu.findItem(R.id.menu_toggle_log);
         logToggle.setVisible(findViewById(R.id.sample_output) instanceof ViewAnimator);
         logToggle.setTitle(mLogShown ? R.string.sample_hide_log : R.string.sample_show_log);
-        WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -138,7 +137,7 @@ public class MainActivity extends SampleActivityBase {
     /** Create a chain of targets that will receive log data */
     @Override
     public void initializeLogging() {
-        /*
+
         // Wraps Android's native log framework.
         LogWrapper logWrapper = new LogWrapper();
         // Using Log, front-end to the logging chain, emulates android.util.log method signatures.
@@ -154,7 +153,7 @@ public class MainActivity extends SampleActivityBase {
         msgFilter.setNext(logFragment.getLogView());
 
         Log.i(TAG, "Ready");
-        */
+
     }
 
 

@@ -18,6 +18,7 @@ package com.nkinta_pu.camera_sbgc_controller;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -130,7 +131,6 @@ public class BluetoothChatFragment extends Fragment {
      * Member object for the chat services
      */
     private BluetoothChatService mChatService = null;
-    private HeadTrackHelper mHeadTrackHelper = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -148,7 +148,6 @@ public class BluetoothChatFragment extends Fragment {
 
         }
         FragmentActivity activity = getActivity();
-        mHeadTrackHelper = new HeadTrackHelper(activity);
     }
 
 
@@ -196,7 +195,6 @@ public class BluetoothChatFragment extends Fragment {
     public void onPause()
     {
         super.onPause();
-        mHeadTrackHelper.onStop();
     }
 
     @Override
@@ -208,96 +206,7 @@ public class BluetoothChatFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-
         mConversationView = (ListView) view.findViewById(R.id.in);
-        // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
-        // mSendButton = (Button) view.findViewById(R.id.button_send);
-        GridLayout frameLayout = (GridLayout) view.findViewById(R.id.control);
-
-        Switch switchButton = (Switch) view.findViewById(R.id.headTrackSwitch);
-        // switchButton.set
-
-        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
-                if (isChecked == true) {
-                    mHeadTrackHelper.onStart();
-                }
-                else {
-                    mHeadTrackHelper.onStop();
-                }
-            }
-
-
-        });
-
-        final TextView headTrackParam = (TextView) view.findViewById(R.id.headTrackParam);
-        HeadTrackJob job1 = new HeadTrackJob() {
-            @Override
-            public void doCommand(HeadTransform t) {
-                float[] angle = new float[3];
-                t.getEulerAngles(angle, 0);
-
-                float[] degree = new float[3];
-                for (int i = 0; i < angle.length; ++i) {
-                    degree[i] = angle[i] * 180 / (float)Math.PI;
-                }
-
-                headTrackParam.setText("x = " + String.format("%8.3f", degree[0]) + ", y = " + String.format("%8.3f",degree[1]) + ", z = " + String.format("%8.3f", degree[2]));
-
-                return;
-            }
-        };
-        mHeadTrackHelper.setJob(job1);
-        HeadTrackJob job2 = new HeadTrackJob() {
-            @Override
-            public void doCommand(HeadTransform t) {
-                float[] angle = new float[3];
-                t.getEulerAngles(angle, 0);
-                short x = (short) (angle[0] * 180 / Math.PI / 0.02197265625);
-                short y = (short) (angle[1] * 180 / Math.PI / 0.02197265625);
-                short z = (short) (angle[2] * 180 / Math.PI / 0.02197265625);
-
-                byte data[] = {(byte)0x02,
-                        (byte)0, (byte)2, (byte)x, (byte) (x >> 8),
-                        (byte)0, (byte)2, (byte)z, (byte) (z >> 8),
-                        (byte)0, (byte)2, (byte)-y, (byte) ((-y >> 8)) };
-                CommandInfo commandInfo = new CommandInfo("control", (byte) 0x43, data);
-                sendMessage(commandInfo.getCommandData());
-                return;
-            }
-        };
-        mHeadTrackHelper.setJob(job2);
-
-        FragmentActivity activity = getActivity();
-        ArrayList<CommandInfo> commandList = new ArrayList<CommandInfo>();
-
-        byte[] data = {(byte)0x00};
-        commandList.add(new CommandInfo("Profile1", (byte) 0x15, data));
-
-        if (frameLayout == null) {
-            return;
-        }
-
-        for (CommandInfo v: commandList) {
-            Button button = new Button(activity);
-            button.setText(v.getLabel());
-            frameLayout.addView(button);
-
-            final byte[] commandData = v.getCommandData();
-            button.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View tempView) {
-                    // Send a message using content of the edit text widget
-                    View view = getView();
-                    if (null != view) {
-                        // byte[] send = {(byte) 0x3E, (byte) 0x15, (byte) 0x01, (byte) 0x16, (byte) 0x00, (byte) 0x00};
-                        sendMessage(commandData);
-                    }
-                }
-            });
-
-        }
-        // mProfileButton = (Button) view.findViewById(R.id.button);
     }
 
     /**
@@ -311,39 +220,17 @@ public class BluetoothChatFragment extends Fragment {
 
         mConversationView.setAdapter(mConversationArrayAdapter);
 
-        // Initialize the compose field with a listener for the return key
-        /*
-        mOutEditText.setOnEditorActionListener(mWriteListener);
-
-        // Initialize the send button with a listener that for click events
-        mSendButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Send a message using content of the edit text widget
-                View view = getView();
-                if (null != view) {
-                    TextView textView = (TextView) view.findViewById(R.id.edit_text_out);
-                    String message = textView.getText().toString();
-                    sendMessage(message.getBytes());
-                }
-            }
-        });
-        */
-        /*
-        mProfileButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Send a message using content of the edit text widget
-                View view = getView();
-                if (null != view) {
-                    byte[] send = { (byte)0x3E, (byte)0x15, (byte) 0x01, (byte) 0x16, (byte) 0x00, (byte) 0x00};
-                    sendMessage(send);
-                }
-            }
-        });
-        */
-
         // Initialize the BluetoothChatService to perform bluetooth connections
-        mChatService = new BluetoothChatService(getActivity(), mHandler);
-
+        // Application application = getActivity().getApplication();
+        SampleApplication app = (SampleApplication) getActivity().getApplication();
+        BluetoothChatService chatService = app.getBluetoothChatService();
+        if (chatService == null) {
+            mChatService = new BluetoothChatService(getActivity(), mHandler);
+            app.setBluetoothChatService(mChatService);
+        }
+        else {
+            mChatService = chatService;
+        }
         // Initialize the buffer for outgoing messages
         mOutStringBuffer = new StringBuffer("");
     }
@@ -365,7 +252,7 @@ public class BluetoothChatFragment extends Fragment {
      *
      * @param message A string of text to send.
      */
-    private void sendMessage(byte[] send) {
+    protected void sendMessage(byte[] send) {
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
             Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();

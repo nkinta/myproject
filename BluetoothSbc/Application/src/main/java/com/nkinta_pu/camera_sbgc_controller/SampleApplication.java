@@ -19,56 +19,41 @@ public class SampleApplication extends Application {
 
     private Set<String> mSupportedApiSet;
 
+    private BluetoothChatService mBluetoothChatService;
+
     /**
      * Sets a target ServerDevice object.
-     * 
+     *
      * @param device
      */
+    public void setBluetoothChatService(BluetoothChatService service) {
+        mBluetoothChatService = service;
+    }
+
+    public BluetoothChatService getBluetoothChatService() {
+        return mBluetoothChatService;
+    }
+
     public void setTargetServerDevice(ServerDevice device) {
         mTargetDevice = device;
     }
 
-    /**
-     * Returns a target ServerDevice object.
-     * 
-     * @return return ServiceDevice
-     */
     public ServerDevice getTargetServerDevice() {
         return mTargetDevice;
     }
 
-    /**
-     * Sets a SimpleRemoteApi object to transmit to Activity.
-     * 
-     * @param remoteApi
-     */
     public void setRemoteApi(SimpleRemoteApi remoteApi) {
         mRemoteApi = remoteApi;
     }
 
-    /**
-     * Returns a SimpleRemoteApi object.
-     * 
-     * @return return SimpleRemoteApi
-     */
     public SimpleRemoteApi getRemoteApi() {
         return mRemoteApi;
     }
 
-    /**
-     * Sets a List of supported APIs.
-     * 
-     * @param apiList
-     */
     public void setSupportedApiList(Set<String> apiList) {
         mSupportedApiSet = apiList;
     }
 
-    /**
-     * Returns a list of supported APIs.
-     * 
-     * @return Returns a list of supported APIs.
-     */
     public Set<String> getSupportedApiList() {
         return mSupportedApiSet;
     }
