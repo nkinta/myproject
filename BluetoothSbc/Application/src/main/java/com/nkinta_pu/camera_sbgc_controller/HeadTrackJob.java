@@ -1,4 +1,4 @@
-package com.example.android.bluetoothchat;
+package com.nkinta_pu.camera_sbgc_controller;
 
 /**
  * Created by NK on 2015/08/24.

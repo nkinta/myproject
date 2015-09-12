@@ -2,10 +2,10 @@
  * Copyright 2014 Sony Corporation
  */
 
-package com.example.android.bluetoothchat;
+package com.nkinta_pu.camera_sbgc_controller;
 
-import com.example.android.bluetoothchat.utils.SimpleLiveviewSlicer;
-import com.example.android.bluetoothchat.utils.SimpleLiveviewSlicer.Payload;
+import com.nkinta_pu.camera_sbgc_controller.utils.SimpleLiveviewSlicer;
+import com.nkinta_pu.camera_sbgc_controller.utils.SimpleLiveviewSlicer.Payload;
 
 import android.annotation.TargetApi;
 import android.content.Context;

@@ -1,4 +1,4 @@
-package com.example.android.bluetoothchat;
+package com.nkinta_pu.camera_sbgc_controller;
 
 import android.app.Activity;
 import android.os.Handler;

@@ -2,10 +2,10 @@
  * Copyright 2014 Sony Corporation
  */
 
-package com.example.android.bluetoothchat;
+package com.nkinta_pu.camera_sbgc_controller;
 
-import com.example.android.bluetoothchat.ServerDevice.ApiService;
-import com.example.android.bluetoothchat.utils.SimpleHttpClient;
+import com.nkinta_pu.camera_sbgc_controller.ServerDevice.ApiService;
+import com.nkinta_pu.camera_sbgc_controller.utils.SimpleHttpClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
