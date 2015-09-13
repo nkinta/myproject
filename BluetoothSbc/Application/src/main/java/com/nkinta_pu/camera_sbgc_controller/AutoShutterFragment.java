@@ -22,14 +22,35 @@ import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 // import android.os.SytemClock;
 // import com.nkinta_pu.camera_sbgc_controller.HeadTrackHelper;
 // import com.google.vrtoolkit.cardboard.HeadTransform;
+
+class AngleInfo {
+
+    String mLabel;
+    float[] mRot = new float[3];
+
+    AngleInfo(String label, float[] rot) {
+        mLabel = label;
+        mRot = rot;
+    }
+
+    String getLabel() {
+        return mLabel;
+    }
+
+}
+
 
 
 /**
@@ -72,41 +93,48 @@ public class AutoShutterFragment extends BluetoothChatFragment {
         // mConversationView = (ListView) view.findViewById(R.id.in);
         // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
         // mSendButton = (Button) view.findViewById(R.id.button_send);
-        GridLayout frameLayout = (GridLayout) view.findViewById(R.id.control);
+        GridLayout gridLayout = (GridLayout) view.findViewById(R.id.control);
+        gridLayout.setColumnCount(4);
 
         FragmentActivity activity = getActivity();
-        ArrayList<CommandInfo> commandList = new ArrayList<CommandInfo>();
+        ArrayList<AngleInfo> angleList = new ArrayList<>();
 
-        byte[] data1 = {(byte)0x00};
-        commandList.add(new CommandInfo("Profile1", (byte) 0x15, data1));
+        angleList.add(new AngleInfo("yaw00", new float[]{0, 00, 0}));
+        angleList.add(new AngleInfo("yaw30", new float[]{0, 30, 0}));
+        angleList.add(new AngleInfo("yaw60", new float[]{0, 60, 0}));
+        angleList.add(new AngleInfo("yaw90", new float[]{0, 90, 0}));
 
-        byte[] data2 = {(byte)0x01};
-        commandList.add(new CommandInfo("Profile2", (byte) 0x15, data2));
-
-        byte[] data3 = {(byte)0x02};
-        commandList.add(new CommandInfo("Profile2", (byte) 0x15, data3));
-
-        if (frameLayout == null) {
+        if (gridLayout == null) {
             return;
         }
 
-        for (CommandInfo v: commandList) {
+        int rowIndex = 0;
+        for (AngleInfo v: angleList) {
+
             Button button = new Button(activity);
             button.setText(v.getLabel());
-            frameLayout.addView(button);
+            gridLayout.addView(button);
 
-            final byte[] commandData = v.getCommandData();
+            for (float rotValue: v.mRot) {
+                EditText editText = new EditText(activity);
+                editText.setText(String.format("%4.1f", rotValue));
+                gridLayout.addView(editText);
+            }
+
+            byte[] data = {(byte)0x00};
+            CommandInfo commandInfo = new CommandInfo(v.getLabel(), (byte) 0x43, data);
+            final byte[] commandData = commandInfo.getCommandData();
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View tempView) {
                     // Send a message using content of the edit text widget
                     View view = getView();
                     if (null != view) {
-                        // byte[] send = {(byte) 0x3E, (byte) 0x15, (byte) 0x01, (byte) 0x16, (byte) 0x00, (byte) 0x00};
                         sendMessage(commandData);
                     }
                 }
             });
 
+            ++rowIndex;
         }
 
 

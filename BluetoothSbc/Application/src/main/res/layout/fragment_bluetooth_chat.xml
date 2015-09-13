@@ -23,7 +23,7 @@
      android:layout_width="match_parent"
      android:layout_height="0dp"
      android:layout_gravity="center_horizontal"
-     android:layout_weight="1"
+     android:layout_weight="5"
      android:id="@+id/control">
 
  </GridLayout>
@@ -33,7 +33,8 @@
      android:layout_width="match_parent"
      android:layout_height="0dp"
      android:layout_weight="1"
-     android:columnCount="2">
+     android:columnCount="7"><![CDATA[>
+     ]]></GridLayout>
 
  <ListView
      android:id="@+id/in"
