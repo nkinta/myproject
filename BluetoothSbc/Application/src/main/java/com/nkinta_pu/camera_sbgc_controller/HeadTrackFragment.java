@@ -94,10 +94,24 @@ public class HeadTrackFragment extends BluetoothChatFragment {
         // mConversationView = (ListView) view.findViewById(R.id.in);
         // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
         // mSendButton = (Button) view.findViewById(R.id.button_send);
+
+
+        FragmentActivity activity = getActivity();
+
         GridLayout frameLayout = (GridLayout) view.findViewById(R.id.control);
 
-        Switch switchButton = (Switch) view.findViewById(R.id.headTrackSwitch);
+        // Switch switchButton = (Switch) view.findViewById(R.id.headTrackSwitch);
         // switchButton.set
+
+        final Switch switchButton = new Switch(activity);
+        switchButton.setText("HEAD_TRACK");
+        frameLayout.addView(switchButton);
+
+        final TextView headTrackParam = new TextView(activity);
+        headTrackParam.setText("-");
+        frameLayout.addView(headTrackParam);
+
+        // final TextView headTrackParam = (TextView) view.findViewById(R.id.headTrackParam);
 
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -113,7 +127,7 @@ public class HeadTrackFragment extends BluetoothChatFragment {
 
         });
 
-        final TextView headTrackParam = (TextView) view.findViewById(R.id.headTrackParam);
+
         HeadTrackJob job1 = new HeadTrackJob() {
             @Override
             public void doCommand(HeadTransform t) {

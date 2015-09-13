@@ -11,6 +11,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         mFm = fm;
     }
 
+
     @Override
     public Fragment getItem(int i) {
         switch (i) {
@@ -19,18 +20,18 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 // CameraFragment fragment = new CameraFragment();
                 // transaction.replace(R.id.sample_content_fragment, fragment);
                 // transaction.commit();
-                // return new CameraRemoteFragment();
+                // return new CameraDeviceFragment();
                 return new MessageFragment();
             case 1:
                 return new HeadTrackFragment();
             default:
-                return null;
+                return new AutoShutterFragment();
         }
     }
 
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
 
     @Override

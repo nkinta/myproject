@@ -24,9 +24,9 @@ import android.widget.Toast;
 /**
  * An Activity class of Device Discovery screen.
  */
-public class CameraRemoteFragment extends Fragment {
+public class CameraDeviceFragment extends Fragment {
 
-    private static final String TAG = CameraRemoteFragment.class.getSimpleName();
+    private static final String TAG = CameraDeviceFragment.class.getSimpleName();
 
     private SimpleSsdpClient mSsdpClient;
     private boolean mActivityActive;
@@ -51,7 +51,7 @@ public class CameraRemoteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_device_discovery, null);
+        View view = inflater.inflate(R.layout.fragment_camera_device, null);
         return view;
     }
 

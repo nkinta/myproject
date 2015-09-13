@@ -35,24 +35,6 @@
      android:layout_weight="1"
      android:columnCount="2">
 
-  <Switch
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="HEAD_TRACK"
-      android:id="@+id/headTrackSwitch"
-      android:layout_row="0"
-      android:layout_column="0"
-      android:checked="false" />
-
-  <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="New Text"
-      android:id="@+id/headTrackParam"
-      android:layout_row="0"
-      android:layout_column="1" />
- </GridLayout>
-
  <ListView
      android:id="@+id/in"
      android:layout_width="match_parent"

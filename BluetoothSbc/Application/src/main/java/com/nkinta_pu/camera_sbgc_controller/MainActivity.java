@@ -17,26 +17,11 @@
 
 package com.nkinta_pu.camera_sbgc_controller;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.text.Html;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewAnimator;
 import android.support.v4.view.ViewPager;
 
@@ -64,7 +49,7 @@ public class MainActivity extends SampleActivityBase {
     private boolean mLogShown;
 
     ViewPager mViewPager;
-    Fragment mCameraFragment;
+    CameraFragment mCameraFragment;
 
 
     @Override
@@ -93,13 +78,13 @@ public class MainActivity extends SampleActivityBase {
 
     public void startCamera() {
         if (mCameraFragment != null) {
-            mCameraFragment.onResume();
+            mCameraFragment.startCamera();
         }
     }
 
     public void stopCamera() {
         if (mCameraFragment != null) {
-            mCameraFragment.onPause();
+            mCameraFragment.stopCamera();
         }
     }
 
