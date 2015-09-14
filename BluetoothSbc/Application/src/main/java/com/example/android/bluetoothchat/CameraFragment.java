@@ -818,9 +818,15 @@ public class CameraFragment extends Fragment {
      */
     private void prepareShootModeSpinnerUi(String[] availableShootModes, String currentMode) {
         final FragmentActivity activity = getActivity();
-        ArrayAdapter<String> adapter;
-        adapter = new ArrayAdapter(getActivity(), //
-                android.R.layout.simple_spinner_item, availableShootModes);
+        ArrayAdapter<CharSequence> adapter;
+        adapter = new ArrayAdapter(getActivity().getApplicationContext(), //
+                 android.R.layout.simple_spinner_item, availableShootModes);
+
+        /*
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                getActivity(), R.array.job_array,
+                android.R.layout.simple_spinner_item);
+        */
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinnerShootMode.setAdapter(adapter);
         mSpinnerShootMode.setPrompt(getString(R.string.prompt_shoot_mode));
