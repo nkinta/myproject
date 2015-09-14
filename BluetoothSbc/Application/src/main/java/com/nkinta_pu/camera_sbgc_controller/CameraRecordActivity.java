@@ -4,6 +4,7 @@
 
 package com.nkinta_pu.camera_sbgc_controller;
 
+import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -42,25 +44,9 @@ import java.util.Set;
 /**
  * An Activity class of Sample Camera screen.
  */
-public class CameraRecordFragment extends Fragment {
+public class CameraRecordActivity extends Activity {
 
-    private static final String TAG = CameraRecordFragment.class.getSimpleName();
-
-    private ImageView mImagePictureWipe;
-
-    private Spinner mSpinnerShootMode;
-
-    private Button mButtonTakePicture;
-
-    private Button mButtonRecStartStop;
-
-    private Button mButtonZoomIn;
-
-    private Button mButtonZoomOut;
-
-    private Button mButtonContentsListMode;
-
-    private TextView mTextCameraStatus;
+    private static final String TAG = CameraRecordActivity.class.getSimpleName();
 
     // private ServerDevice mTargetServer;
 
@@ -83,41 +69,22 @@ public class CameraRecordFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // setHasOptionsMenu(true);
 
-        // activity.requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        // activity.setContentView(R.layout.fragment_camera);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        setContentView(R.layout.activity_camera_record);
 
     }
 
+    /*
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_camera_record, null);
         return view;
     }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        mImagePictureWipe = (ImageView) getView().findViewById(R.id.image_picture_wipe);
-        mSpinnerShootMode = (Spinner) getView().findViewById(R.id.spinner_shoot_mode);
-
-        // Spinner shootMode = (Spinner) getView().findViewById(R.id.spinner_shoot_mode);
-
-        mButtonTakePicture = (Button) getView().findViewById(R.id.button_take_picture);
-        mButtonRecStartStop = (Button) getView().findViewById(R.id.button_rec_start_stop);
-        mButtonZoomIn = (Button) getView().findViewById(R.id.button_zoom_in);
-        mButtonZoomOut = (Button) getView().findViewById(R.id.button_zoom_out);
-        mButtonContentsListMode = (Button) getView().findViewById(R.id.button_contents_list);
-        mTextCameraStatus = (TextView) getView().findViewById(R.id.text_camera_status);
-
-        mSpinnerShootMode.setEnabled(true);
-
-    }
+    */
 
     private boolean doSettingRemoteApi() {
-        final FragmentActivity activity = getActivity();
-        SampleApplication app = (SampleApplication) activity.getApplication();
+        SampleApplication app = (SampleApplication) getApplication();
         final ServerDevice device = app.getTargetServerDevice();
         if (device == null) {
             return false;
@@ -131,9 +98,8 @@ public class CameraRecordFragment extends Fragment {
     }
 
     public void connect() {
-        final FragmentActivity activity = getActivity();
+        mEventObserver = new SimpleCameraEventObserver(getApplicationContext(), mRemoteApi);
 
-        mEventObserver = new SimpleCameraEventObserver(activity.getApplicationContext(), mRemoteApi);
         mEventListener = new SimpleCameraEventObserver.ChangeListenerTmpl() {
 
             @Override
@@ -162,28 +128,12 @@ public class CameraRecordFragment extends Fragment {
                             startLiveview();
                         }
                     }
-                    if (isCameraApiAvailable("actZoom")) {
-                        Log.d(TAG, "onApiListModified(): prepareActZoomButtons()");
-                        prepareActZoomButtons(true);
-                    } else {
-                        prepareActZoomButtons(false);
-                    }
                 }
             }
 
             @Override
             public void onZoomPositionChanged(int zoomPosition) {
                 Log.d(TAG, "onZoomPositionChanged() called = " + zoomPosition);
-                if (zoomPosition == 0) {
-                    mButtonZoomIn.setEnabled(true);
-                    mButtonZoomOut.setEnabled(false);
-                } else if (zoomPosition == 100) {
-                    mButtonZoomIn.setEnabled(false);
-                    mButtonZoomOut.setEnabled(true);
-                } else {
-                    mButtonZoomIn.setEnabled(true);
-                    mButtonZoomOut.setEnabled(true);
-                }
             }
 
             @Override
@@ -202,40 +152,6 @@ public class CameraRecordFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        /*
-        FragmentActivity activity = getActivity();
-        mSpinnerShootMode = (Spinner) getView().findViewById(R.id.spinner_shoot_mode);
-
-        String[] s = {"shoot", "movie"};
-        ArrayAdapter<String> adapter;
-        adapter = new ArrayAdapter(getActivity(), //
-                android.R.layout.simple_spinner_item, s);
-        adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-        mSpinnerShootMode.setAdapter(adapter);
-        // mSpinnerShootMode.setPrompt(getString(R.string.prompt_shoot_mode));
-        selectionShootModeSpinner(mSpinnerShootMode, "shoot");
-
-        mSpinnerShootMode.setOnItemSelectedListener(new OnItemSelectedListener() {
-            // selected Spinner dropdown item
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), mSpinnerShootMode.getSelectedItem().toString(),
-                        Toast.LENGTH_SHORT).show();
-            }
-
-            // not selected Spinner dropdown item
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-        */
-
-    }
-
-
-    @Override
     public void onResume() {
         super.onResume();
 
@@ -244,120 +160,8 @@ public class CameraRecordFragment extends Fragment {
             return;
         }
 
-        final FragmentActivity activity = getActivity();
-        // final FragmentActivity activity = getActivity();
         mEventObserver.activate();
-        mLiveviewSurface = (SimpleStreamSurfaceView) activity.findViewById(R.id.surfaceview_liveview);
-        mSpinnerShootMode.setFocusable(false);
-        mButtonContentsListMode.setEnabled(false);
-
-        mButtonTakePicture.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                takeAndFetchPicture();
-            }
-        });
-        mButtonRecStartStop.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if ("MovieRecording".equals(mEventObserver.getCameraStatus())) {
-                    stopMovieRec();
-                } else if ("IDLE".equals(mEventObserver.getCameraStatus())) {
-                    startMovieRec();
-                }
-            }
-        });
-
-        mImagePictureWipe.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mImagePictureWipe.setVisibility(View.INVISIBLE);
-            }
-        });
-
-        mButtonZoomIn.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                actZoom("in", "1shot");
-            }
-        });
-
-        mButtonZoomOut.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                actZoom("out", "1shot");
-            }
-        });
-
-        mButtonZoomIn.setOnLongClickListener(new View.OnLongClickListener() {
-
-            @Override
-            public boolean onLongClick(View arg0) {
-                actZoom("in", "start");
-                return true;
-            }
-        });
-
-        mButtonZoomOut.setOnLongClickListener(new View.OnLongClickListener() {
-
-            @Override
-            public boolean onLongClick(View arg0) {
-                actZoom("out", "start");
-                return true;
-            }
-        });
-
-        mButtonZoomIn.setOnTouchListener(new View.OnTouchListener() {
-
-            private long downTime = -1;
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (System.currentTimeMillis() - downTime > 500) {
-                        actZoom("in", "stop");
-                    }
-                }
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    downTime = System.currentTimeMillis();
-                }
-                return false;
-            }
-        });
-
-        mButtonZoomOut.setOnTouchListener(new View.OnTouchListener() {
-
-            private long downTime = -1;
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (System.currentTimeMillis() - downTime > 500) {
-                        actZoom("out", "stop");
-                    }
-                }
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    downTime = System.currentTimeMillis();
-                }
-                return false;
-            }
-        });
-
-        mButtonContentsListMode.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "Clicked contents list mode button");
-                // prepareToStartContentsListMode();
-            }
-        });
+        mLiveviewSurface = (SimpleStreamSurfaceView) findViewById(R.id.surfaceview_liveview);
 
         prepareOpenConnection();
 
@@ -378,8 +182,7 @@ public class CameraRecordFragment extends Fragment {
 
     public void prepareOpenConnection() {
         Log.d(TAG, "prepareToOpenConection() exec");
-        final FragmentActivity activity = getActivity();
-        activity.setProgressBarIndeterminateVisibility(true);
+        setProgressBarIndeterminateVisibility(true);
 
         new Thread() {
 
@@ -398,7 +201,7 @@ public class CameraRecordFragment extends Fragment {
                         Log.d(TAG, "AvContent is not support.");
                     }
 
-                    SampleApplication app = (SampleApplication) activity.getApplication();
+                    SampleApplication app = (SampleApplication) getApplication();
                     app.setSupportedApiList(mSupportedApiSet);
 
                     if (!isApiSupported("setCameraFunction")) {
@@ -445,12 +248,12 @@ public class CameraRecordFragment extends Fragment {
                     }
                 } catch (IOException e) {
                     Log.w(TAG, "prepareToStartContentsListMode: IOException: " + e.getMessage());
-                    DisplayHelper.toast(activity.getApplicationContext(), R.string.msg_error_api_calling);
-                    DisplayHelper.setProgressIndicator(activity, false);
+                    DisplayHelper.toast(getApplicationContext(), R.string.msg_error_api_calling);
+                    DisplayHelper.setProgressIndicator(CameraRecordActivity.this, false);
                 } catch (JSONException e) {
                     Log.w(TAG, "prepareToStartContentsListMode: JSONException: " + e.getMessage());
-                    DisplayHelper.toast(activity.getApplicationContext(), R.string.msg_error_api_calling);
-                    DisplayHelper.setProgressIndicator(activity, false);
+                    DisplayHelper.toast(getApplicationContext(), R.string.msg_error_api_calling);
+                    DisplayHelper.setProgressIndicator(CameraRecordActivity.this, false);
                 }
             }
         }.start();
@@ -478,8 +281,7 @@ public class CameraRecordFragment extends Fragment {
 
     private void startOpenConnectionAfterChangeCameraState() {
         Log.d(TAG, "startOpenConectiontAfterChangeCameraState() exec");
-        final FragmentActivity activity = getActivity();
-        activity.runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
@@ -516,7 +318,6 @@ public class CameraRecordFragment extends Fragment {
      * and showing liveview.
      */
     private void openConnection() {
-        final FragmentActivity activity = getActivity();
         mEventObserver.setEventChangeListener(mEventListener);
         new Thread() {
 
@@ -536,9 +337,9 @@ public class CameraRecordFragment extends Fragment {
                         Log.d(TAG, "openConnection(): getApplicationInfo()");
                         replyJson = mRemoteApi.getApplicationInfo();
                         if (!isSupportedServerVersion(replyJson)) {
-                            DisplayHelper.toast(activity.getApplicationContext(), //
+                            DisplayHelper.toast(getApplicationContext(), //
                                     R.string.msg_error_non_supported_device);
-                            activity.finish();
+                            finish();
                             return;
                         }
                     } else {
@@ -568,26 +369,11 @@ public class CameraRecordFragment extends Fragment {
                         startLiveview();
                     }
 
-                    // prepare UIs
-                    if (isCameraApiAvailable("getAvailableShootMode")) {
-                        Log.d(TAG, "openConnection(): prepareShootModeSpinner()");
-                        prepareShootModeSpinner();
-                        // Note: hide progress bar on title after this calling.
-                    }
-
-                    // prepare UIs
-                    if (isCameraApiAvailable("actZoom")) {
-                        Log.d(TAG, "openConnection(): prepareActZoomButtons()");
-                        prepareActZoomButtons(true);
-                    } else {
-                        prepareActZoomButtons(false);
-                    }
-
                     Log.d(TAG, "openConnection(): completed.");
                 } catch (IOException e) {
                     Log.w(TAG, "openConnection : IOException: " + e.getMessage());
-                    DisplayHelper.setProgressIndicator(activity, false);
-                    DisplayHelper.toast(activity.getApplicationContext(), R.string.msg_error_connection);
+                    DisplayHelper.setProgressIndicator(CameraRecordActivity.this, false);
+                    DisplayHelper.toast(getApplicationContext(), R.string.msg_error_connection);
                 }
             }
         }.start();
@@ -635,57 +421,8 @@ public class CameraRecordFragment extends Fragment {
      * Refresh UI appearance along with current "cameraStatus" and "shootMode".
      */
     private void refreshUi() {
-
         String cameraStatus = mEventObserver.getCameraStatus();
         String shootMode = mEventObserver.getShootMode();
-
-        // CameraStatus TextView
-        mTextCameraStatus.setText(cameraStatus);
-
-        // Recording Start/Stop Button
-        if ("MovieRecording".equals(cameraStatus)) {
-            mButtonRecStartStop.setEnabled(true);
-            mButtonRecStartStop.setText(R.string.button_rec_stop);
-        } else if ("IDLE".equals(cameraStatus) && "movie".equals(shootMode)) {
-            mButtonRecStartStop.setEnabled(true);
-            mButtonRecStartStop.setText(R.string.button_rec_start);
-        } else {
-            mButtonRecStartStop.setEnabled(false);
-        }
-
-        // Take picture Button
-        if ("still".equals(shootMode) && "IDLE".equals(cameraStatus)) {
-            mButtonTakePicture.setEnabled(true);
-        } else {
-            mButtonTakePicture.setEnabled(false);
-        }
-
-        // Picture wipe Image
-        if (!"still".equals(shootMode)) {
-            mImagePictureWipe.setVisibility(View.INVISIBLE);
-        }
-
-        // Shoot Mode Buttons
-        if ("IDLE".equals(cameraStatus) || "MovieRecording".equals(cameraStatus)) {
-            mSpinnerShootMode.setEnabled(true);
-            selectionShootModeSpinner(mSpinnerShootMode, shootMode);
-        } else {
-            mSpinnerShootMode.setEnabled(false);
-        }
-
-        // Contents List Button
-        if (isApiSupported("getContentList") //
-                && isApiSupported("getSchemeList") //
-                && isApiSupported("getSourceList")) {
-            String storageId = mEventObserver.getStorageId();
-            if (storageId == null) {
-                Log.d(TAG, "not update ContentsList button ");
-            } else if ("No Media".equals(storageId)) {
-                mButtonContentsListMode.setEnabled(false);
-            } else {
-                mButtonContentsListMode.setEnabled(true);
-            }
-        }
     }
 
     /**
@@ -793,159 +530,12 @@ public class CameraRecordFragment extends Fragment {
     }
 
     /**
-     * Prepare for Spinner to select "shootMode" by user.
-     */
-    private void prepareShootModeSpinner() {
-        final FragmentActivity activity = getActivity();
-        new Thread() {
-
-            @Override
-            public void run() {
-                Log.d(TAG, "prepareShootModeSpinner(): exec.");
-                JSONObject replyJson = null;
-                try {
-                    replyJson = mRemoteApi.getAvailableShootMode();
-
-                    JSONArray resultsObj = replyJson.getJSONArray("result");
-                    final String currentMode = resultsObj.getString(0);
-                    JSONArray availableModesJson = resultsObj.getJSONArray(1);
-                    final List<String> availableModes = new ArrayList<String>();
-
-                    for (int i = 0; i < availableModesJson.length(); i++) {
-                        String mode = availableModesJson.getString(i);
-                        if (!isSupportedShootMode(mode)) {
-                            mode = "";
-                        }
-                        availableModes.add(mode);
-                    }
-                    activity.runOnUiThread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            prepareShootModeSpinnerUi(//
-                                    availableModes.toArray(new String[0]), currentMode);
-                            // Hide progress indeterminately on title bar.
-                            activity.setProgressBarIndeterminateVisibility(false);
-                        }
-                    });
-                } catch (IOException e) {
-                    Log.w(TAG, "prepareShootModeRadioButtons: IOException: " + e.getMessage());
-                } catch (JSONException e) {
-                    Log.w(TAG, "prepareShootModeRadioButtons: JSON format error.");
-                }
-            };
-        }.start();
-    }
-
-    /**
-     * Selection for Spinner UI of Shoot Mode.
-     *
-     * @param spinner
-     * @param mode
-     */
-    private void selectionShootModeSpinner(Spinner spinner, String mode) {
-        if (!isSupportedShootMode(mode)) {
-            mode = "";
-        }
-        @SuppressWarnings("unchecked")
-        ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinner.getAdapter();
-        if (adapter != null) {
-            mSpinnerShootMode.setSelection(adapter.getPosition(mode));
-        }
-    }
-
-    /**
-     * Prepare for Spinner UI of Shoot Mode.
-     *
-     * @param availableShootModes
-     * @param currentMode
-     */
-    private void prepareShootModeSpinnerUi(String[] availableShootModes, String currentMode) {
-        final FragmentActivity activity = getActivity();
-        ArrayAdapter<String> adapter;
-        adapter = new ArrayAdapter(activity, //
-                android.R.layout.simple_spinner_item, availableShootModes);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpinnerShootMode.setAdapter(adapter);
-        mSpinnerShootMode.setPrompt(getString(R.string.prompt_shoot_mode));
-        selectionShootModeSpinner(mSpinnerShootMode, currentMode);
-        mSpinnerShootMode.setOnItemSelectedListener(new OnItemSelectedListener() {
-            // selected Spinner dropdown item
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Spinner spinner = (Spinner) parent;
-                if (!spinner.isFocusable()) {
-                    // ignored the first call, because shoot mode has not
-                    // changed
-                    spinner.setFocusable(true);
-                } else {
-                    String mode = spinner.getSelectedItem().toString();
-                    String currentMode = mEventObserver.getShootMode();
-                    if (mode.isEmpty()) {
-                        DisplayHelper.toast(activity.getApplicationContext(), //
-                                R.string.msg_error_no_supported_shootmode);
-                        // now state that can not be changed
-                        selectionShootModeSpinner(spinner, currentMode);
-                    } else {
-                        if ("IDLE".equals(mEventObserver.getCameraStatus()) //
-                                && !mode.equals(currentMode)) {
-                            setShootMode(mode);
-                        } else {
-                            // now state that can not be changed
-                            selectionShootModeSpinner(spinner, currentMode);
-                        }
-                    }
-                }
-            }
-
-            // not selected Spinner dropdown item
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-    }
-
-    /**
-     * Prepare for Button to select "actZoom" by user.
-     *
-     * @param flag
-     */
-    private void prepareActZoomButtons(final boolean flag) {
-        Log.d(TAG, "prepareActZoomButtons(): exec.");
-        final FragmentActivity activity = getActivity();
-        activity.runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                prepareActZoomButtonsUi(flag);
-            }
-        });
-
-    }
-
-    /**
-     * Prepare for ActZoom Button UI.
-     *
-     * @param flag
-     */
-    private void prepareActZoomButtonsUi(boolean flag) {
-        if (flag) {
-            mButtonZoomOut.setVisibility(View.VISIBLE);
-            mButtonZoomIn.setVisibility(View.VISIBLE);
-        } else {
-            mButtonZoomOut.setVisibility(View.GONE);
-            mButtonZoomIn.setVisibility(View.GONE);
-        }
-    }
-
-    /**
      * Call setShootMode
      *
      * @param mode
      */
     private void setShootMode(final String mode) {
-        final FragmentActivity activity = getActivity();
+        // final FragmentActivity activity = getActivity();
         new Thread() {
 
             @Override
@@ -959,7 +549,7 @@ public class CameraRecordFragment extends Fragment {
                         Log.v(TAG, "setShootMode: success.");
                     } else {
                         Log.w(TAG, "setShootMode: error: " + resultCode);
-                        DisplayHelper.toast(activity.getApplicationContext(), //
+                        DisplayHelper.toast(getApplicationContext(), //
                                 R.string.msg_error_api_calling);
                     }
                 } catch (IOException e) {
@@ -975,9 +565,8 @@ public class CameraRecordFragment extends Fragment {
      * Take a picture and retrieve the image data.
      */
     private void takeAndFetchPicture() {
-        final FragmentActivity activity = getActivity();
         if (mLiveviewSurface == null || !mLiveviewSurface.isStarted()) {
-            DisplayHelper.toast(activity.getApplicationContext(), R.string.msg_error_take_picture);
+            DisplayHelper.toast(getApplicationContext(), R.string.msg_error_take_picture);
             return;
         }
 
@@ -995,12 +584,12 @@ public class CameraRecordFragment extends Fragment {
                     }
                     if (postImageUrl == null) {
                         Log.w(TAG, "takeAndFetchPicture: post image URL is null.");
-                        DisplayHelper.toast(activity.getApplicationContext(), //
+                        DisplayHelper.toast(getApplicationContext(), //
                                 R.string.msg_error_take_picture);
                         return;
                     }
                     // Show progress indicator
-                    DisplayHelper.setProgressIndicator(activity, true);
+                    DisplayHelper.setProgressIndicator(CameraRecordActivity.this, true);
 
                     URL url = new URL(postImageUrl);
                     InputStream istream = new BufferedInputStream(url.openStream());
@@ -1010,125 +599,22 @@ public class CameraRecordFragment extends Fragment {
                             new BitmapDrawable(getResources(), //
                                     BitmapFactory.decodeStream(istream, null, options));
                     istream.close();
-                    activity.runOnUiThread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            mImagePictureWipe.setVisibility(View.VISIBLE);
-                            mImagePictureWipe.setImageDrawable(pictureDrawable);
-                        }
-                    });
-
                 } catch (IOException e) {
                     Log.w(TAG, "IOException while closing slicer: " + e.getMessage());
-                    DisplayHelper.toast(activity.getApplicationContext(), //
+                    DisplayHelper.toast(getApplicationContext(), //
                             R.string.msg_error_take_picture);
                 } catch (JSONException e) {
                     Log.w(TAG, "JSONException while closing slicer");
-                    DisplayHelper.toast(activity.getApplicationContext(), //
+                    DisplayHelper.toast(getApplicationContext(), //
                             R.string.msg_error_take_picture);
                 } finally {
-                    DisplayHelper.setProgressIndicator(activity, false);
-                }
-            }
-        }.start();
-    }
-
-    /**
-     * Call startMovieRec
-     */
-    private void startMovieRec() {
-        final FragmentActivity activity = getActivity();
-        new Thread() {
-
-            @Override
-            public void run() {
-                try {
-                    Log.d(TAG, "startMovieRec: exec.");
-                    JSONObject replyJson = mRemoteApi.startMovieRec();
-                    JSONArray resultsObj = replyJson.getJSONArray("result");
-                    int resultCode = resultsObj.getInt(0);
-                    if (resultCode == 0) {
-                        DisplayHelper.toast(activity.getApplicationContext(), R.string.msg_rec_start);
-                    } else {
-                        Log.w(TAG, "startMovieRec: error: " + resultCode);
-                        DisplayHelper.toast(activity.getApplicationContext(), //
-                                R.string.msg_error_api_calling);
-                    }
-                } catch (IOException e) {
-                    Log.w(TAG, "startMovieRec: IOException: " + e.getMessage());
-                } catch (JSONException e) {
-                    Log.w(TAG, "startMovieRec: JSON format error.");
-                }
-            }
-        }.start();
-    }
-
-    /**
-     * Call stopMovieRec
-     */
-    private void stopMovieRec() {
-        final FragmentActivity activity = getActivity();
-        new Thread() {
-
-            @Override
-            public void run() {
-                try {
-                    Log.d(TAG, "stopMovieRec: exec.");
-                    JSONObject replyJson = mRemoteApi.stopMovieRec();
-                    JSONArray resultsObj = replyJson.getJSONArray("result");
-                    String thumbnailUrl = resultsObj.getString(0);
-                    if (thumbnailUrl != null) {
-                        DisplayHelper.toast(activity.getApplicationContext(), R.string.msg_rec_stop);
-                    } else {
-                        Log.w(TAG, "stopMovieRec: error");
-                        DisplayHelper.toast(activity.getApplicationContext(), //
-                                R.string.msg_error_api_calling);
-                    }
-                } catch (IOException e) {
-                    Log.w(TAG, "stopMovieRec: IOException: " + e.getMessage());
-                } catch (JSONException e) {
-                    Log.w(TAG, "stopMovieRec: JSON format error.");
-                }
-            }
-        }.start();
-    }
-
-    /**
-     * Call actZoom
-     *
-     * @param direction
-     * @param movement
-     */
-    private void actZoom(final String direction, final String movement) {
-        final FragmentActivity activity = getActivity();
-        new Thread() {
-
-            @Override
-            public void run() {
-                try {
-                    JSONObject replyJson = mRemoteApi.actZoom(direction, movement);
-                    JSONArray resultsObj = replyJson.getJSONArray("result");
-                    int resultCode = resultsObj.getInt(0);
-                    if (resultCode == 0) {
-                        // Success, but no refresh UI at the point.
-                        Log.v(TAG, "actZoom: success");
-                    } else {
-                        Log.w(TAG, "actZoom: error: " + resultCode);
-                        DisplayHelper.toast(activity.getApplicationContext(), //
-                                R.string.msg_error_api_calling);
-                    }
-                } catch (IOException e) {
-                    Log.w(TAG, "actZoom: IOException: " + e.getMessage());
-                } catch (JSONException e) {
-                    Log.w(TAG, "actZoom: JSON format error.");
+                    DisplayHelper.setProgressIndicator(CameraRecordActivity.this, false);
                 }
             }
         }.start();
     }
 
     private void startLiveview() {
-        final FragmentActivity activity = getActivity();
         if (mLiveviewSurface == null) {
             Log.w(TAG, "startLiveview mLiveviewSurface is null.");
             return;
@@ -1146,7 +632,7 @@ public class CameraRecordFragment extends Fragment {
                         if (1 <= resultsObj.length()) {
                             // Obtain liveview URL from the result.
                             final String liveviewUrl = resultsObj.getString(0);
-                            activity.runOnUiThread(new Runnable() {
+                            runOnUiThread(new Runnable() {
 
                                 @Override
                                 public void run() {
