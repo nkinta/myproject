@@ -51,6 +51,7 @@ public class CameraFragment extends Fragment {
     public void startCamera() {
         // CameraRecordFragment cameraRecordFragment = (CameraRecordFragment) getFragmentManager().findFragmentById(R.id.camera_record);
         if (mCameraRecordFragment != null) {
+            mCameraRecordFragment.onPause();
             mCameraRecordFragment.onResume();
         }
     }
