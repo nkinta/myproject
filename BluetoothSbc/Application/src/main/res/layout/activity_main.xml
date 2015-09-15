@@ -86,7 +86,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:name="com.nkinta_pu.camera_sbgc_controller.CameraFragment"
-                android:id="@+id/fragment" />
+                android:id="@+id/camera_fragment" />
 
         </LinearLayout>
     </ScrollView>

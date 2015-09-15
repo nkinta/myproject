@@ -99,19 +99,17 @@ public class CameraRecordFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mImagePictureWipe = (ImageView) getView().findViewById(R.id.image_picture_wipe);
-        mSpinnerShootMode = (Spinner) getView().findViewById(R.id.spinner_shoot_mode);
+        mImagePictureWipe = (ImageView) view.findViewById(R.id.image_picture_wipe);
 
         // Spinner shootMode = (Spinner) getView().findViewById(R.id.spinner_shoot_mode);
+        mSpinnerShootMode = (Spinner) view.findViewById(R.id.spinner_shoot_mode);
 
-        mButtonTakePicture = (Button) getView().findViewById(R.id.button_take_picture);
-        mButtonRecStartStop = (Button) getView().findViewById(R.id.button_rec_start_stop);
-        mButtonZoomIn = (Button) getView().findViewById(R.id.button_zoom_in);
-        mButtonZoomOut = (Button) getView().findViewById(R.id.button_zoom_out);
-        mButtonContentsListMode = (Button) getView().findViewById(R.id.button_contents_list);
-        mTextCameraStatus = (TextView) getView().findViewById(R.id.text_camera_status);
-
-        mSpinnerShootMode.setEnabled(true);
+        mButtonTakePicture = (Button) view.findViewById(R.id.button_take_picture);
+        mButtonRecStartStop = (Button) view.findViewById(R.id.button_rec_start_stop);
+        mButtonZoomIn = (Button) view.findViewById(R.id.button_zoom_in);
+        mButtonZoomOut = (Button) view.findViewById(R.id.button_zoom_out);
+        mButtonContentsListMode = (Button) view.findViewById(R.id.button_contents_list);
+        mTextCameraStatus = (TextView) view.findViewById(R.id.text_camera_status);
 
     }
 
@@ -204,6 +202,22 @@ public class CameraRecordFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        mSpinnerShootMode.setEnabled(true);
+
+        /*
+        final FragmentActivity activity = getActivity();
+        ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter(activity, //
+                android.R.layout.simple_spinner_item, new String[] {"still", "movie"});
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinnerShootMode.setAdapter(adapter);
+        mSpinnerShootMode.setEnabled(true);
+        */
+
+        // mSpinnerShootMode.setPrompt(getString(R.string.prompt_shoot_mode));
+        // selectionShootModeSpinner(mSpinnerShootMode, "still1");
+
         /*
         FragmentActivity activity = getActivity();
         mSpinnerShootMode = (Spinner) getView().findViewById(R.id.spinner_shoot_mode);
@@ -250,6 +264,14 @@ public class CameraRecordFragment extends Fragment {
         mLiveviewSurface = (SimpleStreamSurfaceView) activity.findViewById(R.id.surfaceview_liveview);
         mSpinnerShootMode.setFocusable(false);
         mButtonContentsListMode.setEnabled(false);
+
+        mLiveviewSurface.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                takeAndFetchPicture();
+            }
+        });
 
         mButtonTakePicture.setOnClickListener(new View.OnClickListener() {
 
@@ -862,7 +884,6 @@ public class CameraRecordFragment extends Fragment {
      */
     private void prepareShootModeSpinnerUi(String[] availableShootModes, String currentMode) {
         final FragmentActivity activity = getActivity();
-        adapter = new ArrayAdapter(getActivity(), //
         ArrayAdapter<String> adapter;
         adapter = new ArrayAdapter(activity, //
                 android.R.layout.simple_spinner_item, availableShootModes);
@@ -904,7 +925,6 @@ public class CameraRecordFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-
     }
 
     /**

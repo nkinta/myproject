@@ -1,24 +1,11 @@
 <!-- Copyright 2014 Sony Corporation -->
 <LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/camera_root"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
 >
 
-    <fragment
-        android:id="@+id/camera_remote"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="com.nkinta_pu.camera_sbgc_controller.CameraDeviceFragment"
-        android:layout_weight="1"
-        />
 
-    <fragment
-        android:id="@+id/camera_record"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="com.nkinta_pu.camera_sbgc_controller.CameraRecordFragment"
-        android:layout_weight="1"
-        />
 </LinearLayout >

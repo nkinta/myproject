@@ -67,16 +67,17 @@ public class MainActivity extends SampleActivityBase {
             // transaction.replace(R.id.sample_content_fragment, fragment);
             // transaction.commit();
 
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            mCameraFragment = new CameraFragment();
-            transaction.replace(R.id.fragment, mCameraFragment);
-            transaction.commit();
+            // FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            // mCameraFragment = new CameraFragment();
+            // transaction.replace(R.id.fragment, mCameraFragment);
+            // transaction.commit();
 
         }
 
     }
 
     public void startCamera() {
+        mCameraFragment = (CameraFragment) getSupportFragmentManager().findFragmentById(R.id.camera_fragment);
         if (mCameraFragment != null) {
             mCameraFragment.startCamera();
         }

@@ -34,15 +34,14 @@ public class CameraFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            FragmentTransaction transaction1 = getFragmentManager().beginTransaction();
-            mCameraRecordFragment = new CameraRecordFragment();
-            transaction1.replace(R.id.camera_record, mCameraRecordFragment);
-            transaction1.commit();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-            FragmentTransaction transaction2 = getFragmentManager().beginTransaction();
             mCameraDeviceFragment = new CameraDeviceFragment();
-            transaction2.replace(R.id.camera_remote, mCameraDeviceFragment);
-            transaction2.commit();
+            transaction.add(R.id.camera_root, mCameraDeviceFragment);
+
+            mCameraRecordFragment = new CameraRecordFragment();
+            transaction.add(R.id.camera_root, mCameraRecordFragment);
+            transaction.commit();
 
         }
     }
@@ -57,7 +56,7 @@ public class CameraFragment extends Fragment {
     }
 
     public void stopCamera() {
-        CameraRecordFragment cameraRecordFragment = (CameraRecordFragment) getFragmentManager().findFragmentById(R.id.camera_record);
+        // CameraRecordFragment cameraRecordFragment = (CameraRecordFragment) getFragmentManager().findFragmentById(R.id.camera_record);
         if (mCameraRecordFragment != null) {
             mCameraRecordFragment.onPause();
         }
