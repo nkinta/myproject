@@ -60,6 +60,8 @@ import java.lang.Math;
 public class HeadTrackFragment extends BluetoothChatFragment {
 
     private HeadTrackHelper mHeadTrackHelper = null;
+    private float mRoll = 90.0f;
+    private float[] mBeforeAngle = {};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,7 +80,7 @@ public class HeadTrackFragment extends BluetoothChatFragment {
     public void onPause()
     {
         super.onPause();
-        mHeadTrackHelper.onStop();
+        // mHeadTrackHelper.onStop();
     }
 
     @Override
@@ -132,7 +134,8 @@ public class HeadTrackFragment extends BluetoothChatFragment {
             @Override
             public void doCommand(HeadTransform t) {
                 float[] angle = new float[3];
-                t.getEulerAngles(angle, 0);
+                t.getEulerAngles(mBeforeAngle, mRoll, angle, 0);
+                // mBeforeAngle = angle;
 
                 float[] degree = new float[3];
                 for (int i = 0; i < angle.length; ++i) {
@@ -149,7 +152,9 @@ public class HeadTrackFragment extends BluetoothChatFragment {
             @Override
             public void doCommand(HeadTransform t) {
                 float[] angle = new float[3];
-                t.getEulerAngles(angle, 0);
+                t.getEulerAngles(mBeforeAngle, mRoll, angle, 0);
+                mBeforeAngle = angle;
+
                 short x = (short) (angle[0] * 180 / Math.PI / 0.02197265625);
                 short y = (short) (angle[1] * 180 / Math.PI / 0.02197265625);
                 short z = (short) (angle[2] * 180 / Math.PI / 0.02197265625);

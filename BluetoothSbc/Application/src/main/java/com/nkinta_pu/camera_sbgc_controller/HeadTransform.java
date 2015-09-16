@@ -125,11 +125,31 @@ public class HeadTransform
 		quaternion[(offset + 3)] = w;
 	}
 
-	public void getEulerAngles(float[] eulerAngles, int offset)
+	private float getContinuesAngle(float before, float now) {
+		float tempDiff = now - before;
+		float diff = 0;
+		if (tempDiff > 0) {
+			diff = (tempDiff + (float) Math.PI) % (float) (2 * Math.PI) - (float) Math.PI;
+		}
+		else {
+			diff = (-tempDiff + (float) Math.PI) % (float) (2 * Math.PI) - (float) Math.PI;
+			diff = -diff;
+		}
+		diff = (tempDiff + (float) Math.PI) % (float) (2 * Math.PI) - (float) Math.PI;
+
+		return now;
+	}
+
+	public void getEulerAngles(float[] beforeEulerAngles, float rollOffset, float[] eulerAngles, int offset)
 	{
 		if (offset + 3 > eulerAngles.length) {
 			throw new IllegalArgumentException("Not enough space to write the result");
 		}
+
+		float[] headView = mHeadView;
+		/*
+		Matrix.rotateM(headView, 0, rollOffset, 0, 0, 1);
+		*/
 
 		/*
 		float yaw, roll, pitch = (float)Math.asin(mHeadView[6]);
@@ -145,21 +165,52 @@ public class HeadTransform
 		}
 		*/
 
-		float yaw, roll, pitch = (float)Math.asin(mHeadView[4]);
-		if (FloatMath.sqrt(1.0F - mHeadView[4] * mHeadView[4]) >= 0.01F)
+		float yaw, pitch, roll = (float)Math.asin(headView[4]);
+		if (FloatMath.sqrt(1.0F - headView[4] * headView[4]) >= 0.01F)
 		{
-			yaw = (float)Math.atan2(-mHeadView[8], mHeadView[0]);
-			roll = (float)Math.atan2(-mHeadView[6], mHeadView[5]);
+			yaw = (float)Math.atan2(-headView[8], headView[0]);
+			pitch = (float)Math.atan2(-headView[6], headView[5]);
 		}
 		else
 		{
 			yaw = 0.0F;
-			roll = (float)Math.atan2(mHeadView[1], mHeadView[10]);
+			pitch = (float)Math.atan2(headView[1], headView[10]);
 		}
 
+		if  (offset + 3 > beforeEulerAngles.length) {
+			eulerAngles[(offset + 0)] = roll;
+			eulerAngles[(offset + 1)] = yaw;
+			eulerAngles[(offset + 2)] = pitch;
+		}
+		else {
+			float bPitch = beforeEulerAngles[(offset + 0)];
+			float bYaw = beforeEulerAngles[(offset + 1)];
+			float bRoll = beforeEulerAngles[(offset + 2)];
 
-		eulerAngles[(offset + 0)] = (pitch);
-		eulerAngles[(offset + 1)] = (yaw);
-		eulerAngles[(offset + 2)] = (roll);
+			float diff = 0;
+			diff += 1 - Math.sin(bPitch) * Math.sin(pitch) - Math.cos(bPitch) * Math.cos(pitch);
+			diff += 1 - Math.sin(bYaw) * Math.sin(yaw) - Math.cos(bYaw) * Math.cos(yaw);
+			diff += 1 - Math.sin(bRoll) * Math.sin(roll) - Math.cos(bRoll) * Math.cos(roll);
+
+
+			float newPitch, newYaw, newRoll;
+			if (diff > 2.0) {
+				newPitch = pitch + (float) Math.PI;
+				newYaw = yaw + (float) Math.PI;
+				newRoll = -roll;
+			} else {
+				newPitch = pitch;
+				newYaw = yaw;
+				newRoll = roll;
+			}
+
+			newPitch = getContinuesAngle(bPitch, newPitch);
+			newYaw = getContinuesAngle(bYaw, newYaw);
+			newRoll = getContinuesAngle(bRoll, newRoll);
+
+			eulerAngles[(offset + 0)] = newRoll;
+			eulerAngles[(offset + 1)] = newYaw;
+			eulerAngles[(offset + 2)] = newPitch;
+		}
 	}
 }
