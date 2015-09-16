@@ -266,12 +266,28 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
         int h = frame.getHeight();
         Rect src = new Rect(0, 0, w, h);
 
+        /*
         float by = Math.min((float) getWidth() / w, (float) getHeight() / h);
         int offsetX = (getWidth() - (int) (w * by)) / 2;
         int offsetY = (getHeight() - (int) (h * by)) / 2;
         Rect dst = new Rect(offsetX, offsetY, getWidth() - offsetX, getHeight() - offsetY);
         canvas.drawBitmap(frame, src, dst, mFramePaint);
         getHolder().unlockCanvasAndPost(canvas);
+        */
+        int wWidth = getWidth();
+        int wHeight = getHeight();
+        float by = Math.min(wWidth / w, wHeight / h);
+        int offsetX = (wWidth - (int) (w * by)) / 2;
+        int offsetY = (wHeight - (int) (h * by)) / 2;
+
+        Rect dstl = new Rect(offsetX, offsetY, wWidth / 2 - offsetX, wHeight - offsetY);
+        canvas.drawBitmap(frame, src, dstl, mFramePaint);
+
+        Rect dstr = new Rect(offsetX + wWidth / 2, offsetY, wWidth - offsetX, wHeight - offsetY);
+        canvas.drawBitmap(frame, src, dstr, mFramePaint);
+
+        getHolder().unlockCanvasAndPost(canvas);
+
     }
 
     /**

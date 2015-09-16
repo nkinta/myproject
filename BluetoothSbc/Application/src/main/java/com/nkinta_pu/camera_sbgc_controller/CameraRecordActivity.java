@@ -561,58 +561,6 @@ public class CameraRecordActivity extends Activity {
         }.start();
     }
 
-    /**
-     * Take a picture and retrieve the image data.
-     */
-    private void takeAndFetchPicture() {
-        if (mLiveviewSurface == null || !mLiveviewSurface.isStarted()) {
-            DisplayHelper.toast(getApplicationContext(), R.string.msg_error_take_picture);
-            return;
-        }
-
-        new Thread() {
-
-            @Override
-            public void run() {
-                try {
-                    JSONObject replyJson = mRemoteApi.actTakePicture();
-                    JSONArray resultsObj = replyJson.getJSONArray("result");
-                    JSONArray imageUrlsObj = resultsObj.getJSONArray(0);
-                    String postImageUrl = null;
-                    if (1 <= imageUrlsObj.length()) {
-                        postImageUrl = imageUrlsObj.getString(0);
-                    }
-                    if (postImageUrl == null) {
-                        Log.w(TAG, "takeAndFetchPicture: post image URL is null.");
-                        DisplayHelper.toast(getApplicationContext(), //
-                                R.string.msg_error_take_picture);
-                        return;
-                    }
-                    // Show progress indicator
-                    DisplayHelper.setProgressIndicator(CameraRecordActivity.this, true);
-
-                    URL url = new URL(postImageUrl);
-                    InputStream istream = new BufferedInputStream(url.openStream());
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inSampleSize = 4; // irresponsible value
-                    final Drawable pictureDrawable =
-                            new BitmapDrawable(getResources(), //
-                                    BitmapFactory.decodeStream(istream, null, options));
-                    istream.close();
-                } catch (IOException e) {
-                    Log.w(TAG, "IOException while closing slicer: " + e.getMessage());
-                    DisplayHelper.toast(getApplicationContext(), //
-                            R.string.msg_error_take_picture);
-                } catch (JSONException e) {
-                    Log.w(TAG, "JSONException while closing slicer");
-                    DisplayHelper.toast(getApplicationContext(), //
-                            R.string.msg_error_take_picture);
-                } finally {
-                    DisplayHelper.setProgressIndicator(CameraRecordActivity.this, false);
-                }
-            }
-        }.start();
-    }
 
     private void startLiveview() {
         if (mLiveviewSurface == null) {

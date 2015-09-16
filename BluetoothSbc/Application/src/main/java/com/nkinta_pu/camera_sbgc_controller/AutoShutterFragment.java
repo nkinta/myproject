@@ -63,8 +63,6 @@ public class AutoShutterFragment extends BluetoothChatFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FragmentActivity activity = getActivity();
-        mHeadTrackHelper = new HeadTrackHelper(activity);
     }
 
     @Override
@@ -77,7 +75,6 @@ public class AutoShutterFragment extends BluetoothChatFragment {
     public void onPause()
     {
         super.onPause();
-        mHeadTrackHelper.onStop();
     }
 
     @Override

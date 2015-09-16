@@ -4,6 +4,7 @@
 
 package com.nkinta_pu.camera_sbgc_controller;
 
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -111,6 +112,8 @@ public class CameraRecordFragment extends Fragment {
         mButtonContentsListMode = (Button) view.findViewById(R.id.button_contents_list);
         mTextCameraStatus = (TextView) view.findViewById(R.id.text_camera_status);
 
+        mSpinnerShootMode.setEnabled(false);
+
     }
 
     private boolean doSettingRemoteApi() {
@@ -203,8 +206,6 @@ public class CameraRecordFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mSpinnerShootMode.setEnabled(true);
-
         /*
         final FragmentActivity activity = getActivity();
         ArrayAdapter<String> adapter;
@@ -269,7 +270,11 @@ public class CameraRecordFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                takeAndFetchPicture();
+                final MainActivity activity = (MainActivity) getActivity();
+
+                // Set target ServerDevice instance to control in Activity.
+                Intent intent = new Intent(activity, CameraRecordActivity.class);
+                startActivity(intent);
             }
         });
 
