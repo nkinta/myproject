@@ -135,7 +135,7 @@ public class HeadTrackFragment extends BluetoothChatFragment {
             public void doCommand(HeadTransform t) {
                 float[] angle = new float[3];
                 t.getEulerAngles(mBeforeAngle, mRoll, angle, 0);
-                // mBeforeAngle = angle;
+                mBeforeAngle = angle;
 
                 float[] degree = new float[3];
                 for (int i = 0; i < angle.length; ++i) {
@@ -147,7 +147,9 @@ public class HeadTrackFragment extends BluetoothChatFragment {
                 return;
             }
         };
+
         mHeadTrackHelper.setJob(job1);
+        /*
         HeadTrackJob job2 = new HeadTrackJob() {
             @Override
             public void doCommand(HeadTransform t) {
@@ -169,7 +171,7 @@ public class HeadTrackFragment extends BluetoothChatFragment {
             }
         };
         mHeadTrackHelper.setJob(job2);
-
+        */
     }
 
 }
