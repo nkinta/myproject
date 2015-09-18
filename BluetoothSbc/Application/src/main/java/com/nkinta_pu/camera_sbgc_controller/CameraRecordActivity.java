@@ -105,13 +105,11 @@ public class CameraRecordActivity extends Activity {
             @Override
             public void onShootModeChanged(String shootMode) {
                 Log.d(TAG, "onShootModeChanged() called: " + shootMode);
-                refreshUi();
             }
 
             @Override
             public void onCameraStatusChanged(String status) {
                 Log.d(TAG, "onCameraStatusChanged() called: " + status);
-                refreshUi();
             }
 
             @Override
@@ -144,7 +142,6 @@ public class CameraRecordActivity extends Activity {
             @Override
             public void onStorageIdChanged(String storageId) {
                 Log.d(TAG, "onStorageIdChanged() called: " + storageId);
-                refreshUi();
             }
         };
 
@@ -294,17 +291,6 @@ public class CameraRecordActivity extends Activity {
                                 if ("IDLE".equals(status)) {
                                     openConnection();
                                 }
-                                refreshUi();
-                            }
-
-                            @Override
-                            public void onShootModeChanged(String shootMode) {
-                                refreshUi();
-                            }
-
-                            @Override
-                            public void onStorageIdChanged(String storageId) {
-                                refreshUi();
                             }
                         });
 
@@ -418,14 +404,6 @@ public class CameraRecordActivity extends Activity {
     }
 
     /**
-     * Refresh UI appearance along with current "cameraStatus" and "shootMode".
-     */
-    private void refreshUi() {
-        String cameraStatus = mEventObserver.getCameraStatus();
-        String shootMode = mEventObserver.getShootMode();
-    }
-
-    /**
      * Retrieve a list of APIs that are available at present.
      *
      * @param replyJson
@@ -515,52 +493,6 @@ public class CameraRecordActivity extends Activity {
         }
         return false;
     }
-
-    /**
-     * Check if the shoot mode is supported in this application.
-     *
-     * @param mode
-     * @return
-     */
-    private boolean isSupportedShootMode(String mode) {
-        if ("still".equals(mode) || "movie".equals(mode)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Call setShootMode
-     *
-     * @param mode
-     */
-    private void setShootMode(final String mode) {
-        // final FragmentActivity activity = getActivity();
-        new Thread() {
-
-            @Override
-            public void run() {
-                try {
-                    JSONObject replyJson = mRemoteApi.setShootMode(mode);
-                    JSONArray resultsObj = replyJson.getJSONArray("result");
-                    int resultCode = resultsObj.getInt(0);
-                    if (resultCode == 0) {
-                        // Success, but no refresh UI at the point.
-                        Log.v(TAG, "setShootMode: success.");
-                    } else {
-                        Log.w(TAG, "setShootMode: error: " + resultCode);
-                        DisplayHelper.toast(getApplicationContext(), //
-                                R.string.msg_error_api_calling);
-                    }
-                } catch (IOException e) {
-                    Log.w(TAG, "setShootMode: IOException: " + e.getMessage());
-                } catch (JSONException e) {
-                    Log.w(TAG, "setShootMode: JSON format error.");
-                }
-            }
-        }.start();
-    }
-
 
     private void startLiveview() {
         if (mLiveviewSurface == null) {

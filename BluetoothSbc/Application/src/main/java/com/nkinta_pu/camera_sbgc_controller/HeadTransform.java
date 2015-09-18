@@ -164,7 +164,14 @@ public class HeadTransform
 			throw new IllegalArgumentException("Not enough space to write the result");
 		}
 
-		float[] headView = mHeadView;
+		// float[] headView = mHeadView;
+		float[] rollOffsetMatrix = new float[16];
+		Matrix.setIdentityM(rollOffsetMatrix, 0);
+		Matrix.rotateM(rollOffsetMatrix, 0, rollOffset, 0, 0, 1);
+
+		float[] headView = new float[16];
+		Matrix.multiplyMM(headView, 0, rollOffsetMatrix, 0, mHeadView, 0);
+
 		/*
 		Matrix.rotateM(headView, 0, rollOffset, 0, 0, 1);
 		*/
@@ -183,11 +190,12 @@ public class HeadTransform
 		}
 		*/
 
-		float yaw1, pitch1, roll1 = (float)Math.asin(headView[4]);
+		float yaw1, pitch1;
+		float roll1 = (float)Math.asin(headView[4]);
 		if (FloatMath.sqrt(1.0F - headView[4] * headView[4]) >= 0.01F)
 		{
-			yaw1 = (float)Math.atan2(-headView[8] / Math.cos(roll1), headView[0] / Math.cos(roll1));
-			pitch1 = (float)Math.atan2(-headView[6] / Math.cos(roll1), headView[5] / Math.cos(roll1));
+			yaw1 = (float)Math.atan2(-headView[8], headView[0]);
+			pitch1 = (float)Math.atan2(-headView[6], headView[5]);
 		}
 		else
 		{
@@ -204,8 +212,8 @@ public class HeadTransform
 		float roll2 = (float)Math.PI - (float)Math.asin(headView[4]);
 		if (FloatMath.sqrt(1.0F - headView[4] * headView[4]) >= 0.01F)
 		{
-			yaw2 = (float)Math.atan2(-headView[8] / Math.cos(roll2), headView[0] / Math.cos(roll2));
-			pitch2 = (float)Math.atan2(-headView[6] / Math.cos(roll2), headView[5] / Math.cos(roll2));
+			yaw2 = (float)Math.atan2(headView[8], -headView[0]);
+			pitch2 = (float)Math.atan2(headView[6], -headView[5]);
 		}
 		else
 		{
@@ -249,13 +257,17 @@ public class HeadTransform
 				newRoll = roll1;
 			}
 
-			newPitch = removeLimitByOldAngle(bPitch, newPitch);
-			newYaw = removeLimitByOldAngle(bYaw, newYaw);
-			newRoll = removeLimitByOldAngle(bRoll, newRoll);
+			float resultPitch = removeLimitByOldAngle(bPitch, newPitch);
+			float resultYaw = removeLimitByOldAngle(bYaw, newYaw);
+			float resultRoll = removeLimitByOldAngle(bRoll, newRoll);
 
-			eulerAngles[(offset + 0)] = newRoll;
-			eulerAngles[(offset + 1)] = newYaw;
-			eulerAngles[(offset + 2)] = newPitch;
+			// if (bRoll > resultRoll) {
+			// 	throw new IllegalArgumentException("hi");
+			// }
+
+			eulerAngles[(offset + 0)] = resultRoll;
+			eulerAngles[(offset + 1)] = resultYaw;
+			eulerAngles[(offset + 2)] = resultPitch;
 		}
 	}
 }

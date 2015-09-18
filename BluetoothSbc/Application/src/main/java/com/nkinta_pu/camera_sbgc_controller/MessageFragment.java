@@ -56,7 +56,7 @@ import java.lang.Math;
 /**
  * This fragment controls Bluetooth to communicate with other devices.
  */
-public class MessageFragment extends BluetoothChatFragment {
+public class MessageFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -71,7 +71,7 @@ public class MessageFragment extends BluetoothChatFragment {
 
         GridLayout frameLayout = (GridLayout) view.findViewById(R.id.control);
 
-        FragmentActivity activity = getActivity();
+        final MainActivity activity = (MainActivity)getActivity();
         ArrayList<CommandInfo> commandList = new ArrayList<CommandInfo>();
 
         byte[] data1 = {(byte)0x00};
@@ -87,7 +87,7 @@ public class MessageFragment extends BluetoothChatFragment {
             return;
         }
 
-        for (CommandInfo v: commandList) {
+        for (final CommandInfo v: commandList) {
             Button button = new Button(activity);
             button.setText(v.getLabel());
             frameLayout.addView(button);
@@ -99,7 +99,7 @@ public class MessageFragment extends BluetoothChatFragment {
                     View view = getView();
                     if (null != view) {
                         // byte[] send = {(byte) 0x3E, (byte) 0x15, (byte) 0x01, (byte) 0x16, (byte) 0x00, (byte) 0x00};
-                        sendMessage(commandData);
+                        activity.send_bluetooth_message(v.getCommandData());
                     }
                 }
             });

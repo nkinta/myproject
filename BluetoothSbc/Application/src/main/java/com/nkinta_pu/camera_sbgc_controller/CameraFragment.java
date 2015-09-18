@@ -17,7 +17,6 @@ import android.view.ViewGroup;
  */
 public class CameraFragment extends Fragment {
 
-
     CameraRecordFragment mCameraRecordFragment;
 
     CameraDeviceFragment mCameraDeviceFragment;
@@ -46,6 +45,13 @@ public class CameraFragment extends Fragment {
         }
     }
 
+    public CameraRecordFragment getCameraRecordFragment() {
+        return mCameraRecordFragment;
+    }
+
+    public CameraDeviceFragment getCameraDeviceFragment() {
+        return mCameraDeviceFragment;
+    }
 
     public void startCamera() {
         // CameraRecordFragment cameraRecordFragment = (CameraRecordFragment) getFragmentManager().findFragmentById(R.id.camera_record);

@@ -1000,7 +1000,7 @@ public class CameraRecordFragment extends Fragment {
     /**
      * Take a picture and retrieve the image data.
      */
-    private void takeAndFetchPicture() {
+    public void takeAndFetchPicture() {
         final FragmentActivity activity = getActivity();
         if (mLiveviewSurface == null || !mLiveviewSurface.isStarted()) {
             DisplayHelper.toast(activity.getApplicationContext(), R.string.msg_error_take_picture);

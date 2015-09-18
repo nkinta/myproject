@@ -35,17 +35,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.GridLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 // import android.os.SytemClock;
 
 import com.example.android.common.logger.Log;
+import com.nkinta_pu.camera_sbgc_controller.utils.DisplayHelper;
 // import com.nkinta_pu.camera_sbgc_controller.HeadTrackHelper;
 
 // import com.google.vrtoolkit.cardboard.HeadTransform;
@@ -57,10 +60,10 @@ import java.lang.Math;
 /**
  * This fragment controls Bluetooth to communicate with other devices.
  */
-public class HeadTrackFragment extends BluetoothChatFragment {
+public class HeadTrackFragment extends Fragment {
 
     private HeadTrackHelper mHeadTrackHelper = null;
-    private float mRoll = 90.0f;
+    private float mRoll = 0;
     private float[] mBeforeAngle = {};
 
     @Override
@@ -84,6 +87,12 @@ public class HeadTrackFragment extends BluetoothChatFragment {
     }
 
     @Override
+    public void onDestroy() {
+        mHeadTrackHelper.onStop();
+        super.onDestroy();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bluetooth_chat, null);
@@ -96,22 +105,19 @@ public class HeadTrackFragment extends BluetoothChatFragment {
         // mConversationView = (ListView) view.findViewById(R.id.in);
         // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
         // mSendButton = (Button) view.findViewById(R.id.button_send);
-
-
-        FragmentActivity activity = getActivity();
-
-        GridLayout frameLayout = (GridLayout) view.findViewById(R.id.control);
-
+        final MainActivity activity = (MainActivity)getActivity();
+        GridLayout gridLayout = (GridLayout) view.findViewById(R.id.control);
+        gridLayout.setColumnCount(2);
         // Switch switchButton = (Switch) view.findViewById(R.id.headTrackSwitch);
         // switchButton.set
 
         final Switch switchButton = new Switch(activity);
         switchButton.setText("HEAD_TRACK");
-        frameLayout.addView(switchButton);
+        gridLayout.addView(switchButton);
 
         final TextView headTrackParam = new TextView(activity);
         headTrackParam.setText("-");
-        frameLayout.addView(headTrackParam);
+        gridLayout.addView(headTrackParam);
 
         // final TextView headTrackParam = (TextView) view.findViewById(R.id.headTrackParam);
 
@@ -129,7 +135,6 @@ public class HeadTrackFragment extends BluetoothChatFragment {
 
         });
 
-
         HeadTrackJob job1 = new HeadTrackJob() {
             @Override
             public void doCommand(HeadTransform t) {
@@ -142,36 +147,54 @@ public class HeadTrackFragment extends BluetoothChatFragment {
                     degree[i] = angle[i] * 180 / (float)Math.PI;
                 }
 
-                headTrackParam.setText("x = " + String.format("%8.3f", degree[0]) + ", y = " + String.format("%8.3f",degree[1]) + ", z = " + String.format("%8.3f", degree[2]));
+                headTrackParam.setText("x = " + String.format("%8.3f", degree[0]) + ", y = " + String.format("%8.3f", degree[1]) + ", z = " + String.format("%8.3f", degree[2]));
 
-                return;
+                CommandInfo command = SimpleBgcUtility.getControlCommand(angle);
+
+                activity.send_bluetooth_message(command.getCommandData());
             }
         };
 
         mHeadTrackHelper.setJob(job1);
-        /*
-        HeadTrackJob job2 = new HeadTrackJob() {
+
+        final Spinner directorySpinner = new Spinner(activity);
+        gridLayout.addView(directorySpinner);
+        // directorySpinner.setText("HEAD_TRACK");
+
+        ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter(activity, //
+                android.R.layout.simple_spinner_item, new String[] {"default", "->"});
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        directorySpinner.setAdapter(adapter);
+        directorySpinner.setPrompt(getString(R.string.prompt_shoot_mode));
+        // selectionShootModeSpinner(directorySpinner, currentMode);
+        directorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            // selected Spinner dropdown item
             @Override
-            public void doCommand(HeadTransform t) {
-                float[] angle = new float[3];
-                t.getEulerAngles(mBeforeAngle, mRoll, angle, 0);
-                mBeforeAngle = angle;
-
-                short x = (short) (angle[0] * 180 / Math.PI / 0.02197265625);
-                short y = (short) (angle[1] * 180 / Math.PI / 0.02197265625);
-                short z = (short) (angle[2] * 180 / Math.PI / 0.02197265625);
-
-                byte data[] = {(byte)0x02,
-                        (byte)0, (byte)2, (byte)x, (byte) (x >> 8),
-                        (byte)0, (byte)2, (byte)z, (byte) (z >> 8),
-                        (byte)0, (byte)2, (byte)-y, (byte) ((-y >> 8)) };
-                CommandInfo commandInfo = new CommandInfo("control", (byte) 0x43, data);
-                sendMessage(commandInfo.getCommandData());
-                return;
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Spinner spinner = (Spinner) parent;
+                if (!spinner.isFocusable()) {
+                    // ignored the first call, because shoot mode has not
+                    // changed
+                    spinner.setFocusable(true);
+                } else {
+                    long spinnerId = spinner.getSelectedItemId();
+                    if (spinnerId == 0) {
+                        mBeforeAngle = new float[]{};
+                        mRoll = 0;
+                    }
+                    else if (spinnerId == 1) {
+                        mBeforeAngle = new float[]{};
+                        mRoll = 90;
+                    }
+                }
             }
-        };
-        mHeadTrackHelper.setJob(job2);
-        */
+
+            // not selected Spinner dropdown item
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 
 }

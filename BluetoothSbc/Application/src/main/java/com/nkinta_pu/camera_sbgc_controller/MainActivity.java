@@ -50,7 +50,7 @@ public class MainActivity extends SampleActivityBase {
 
     ViewPager mViewPager;
     CameraFragment mCameraFragment;
-
+    BluetoothChatFragment mBluetoothChatFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +62,10 @@ public class MainActivity extends SampleActivityBase {
         // mCameraFragment = (Fragment)(getFragmentManager().findFragmentById(R.id.fragment));
 
         if (savedInstanceState == null) {
-            // FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            // BluetoothChatFragment fragment = new BluetoothChatFragment();
-            // transaction.replace(R.id.sample_content_fragment, fragment);
-            // transaction.commit();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            mBluetoothChatFragment = new BluetoothChatFragment();
+            transaction.add(R.id.sample_main_layout, mBluetoothChatFragment);
+            transaction.commit();
 
             // FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             // mCameraFragment = new CameraFragment();
@@ -74,6 +74,15 @@ public class MainActivity extends SampleActivityBase {
 
         }
 
+    }
+
+    public void send_bluetooth_message(byte[] send) {
+        mBluetoothChatFragment.sendMessage(send);
+    }
+
+    public void takeAndFetchPicture() {
+        mCameraFragment = (CameraFragment) getSupportFragmentManager().findFragmentById(R.id.camera_fragment);
+        mCameraFragment.getCameraRecordFragment().takeAndFetchPicture();
     }
 
     public void startCamera() {

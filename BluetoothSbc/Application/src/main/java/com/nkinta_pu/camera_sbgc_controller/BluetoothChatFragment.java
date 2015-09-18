@@ -54,44 +54,6 @@ import com.example.android.common.logger.Log;
 import java.util.ArrayList;
 import java.lang.Math;
 
-class CommandInfo {
-
-    private final byte mCommand;
-    private final byte[] mData;
-    private final String mLabel;
-
-    CommandInfo(String label, byte command, byte[] data) {
-        mLabel = label;
-        mCommand = command;
-        mData = data;
-    }
-
-    public String getLabel() {
-        return mLabel;
-    }
-
-    public byte[] getCommandData() {
-        int size = 5 + mData.length;
-        // byte[] send = { (byte)0x3E, (byte)0x15, (byte) 0x01, (byte) 0x16, (byte) 0x00, (byte) 0x00};
-        byte[] commandData = new byte[size];
-
-        commandData[0] = (byte)0x3E;
-        commandData[1] = (byte)mCommand;
-        commandData[2] = (byte)mData.length;
-        commandData[3] = (byte)(mData.length + mCommand);
-        int dataTotal = 0;
-        for (int i = 0; i <  mData.length; ++i) {
-            commandData[4 + i] = mData[i];
-            dataTotal += 0xff & mData[i];
-        }
-        commandData[4 + mData.length] = (byte)dataTotal;
-
-        return commandData;
-    }
-
-}
-
-
 /**
  * This fragment controls Bluetooth to communicate with other devices.
  */
@@ -252,7 +214,7 @@ public class BluetoothChatFragment extends Fragment {
      *
      * @param message A string of text to send.
      */
-    protected void sendMessage(byte[] send) {
+    public void sendMessage(byte[] send) {
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
             Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();

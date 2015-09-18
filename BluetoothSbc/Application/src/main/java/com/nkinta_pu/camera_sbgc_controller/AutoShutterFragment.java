@@ -18,6 +18,7 @@ package com.nkinta_pu.camera_sbgc_controller;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,7 +57,7 @@ class AngleInfo {
 /**
  * This fragment controls Bluetooth to communicate with other devices.
  */
-public class AutoShutterFragment extends BluetoothChatFragment {
+public class AutoShutterFragment extends Fragment {
 
     private HeadTrackHelper mHeadTrackHelper = null;
 
@@ -93,7 +94,7 @@ public class AutoShutterFragment extends BluetoothChatFragment {
         GridLayout gridLayout = (GridLayout) view.findViewById(R.id.control);
         gridLayout.setColumnCount(4);
 
-        FragmentActivity activity = getActivity();
+        final MainActivity activity = (MainActivity)getActivity();
         ArrayList<AngleInfo> angleList = new ArrayList<>();
 
         angleList.add(new AngleInfo("yaw00", new float[]{0, 00, 0}));
@@ -105,7 +106,6 @@ public class AutoShutterFragment extends BluetoothChatFragment {
             return;
         }
 
-        int rowIndex = 0;
         for (AngleInfo v: angleList) {
 
             Button button = new Button(activity);
@@ -126,12 +126,11 @@ public class AutoShutterFragment extends BluetoothChatFragment {
                     // Send a message using content of the edit text widget
                     View view = getView();
                     if (null != view) {
-                        sendMessage(commandData);
+                        activity.send_bluetooth_message(commandData);
                     }
                 }
             });
 
-            ++rowIndex;
         }
 
 
