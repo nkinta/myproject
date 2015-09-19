@@ -21,11 +21,11 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 // transaction.replace(R.id.sample_content_fragment, fragment);
                 // transaction.commit();
                 // return new CameraDeviceFragment();
-                return new MessageFragment();
-            case 1:
                 return new HeadTrackFragment();
-            default:
+            case 1:
                 return new AutoShutterFragment();
+            default:
+                return new MessageFragment();
         }
     }
 

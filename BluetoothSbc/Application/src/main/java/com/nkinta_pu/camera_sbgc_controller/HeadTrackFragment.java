@@ -125,6 +125,7 @@ public class HeadTrackFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
                 if (isChecked == true) {
+                    mBeforeAngle = new float[]{};
                     mHeadTrackHelper.onStart();
                 }
                 else {

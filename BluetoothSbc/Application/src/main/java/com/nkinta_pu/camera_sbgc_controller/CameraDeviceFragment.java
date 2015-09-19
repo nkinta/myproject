@@ -5,6 +5,8 @@
 package com.nkinta_pu.camera_sbgc_controller;
 
 import android.content.Context;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -20,6 +22,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.List;
 
 /**
  * An Activity class of Device Discovery screen.
@@ -85,9 +89,30 @@ public class CameraDeviceFragment extends Fragment {
             }
         });
 
-        // Show Wi-Fi SSID.
+        getView().findViewById(R.id.button_search).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Button btn = (Button) v;
+                if (!mSsdpClient.isSearching()) {
+                    searchDevices();
+                    btn.setEnabled(false);
+                }
+            }
+        });
+
+        getView().findViewById(R.id.connect_wifi).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                connectWifi();
+            }
+        });
         TextView textWifiSsid = (TextView)  getView().findViewById(R.id.text_wifi_ssid);
         WifiManager wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+
+
+        // Show Wi-Fi SSID.
         if (wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             String htmlLabel = String.format("SSID: <b>%s</b>", wifiInfo.getSSID());
@@ -97,6 +122,36 @@ public class CameraDeviceFragment extends Fragment {
         }
 
         android.util.Log.d(TAG, "onResume() completed.");
+    }
+
+    private void connectWifi() {
+        final MainActivity activity = (MainActivity)getActivity();
+        WifiManager wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+        wifiManager.startScan();
+        List<ScanResult> apList = wifiManager.getScanResults();
+        List<WifiConfiguration> confList = wifiManager.getConfiguredNetworks();
+        String ssidPattern = "DIRECT-.*";
+        for (WifiConfiguration conf: confList) {
+            boolean isExist = false;
+            String ssid = conf.SSID.replace("\"", "");
+            if (!ssid.matches(ssidPattern)) {
+                continue;
+            }
+
+            for (ScanResult ap: apList) {
+                if (!ssid.equals(ap.SSID)) {
+                    continue;
+                }
+                isExist = true;
+                break;
+            }
+            if (isExist == false) {
+                continue;
+            }
+
+            wifiManager.enableNetwork(conf.networkId, true);
+            break;
+        }
     }
 
     private void searchDevices() {

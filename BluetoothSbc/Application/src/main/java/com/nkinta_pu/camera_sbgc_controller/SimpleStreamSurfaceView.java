@@ -34,7 +34,6 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
 
     private boolean mWhileFetching;
 
-
     private final BlockingQueue<byte[]> mJpegQueue = new ArrayBlockingQueue<byte[]>(2);
 
     private final boolean mInMutableAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
@@ -48,6 +47,13 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
     private final Paint mFramePaint;
 
     private StreamErrorListener mErrorListener;
+
+    private int mViewType = NORMAL_VIEW;
+
+    private static final int NORMAL_VIEW = 1;
+    private static final int VR_VIEW_FULL = 2;
+    private static final int VR_VIEW = 3;
+
 
     /**
      * Constructor
@@ -229,6 +235,10 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
         return mWhileFetching;
     }
 
+    public void shiftViewType() {
+        mViewType = (mViewType + 1) % 3;
+    }
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void initInBitmap(BitmapFactory.Options options) {
         options.inBitmap = null;
@@ -266,26 +276,39 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
         int h = frame.getHeight();
         Rect src = new Rect(0, 0, w, h);
 
-        /*
-        float by = Math.min((float) getWidth() / w, (float) getHeight() / h);
-        int offsetX = (getWidth() - (int) (w * by)) / 2;
-        int offsetY = (getHeight() - (int) (h * by)) / 2;
-        Rect dst = new Rect(offsetX, offsetY, getWidth() - offsetX, getHeight() - offsetY);
-        canvas.drawBitmap(frame, src, dst, mFramePaint);
-        getHolder().unlockCanvasAndPost(canvas);
-        */
-        int wWidth = getWidth();
-        int wHeight = getHeight();
-        float by = Math.min(wWidth / w, wHeight / h);
-        int offsetX = (wWidth - (int) (w * by)) / 2;
-        int offsetY = (wHeight - (int) (h * by)) / 2;
+        if (mViewType == NORMAL_VIEW) {
+            float by = Math.min((float) getWidth() / w, (float) getHeight() / h);
+            int offsetX = (getWidth() - (int) (w * by)) / 2;
+            int offsetY = (getHeight() - (int) (h * by)) / 2;
+            Rect dst = new Rect(offsetX, offsetY, getWidth() - offsetX, getHeight() - offsetY);
+            canvas.drawBitmap(frame, src, dst, mFramePaint);
 
-        Rect dstl = new Rect(offsetX, offsetY, wWidth / 2 - offsetX, wHeight - offsetY);
-        canvas.drawBitmap(frame, src, dstl, mFramePaint);
+        }
+        else if (mViewType == VR_VIEW) {
+            float wWidth = getWidth();
+            float wHeight = getHeight();
+            float by = Math.min(wWidth / (2 * w), wHeight / h);
+            int offsetX = (int) ((wWidth - (2 * w * by)) / 2);
+            int offsetY = (int) ((wHeight - (h * by)) / 2);
 
-        Rect dstr = new Rect(offsetX + wWidth / 2, offsetY, wWidth - offsetX, wHeight - offsetY);
-        canvas.drawBitmap(frame, src, dstr, mFramePaint);
+            Rect dstl = new Rect((int) offsetX, offsetY, (int) wWidth / 2, (int) wHeight - offsetY);
+            canvas.drawBitmap(frame, src, dstl, mFramePaint);
 
+            Rect dstr = new Rect((int) wWidth / 2, offsetY, (int) wWidth - offsetX, (int) wHeight - offsetY);
+            canvas.drawBitmap(frame, src, dstr, mFramePaint);
+
+        }
+        else if (mViewType == VR_VIEW_FULL) {
+            float wWidth = getWidth();
+            float wHeight = getHeight();
+
+            Rect dstl = new Rect(0, 0, (int) wWidth / 2, (int) wHeight);
+            canvas.drawBitmap(frame, src, dstl, mFramePaint);
+
+            Rect dstr = new Rect((int) wWidth / 2, 0, (int) wWidth, (int) wHeight);
+            canvas.drawBitmap(frame, src, dstr, mFramePaint);
+
+        }
         getHolder().unlockCanvasAndPost(canvas);
 
     }

@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -162,6 +163,8 @@ public class CameraRecordActivity extends Activity {
 
         prepareOpenConnection();
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         Log.d(TAG, "onResume() completed.");
     }
 
@@ -173,6 +176,8 @@ public class CameraRecordActivity extends Activity {
         }
 
         closeConnection();
+
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Log.d(TAG, "onPause() completed.");
     }

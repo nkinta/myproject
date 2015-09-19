@@ -205,48 +205,6 @@ public class CameraRecordFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        /*
-        final FragmentActivity activity = getActivity();
-        ArrayAdapter<String> adapter;
-        adapter = new ArrayAdapter(activity, //
-                android.R.layout.simple_spinner_item, new String[] {"still", "movie"});
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpinnerShootMode.setAdapter(adapter);
-        mSpinnerShootMode.setEnabled(true);
-        */
-
-        // mSpinnerShootMode.setPrompt(getString(R.string.prompt_shoot_mode));
-        // selectionShootModeSpinner(mSpinnerShootMode, "still1");
-
-        /*
-        FragmentActivity activity = getActivity();
-        mSpinnerShootMode = (Spinner) getView().findViewById(R.id.spinner_shoot_mode);
-
-        String[] s = {"shoot", "movie"};
-        ArrayAdapter<String> adapter;
-        adapter = new ArrayAdapter(getActivity(), //
-                android.R.layout.simple_spinner_item, s);
-        adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-        mSpinnerShootMode.setAdapter(adapter);
-        // mSpinnerShootMode.setPrompt(getString(R.string.prompt_shoot_mode));
-        selectionShootModeSpinner(mSpinnerShootMode, "shoot");
-
-        mSpinnerShootMode.setOnItemSelectedListener(new OnItemSelectedListener() {
-            // selected Spinner dropdown item
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), mSpinnerShootMode.getSelectedItem().toString(),
-                        Toast.LENGTH_SHORT).show();
-            }
-
-            // not selected Spinner dropdown item
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-        */
-
     }
 
 
@@ -266,15 +224,24 @@ public class CameraRecordFragment extends Fragment {
         mSpinnerShootMode.setFocusable(false);
         mButtonContentsListMode.setEnabled(false);
 
-        mLiveviewSurface.setOnClickListener(new View.OnClickListener() {
-
+        mLiveviewSurface.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onLongClick(View v) {
                 final MainActivity activity = (MainActivity) getActivity();
 
                 // Set target ServerDevice instance to control in Activity.
                 Intent intent = new Intent(activity, CameraRecordActivity.class);
+                // intent.putExtra();
                 startActivity(intent);
+                return true;
+            }
+        });
+
+        mLiveviewSurface.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mLiveviewSurface.shiftViewType();
             }
         });
 
