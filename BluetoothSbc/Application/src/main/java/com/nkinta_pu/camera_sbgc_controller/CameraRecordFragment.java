@@ -231,7 +231,7 @@ public class CameraRecordFragment extends Fragment {
 
                 // Set target ServerDevice instance to control in Activity.
                 Intent intent = new Intent(activity, CameraRecordActivity.class);
-                // intent.putExtra();
+                intent.putExtra("viewType", mLiveviewSurface.getViewType());
                 startActivity(intent);
                 return true;
             }

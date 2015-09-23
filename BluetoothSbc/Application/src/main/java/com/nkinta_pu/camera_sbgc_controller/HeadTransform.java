@@ -266,8 +266,8 @@ public class HeadTransform
 			// }
 
 			eulerAngles[(offset + 0)] = resultRoll;
-			eulerAngles[(offset + 1)] = resultYaw;
-			eulerAngles[(offset + 2)] = resultPitch;
+			eulerAngles[(offset + 1)] = resultPitch;
+			eulerAngles[(offset + 2)] = -resultYaw;
 		}
 	}
 }

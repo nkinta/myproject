@@ -7,6 +7,7 @@ package com.nkinta_pu.camera_sbgc_controller;
 import android.app.Application;
 
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * Application class for the sample application.
@@ -20,6 +21,10 @@ public class SampleApplication extends Application {
     private Set<String> mSupportedApiSet;
 
     private BluetoothChatService mBluetoothChatService;
+
+    private HeadTrackHelper mHeadTrackHelper;
+
+    private ArrayBlockingQueue<byte[]> mBluetoothBlockingQueue = new ArrayBlockingQueue<byte[]>(10);
 
     /**
      * Sets a target ServerDevice object.
@@ -48,6 +53,22 @@ public class SampleApplication extends Application {
 
     public SimpleRemoteApi getRemoteApi() {
         return mRemoteApi;
+    }
+
+    public ArrayBlockingQueue<byte[]> getBluetoothBlockingQueue() {
+        return mBluetoothBlockingQueue;
+    }
+
+    public void setBluetoothBlockingQueue(ArrayBlockingQueue<byte[]> queue) {
+        mBluetoothBlockingQueue = queue;
+    }
+
+    public void setHeadTrackHelper(HeadTrackHelper headTrackHelper) {
+        mHeadTrackHelper = headTrackHelper;
+    }
+
+    public HeadTrackHelper getHeadTrackHelper() {
+        return mHeadTrackHelper;
     }
 
     public void setSupportedApiList(Set<String> apiList) {

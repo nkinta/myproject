@@ -1,6 +1,10 @@
 package com.nkinta_pu.camera_sbgc_controller;
 
 import android.view.View;
+import android.widget.Toast;
+
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by kanenao on 2015/09/18.
@@ -95,7 +99,22 @@ public class SimpleBgcUtility {
     static int CMD_BOOT_MODE_3 = 51;
     static int CMD_READ_FILE = 53;
 
-    static public CommandInfo getControlCommand(float[] angle) {
+    static private byte[] floatDegreeToByte(float v, float oneUnitDeg) {
+        short sv = (short) (v * 180 / Math.PI / oneUnitDeg);
+        byte result[] =  {(byte) sv, (byte) (sv >> 8)};
+
+        return result;
+    }
+
+    static private byte[] floatAngleDegreeToByte(float v) {
+        return floatDegreeToByte(v, 0.02197265625f);
+    }
+
+    static private byte[] floatSpeedDegreeToByte(float v) {
+        return floatDegreeToByte(v, 0.1220740379f);
+    }
+
+    static public CommandInfo getControlCommand(float[] speed, float[] angle) {
 
         if (angle.length > 3) {
             throw new IllegalArgumentException("Angle info must exist 3 element.");
@@ -105,22 +124,52 @@ public class SimpleBgcUtility {
         short y = (short) (angle[1] * 180 / Math.PI / 0.02197265625);
         short z = (short) (angle[2] * 180 / Math.PI / 0.02197265625);
 
-        byte data[] = {(byte) 0x02,
-                (byte) 0, (byte) 2, (byte) x, (byte) (x >> 8),
-                (byte) 0, (byte) 2, (byte) z, (byte) (z >> 8),
-                (byte) 0, (byte) 2, (byte) -y, (byte) ((-y >> 8))};
+        byte data[] = new byte[13];
+        data[0] = (byte) 0x02;
+        int offset = 1;
+        for (int i = 0; i < 3; ++i) {
+            byte byteSpeed[] = floatSpeedDegreeToByte(speed[i]);
+            byte byteAngle[] = floatAngleDegreeToByte(angle[i]);
+            data[offset + 4 * i + 0] = byteSpeed[0];
+            data[offset + 4 * i + 1] = byteSpeed[1];
+            data[offset + 4 * i + 2] = byteAngle[0];
+            data[offset + 4 * i + 3] = byteAngle[1];
+        }
+
         CommandInfo commandInfo = new CommandInfo("control", (byte)CMD_CONTROL, data);
 
         return commandInfo;
 
     }
 
-    static public void moveAndWait(float[] angle) {
+    static public CommandInfo getGetAngleCommand() {
+        byte data[] = {};
+        CommandInfo commandInfo = new CommandInfo("control", (byte)CMD_GET_ANGLES, data);
 
-        byte[] data = {(byte)0x00};
-        CommandInfo commandInfo = new CommandInfo("moveAndWait", (byte) CMD_CONTROL, data);
+        return commandInfo;
+
+    }
+
+    static public byte[] moveAndWait(float[] angle, BluetoothChatService chatService, ArrayBlockingQueue<byte[]> bluetoothBlockingQueue) {
+
+        CommandInfo commandInfo = getControlCommand(new float[] {1.0f, 1.0f, 1.0f}, angle);
         final byte[] commandData = commandInfo.getCommandData();
 
+        // Send a message using content of the edit text widget
+        bluetoothBlockingQueue.clear();
+        chatService.write(commandData);
+        byte[] result = {};
+        try {
+            result = bluetoothBlockingQueue.poll(1000, TimeUnit.MILLISECONDS);
+        }
+        catch (InterruptedException e) {
+            return null;
+        }
+        if (result == null) {
+            return null;
+        }
+
+        return result;
 
     }
 

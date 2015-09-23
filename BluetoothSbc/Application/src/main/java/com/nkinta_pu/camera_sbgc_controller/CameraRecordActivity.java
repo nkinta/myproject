@@ -73,14 +73,23 @@ public class CameraRecordActivity extends Activity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_camera_record);
 
+        SampleApplication application = (SampleApplication)getApplication();
+        HeadTrackHelper headTrackHelper = application.getHeadTrackHelper();
+        if (headTrackHelper != null) {
+            headTrackHelper.reset();
+        }
+
+        SampleApplication app = (SampleApplication) getApplication();
+        mRemoteApi = app.getRemoteApi();
+        connect();
+
     }
 
     /*
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_camera_record, null);
-        return view;
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+
+
     }
     */
 
@@ -152,20 +161,27 @@ public class CameraRecordActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-
-        boolean settingResult = doSettingRemoteApi();
-        if (settingResult == false) {
-            return;
-        }
-
+        Log.d(TAG, "onResume() completed.");
         mEventObserver.activate();
+
         mLiveviewSurface = (SimpleStreamSurfaceView) findViewById(R.id.surfaceview_liveview);
+        int viewType = getIntent().getIntExtra("viewType", 0);
+        mLiveviewSurface.setViewType(viewType);
+
+        mLiveviewSurface.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                SampleApplication app = (SampleApplication)getApplication();
+                HeadTrackHelper headTrackHelper = app.getHeadTrackHelper();
+                headTrackHelper.reset();
+            }
+        });
 
         prepareOpenConnection();
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        Log.d(TAG, "onResume() completed.");
     }
 
     @Override

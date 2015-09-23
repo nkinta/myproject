@@ -53,6 +53,7 @@ import com.example.android.common.logger.Log;
 
 import java.util.ArrayList;
 import java.lang.Math;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * This fragment controls Bluetooth to communicate with other devices.
@@ -93,6 +94,9 @@ public class BluetoothChatFragment extends Fragment {
      * Member object for the chat services
      */
     private BluetoothChatService mChatService = null;
+
+
+    private ArrayBlockingQueue<byte[]> mBluetoothBlockingQueue;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -193,6 +197,7 @@ public class BluetoothChatFragment extends Fragment {
         else {
             mChatService = chatService;
         }
+        mBluetoothBlockingQueue = app.getBluetoothBlockingQueue();
         // Initialize the buffer for outgoing messages
         mOutStringBuffer = new StringBuffer("");
     }
@@ -307,25 +312,30 @@ public class BluetoothChatFragment extends Fragment {
                     break;
                 case Constants.MESSAGE_WRITE:
                     byte[] writeBuf = (byte[]) msg.obj;
-                    // construct a string from the buffer
+
+                    /*
                     StringBuffer writeSb = new StringBuffer();
                     for (byte v: writeBuf) {
                         writeSb.append(String.format("%02x,", v));
                     }
-                    // String writeMessage = new String(writeBuf);
                     mConversationArrayAdapter.add("Me:  " + writeSb.toString());
+                    */
                     break;
                 case Constants.MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
-                    // construct a string from the valid bytes in the buffer
-                    // String readMessage = Base64.encodeToString(readBuf, 0, msg.arg1, Base64.DEFAULT);
-                    // Base64.encodeToString();
-                    // String readMessage = new String(readBuf, 0, msg.arg1);
+                    byte[] newData = new byte[msg.arg1];
+                    for (int i = 0; i < msg.arg1; ++i) {
+                        newData[i] = readBuf[i];
+                    }
+                    /*
                     StringBuffer readSb = new StringBuffer();
                     for (int i = 0; i < msg.arg1; ++i) {
                         readSb.append(String.format("%02x,", readBuf[i]));
                     }
                     mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readSb.toString());
+                    */
+                    mBluetoothBlockingQueue.offer(newData);
+
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name

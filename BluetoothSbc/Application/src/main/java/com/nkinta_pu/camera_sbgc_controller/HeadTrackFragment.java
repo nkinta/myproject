@@ -39,7 +39,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.GridLayout;
+import android.support.v7.widget.GridLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -69,8 +69,14 @@ public class HeadTrackFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         FragmentActivity activity = getActivity();
-        mHeadTrackHelper = new HeadTrackHelper(activity);
+        SampleApplication application = (SampleApplication)activity.getApplication();
+        mHeadTrackHelper = application.getHeadTrackHelper();
+        if (mHeadTrackHelper == null) {
+            mHeadTrackHelper = new HeadTrackHelper(activity);
+            application.setHeadTrackHelper(mHeadTrackHelper);
+        }
     }
 
     @Override
@@ -95,7 +101,7 @@ public class HeadTrackFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_bluetooth_chat, null);
+        View view = inflater.inflate(R.layout.fragment_control, null);
         return view;
     }
 
@@ -148,9 +154,9 @@ public class HeadTrackFragment extends Fragment {
                     degree[i] = angle[i] * 180 / (float)Math.PI;
                 }
 
-                headTrackParam.setText("x = " + String.format("%8.3f", degree[0]) + ", y = " + String.format("%8.3f", degree[1]) + ", z = " + String.format("%8.3f", degree[2]));
+                headTrackParam.setText("roll = " + String.format("%8.3f", degree[0]) + ", pitch = " + String.format("%8.3f", degree[1]) + ", yaw = " + String.format("%8.3f", degree[2]));
 
-                CommandInfo command = SimpleBgcUtility.getControlCommand(angle);
+                CommandInfo command = SimpleBgcUtility.getControlCommand(new float[] {0.6f, 0.6f, 0.6f}, angle);
 
                 activity.send_bluetooth_message(command.getCommandData());
             }

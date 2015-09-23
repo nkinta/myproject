@@ -26,11 +26,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.GridLayout;
+import android.support.v7.widget.GridLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 // import android.os.SytemClock;
 // import com.nkinta_pu.camera_sbgc_controller.HeadTrackHelper;
@@ -46,6 +49,14 @@ class AngleInfo {
         mRot = rot;
     }
 
+    float[] getRadian() {
+        float[] rot = new float[mRot.length];
+        for (int i = 0; i < mRot.length; ++i) {
+            rot[i] = mRot[i] / 180.0f * (float)Math.PI;
+        }
+        return rot;
+    }
+
     String getLabel() {
         return mLabel;
     }
@@ -59,7 +70,9 @@ class AngleInfo {
  */
 public class AutoShutterFragment extends Fragment {
 
-    private HeadTrackHelper mHeadTrackHelper = null;
+    private BluetoothChatService mChatService = null;
+
+    private ArrayBlockingQueue<byte[]> mBluetoothBlockingQueue = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,53 +94,126 @@ public class AutoShutterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_bluetooth_chat, null);
+        View view = inflater.inflate(R.layout.fragment_control, null);
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        SampleApplication app = (SampleApplication) getActivity().getApplication();
+        mChatService = app.getBluetoothChatService();
+        mBluetoothBlockingQueue = app.getBluetoothBlockingQueue();
+
         // mConversationView = (ListView) view.findViewById(R.id.in);
         // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
         // mSendButton = (Button) view.findViewById(R.id.button_send);
         GridLayout gridLayout = (GridLayout) view.findViewById(R.id.control);
-        gridLayout.setColumnCount(4);
+        gridLayout.setColumnCount(2);
 
         final MainActivity activity = (MainActivity)getActivity();
-        ArrayList<AngleInfo> angleList = new ArrayList<>();
+        final ArrayList<AngleInfo> angleList = new ArrayList<>();
 
-        angleList.add(new AngleInfo("yaw00", new float[]{0, 00, 0}));
-        angleList.add(new AngleInfo("yaw30", new float[]{0, 30, 0}));
-        angleList.add(new AngleInfo("yaw60", new float[]{0, 60, 0}));
-        angleList.add(new AngleInfo("yaw90", new float[]{0, 90, 0}));
+        for (int i = 0; i < 12; ++i) {
+            angleList.add(new AngleInfo("y" + String.format("%3.1f", i * 30.0f), new float[]{0, 0, i * 30f}));
+        }
+        for (int i = 0; i < 12; ++i) {
+            angleList.add(new AngleInfo("y" + String.format("%3.1f", 360 - i * 30.0f), new float[]{0, 30f, 360 - i * 30f}));
+        }
+        for (int i = 0; i < 6; ++i) {
+            angleList.add(new AngleInfo("y" + String.format("%3.1f", i * 60.0f), new float[]{0, 60f, i * 60f}));
+        }
+
+        // angleList.add(new AngleInfo("yaw90", new float[]{0, 0, 90}));
+
 
         if (gridLayout == null) {
             return;
         }
 
-        for (AngleInfo v: angleList) {
+        Button allButton = new Button(activity);
+
+        GridLayout.LayoutParams params =
+                new GridLayout.LayoutParams();// gridLayout.getLayoutParams()
+        params.columnSpec = GridLayout.spec(0, 2);
+        allButton.setLayoutParams(params);
+
+        allButton.setText("all");
+        gridLayout.addView(allButton);
+        allButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View tempView) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        for (final AngleInfo v : angleList) {
+                            final byte[] result = SimpleBgcUtility.moveAndWait(v.getRadian(), mChatService, mBluetoothBlockingQueue);
+                            try {
+                                Thread.sleep(3000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            activity.takeAndFetchPicture();
+                            try {
+                                Thread.sleep(3000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }.start();
+            }
+        });
+
+
+        for (final AngleInfo v: angleList) {
 
             Button button = new Button(activity);
             button.setText(v.getLabel());
             gridLayout.addView(button);
-
+            /*
             for (float rotValue: v.mRot) {
                 EditText editText = new EditText(activity);
                 editText.setText(String.format("%4.1f", rotValue));
                 gridLayout.addView(editText);
             }
+            */
+            final TextView angleText = new TextView(activity);
+            angleText.setText("r = " + String.format("%3.1f", v.mRot[0]) + ", p = " + String.format("%3.1f", v.mRot[1]) + ", y = " + String.format("%3.1f", v.mRot[2]));
+            gridLayout.addView(angleText);
 
-            byte[] data = {(byte)0x00};
-            CommandInfo commandInfo = new CommandInfo(v.getLabel(), (byte) 0x43, data);
-            final byte[] commandData = commandInfo.getCommandData();
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View tempView) {
-                    // Send a message using content of the edit text widget
-                    View view = getView();
-                    if (null != view) {
-                        activity.send_bluetooth_message(commandData);
-                    }
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            final byte[] result = SimpleBgcUtility.moveAndWait(v.getRadian(), mChatService, mBluetoothBlockingQueue);
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (result == null) {
+                                        Toast.makeText(activity, "Couldn't get result.", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+
+                                    final StringBuffer readSb = new StringBuffer();
+                                    for (int i = 0; i < result.length; ++i) {
+                                        readSb.append(String.format("%02x,", result[i]));
+                                    }
+                                    Toast.makeText(activity, readSb.toString(), Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
+                            try {
+                                Thread.sleep(3000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            activity.takeAndFetchPicture();
+
+
+                        }
+                    }.start();
                 }
             });
 

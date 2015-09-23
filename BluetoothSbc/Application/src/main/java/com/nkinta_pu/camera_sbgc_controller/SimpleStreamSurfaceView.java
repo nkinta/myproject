@@ -50,10 +50,10 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
 
     private int mViewType = NORMAL_VIEW;
 
-    private static final int NORMAL_VIEW = 1;
-    private static final int VR_VIEW_FULL = 2;
-    private static final int VR_VIEW = 3;
-
+    private static final int NORMAL_VIEW = 0;
+    private static final int VR_FULL_VIEW = 1;
+    private static final int VR_VIEW = 2;
+    private static final int NONE_VIEW = 3;
 
     /**
      * Constructor
@@ -236,8 +236,17 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
     }
 
     public void shiftViewType() {
-        mViewType = (mViewType + 1) % 3;
+        mViewType = (mViewType + 1) % NONE_VIEW;
     }
+
+    public void setViewType(int v) {
+        mViewType = v;
+    }
+
+    public int getViewType() {
+        return mViewType;
+    }
+
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void initInBitmap(BitmapFactory.Options options) {
@@ -298,7 +307,7 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
             canvas.drawBitmap(frame, src, dstr, mFramePaint);
 
         }
-        else if (mViewType == VR_VIEW_FULL) {
+        else if (mViewType == VR_FULL_VIEW) {
             float wWidth = getWidth();
             float wHeight = getHeight();
 

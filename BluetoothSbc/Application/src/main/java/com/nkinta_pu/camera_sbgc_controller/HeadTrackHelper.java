@@ -43,6 +43,10 @@ public class HeadTrackHelper {
         mHeadTracker.stopTracking();
     }
 
+    public void reset() {
+        mHeadTracker.resetTracker();
+    }
+
     public void onStart() {
         mRunnable = new Runnable() {
             @Override
