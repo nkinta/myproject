@@ -24,6 +24,8 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 return new HeadTrackFragment();
             case 1:
                 return new AutoShutterFragment();
+            case 2:
+                return new GamePadFragment();
             default:
                 return new MessageFragment();
         }
@@ -31,7 +33,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return 4;
     }
 
     @Override

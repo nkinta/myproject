@@ -110,19 +110,19 @@ public class AutoShutterFragment extends Fragment {
         // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
         // mSendButton = (Button) view.findViewById(R.id.button_send);
         GridLayout gridLayout = (GridLayout) view.findViewById(R.id.control);
-        gridLayout.setColumnCount(2);
+        gridLayout.setColumnCount(3);
 
         final MainActivity activity = (MainActivity)getActivity();
         final ArrayList<AngleInfo> angleList = new ArrayList<>();
 
         for (int i = 0; i < 12; ++i) {
-            angleList.add(new AngleInfo("y" + String.format("%3.1f", i * 30.0f), new float[]{0, 0, i * 30f}));
+            angleList.add(new AngleInfo("p" + String.format("%3.0f", 00.0f) + "y" + String.format("%3.0f", i * 30.0f), new float[]{0, 0, i * 30f}));
         }
         for (int i = 0; i < 12; ++i) {
-            angleList.add(new AngleInfo("y" + String.format("%3.1f", 360 - i * 30.0f), new float[]{0, 30f, 360 - i * 30f}));
+            angleList.add(new AngleInfo("p" + String.format("%3.0f", 30.0f) + "y" + String.format("%3.0f", 360 - i * 30.0f), new float[]{0, 30f, 360 - i * 30f}));
         }
         for (int i = 0; i < 6; ++i) {
-            angleList.add(new AngleInfo("y" + String.format("%3.1f", i * 60.0f), new float[]{0, 60f, i * 60f}));
+            angleList.add(new AngleInfo("p" + String.format("%3.0f", 60.0f) + "y" + String.format("%3.0f", i * 60.0f), new float[]{0, 60f, i * 60f}));
         }
 
         // angleList.add(new AngleInfo("yaw90", new float[]{0, 0, 90}));
@@ -136,7 +136,7 @@ public class AutoShutterFragment extends Fragment {
 
         GridLayout.LayoutParams params =
                 new GridLayout.LayoutParams();// gridLayout.getLayoutParams()
-        params.columnSpec = GridLayout.spec(0, 2);
+        params.columnSpec = GridLayout.spec(0, 3);
         allButton.setLayoutParams(params);
 
         allButton.setText("all");
@@ -178,9 +178,12 @@ public class AutoShutterFragment extends Fragment {
                 gridLayout.addView(editText);
             }
             */
+
+            /*
             final TextView angleText = new TextView(activity);
             angleText.setText("r = " + String.format("%3.1f", v.mRot[0]) + ", p = " + String.format("%3.1f", v.mRot[1]) + ", y = " + String.format("%3.1f", v.mRot[2]));
             gridLayout.addView(angleText);
+            */
 
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View tempView) {
@@ -197,8 +200,8 @@ public class AutoShutterFragment extends Fragment {
                                     }
 
                                     final StringBuffer readSb = new StringBuffer();
-                                    for (int i = 0; i < result.length; ++i) {
-                                        readSb.append(String.format("%02x,", result[i]));
+                                    for (byte data: result) {
+                                        readSb.append(String.format("%02x,", data));
                                     }
                                     Toast.makeText(activity, readSb.toString(), Toast.LENGTH_SHORT).show();
 

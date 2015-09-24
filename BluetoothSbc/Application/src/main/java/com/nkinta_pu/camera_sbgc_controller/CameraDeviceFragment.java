@@ -105,7 +105,17 @@ public class CameraDeviceFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                connectWifi();
+                boolean connectFlag = connectWifi();
+                if (connectFlag) {
+                    Toast.makeText(activity, //
+                            "connect wifi", //
+                            Toast.LENGTH_SHORT).show(); //
+                }
+                else {
+                    Toast.makeText(activity, //
+                            "not connect wifi", //
+                            Toast.LENGTH_SHORT).show(); //
+                }
             }
         });
         TextView textWifiSsid = (TextView)  getView().findViewById(R.id.text_wifi_ssid);
@@ -124,13 +134,14 @@ public class CameraDeviceFragment extends Fragment {
         android.util.Log.d(TAG, "onResume() completed.");
     }
 
-    private void connectWifi() {
+    private boolean connectWifi() {
         final MainActivity activity = (MainActivity)getActivity();
         WifiManager wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
         wifiManager.startScan();
         List<ScanResult> apList = wifiManager.getScanResults();
         List<WifiConfiguration> confList = wifiManager.getConfiguredNetworks();
         String ssidPattern = "DIRECT-.*";
+        WifiConfiguration targetConf = null;
         for (WifiConfiguration conf: confList) {
             boolean isExist = false;
             String ssid = conf.SSID.replace("\"", "");
@@ -150,7 +161,15 @@ public class CameraDeviceFragment extends Fragment {
             }
 
             wifiManager.enableNetwork(conf.networkId, true);
+            targetConf = conf;
             break;
+        }
+
+        if (targetConf != null) {
+            return wifiManager.enableNetwork(targetConf.networkId, true);
+        }
+        else {
+            return false;
         }
     }
 

@@ -19,9 +19,13 @@ package com.nkinta_pu.camera_sbgc_controller;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.view.InputDevice;
+import android.view.InputEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 import android.support.v4.view.ViewPager;
 
@@ -51,6 +55,8 @@ public class MainActivity extends SampleActivityBase {
     ViewPager mViewPager;
     CameraFragment mCameraFragment;
     BluetoothChatFragment mBluetoothChatFragment;
+
+    JoyPadJob mJoyPadJob = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +102,10 @@ public class MainActivity extends SampleActivityBase {
         if (mCameraFragment != null) {
             mCameraFragment.stopCamera();
         }
+    }
+
+    public void setJoyPadJob(JoyPadJob job) {
+        mJoyPadJob = job;
     }
 
     @Override
@@ -151,5 +161,34 @@ public class MainActivity extends SampleActivityBase {
 
     }
 
+    @Override
+    public boolean dispatchGenericMotionEvent(MotionEvent e){
 
+        if (!((e.getSource() & InputDevice.SOURCE_DPAD)
+                != InputDevice.SOURCE_DPAD)) {
+            return super.dispatchGenericMotionEvent(e);
+        }
+
+        if (mJoyPadJob == null) {
+            return false;
+        }
+        // Use the hat axis value to find the D-pad direction
+        MotionEvent motionEvent = (MotionEvent) e;
+        float xaxis = motionEvent.getAxisValue(MotionEvent.AXIS_X);
+        float yaxis = motionEvent.getAxisValue(MotionEvent.AXIS_Y);
+
+        mJoyPadJob.doCommand(new float[] {xaxis, yaxis});
+            // Toast.makeText(this, "xy -> " + String.format("%3.2f",xaxis) + " - " +  String.format("%3.2f",yaxis), Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    public static boolean isDpadDevice(InputEvent event) {
+        // Check that input comes from a device with directional pads.
+        if ((event.getSource() & InputDevice.SOURCE_DPAD)
+                != InputDevice.SOURCE_DPAD) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
