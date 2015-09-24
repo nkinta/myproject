@@ -19,39 +19,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.nkinta_pu.camera_sbgc_controller.SimpleStreamSurfaceView
-            android:id="@+id/surfaceview_liveview"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_weight="1" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-
-            android:layout_marginBottom="10dp"
-            android:layout_weight="1"
-            android:orientation="horizontal" >
-
-            <Button
-                android:id="@+id/button_zoom_out"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent"
-                android:drawableLeft="@android:drawable/btn_minus"
-                android:layout_weight="1">
-            </Button>
-
-            <Button
-                android:id="@+id/button_zoom_in"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent"
-                android:drawableLeft="@android:drawable/btn_plus"
-                android:layout_weight="1">
-            </Button>
-        </LinearLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -95,6 +62,64 @@
                 android:layout_weight="1" />
 
         </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.nkinta_pu.camera_sbgc_controller.SimpleStreamSurfaceView
+                android:id="@+id/surfaceview_liveview"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+
+                    android:layout_marginBottom="10dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal" >
+
+                    <Button
+                        android:id="@+id/button_zoom_out"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:drawableLeft="@android:drawable/btn_minus"
+                        android:layout_weight="1">
+                    </Button>
+
+                    <Button
+                        android:id="@+id/button_zoom_in"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:drawableLeft="@android:drawable/btn_plus"
+                        android:layout_weight="1">
+                    </Button>
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/image_picture_wipe"
+                    android:layout_width="150dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="right|top"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/picture_wipe_boarder"
+                    android:contentDescription="@string/no_image"
+                    android:src="@android:drawable/ic_menu_report_image"
+                    android:visibility="invisible" />
+
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <TextView
@@ -107,17 +132,5 @@
         android:text=""
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-
-    <ImageView
-        android:id="@+id/image_picture_wipe"
-        android:layout_width="150dp"
-        android:layout_height="100dp"
-        android:layout_gravity="left|top"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/picture_wipe_boarder"
-        android:contentDescription="@string/no_image"
-        android:src="@android:drawable/ic_menu_report_image"
-        android:visibility="invisible" />
 
 </LinearLayout >

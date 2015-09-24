@@ -10,7 +10,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,9 +61,15 @@ public class GamePadFragment extends Fragment {
 
         final TextView speedTextView = new TextView(activity);
         speedTextView.setText("-");
+
+        final Switch switchButton = new Switch(activity);
+        switchButton.setText("GAME_PAD");
+
         final SeekBar speedSeekBar = new SeekBar(activity);
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        speedSeekBar.setLayoutParams(params);
         speedSeekBar.setProgress(0); speedSeekBar.setMax(100);
-        speedSeekBar.setFitsSystemWindows(true);
 
         final TextView textView = new TextView(activity);
         textView.setText("-");
@@ -69,6 +77,7 @@ public class GamePadFragment extends Fragment {
         GridLayout gridLayout = (GridLayout) view.findViewById(R.id.control);
         gridLayout.setColumnCount(2);
 
+        gridLayout.addView(switchButton);
         gridLayout.addView(speedTextView);
         gridLayout.addView(speedSeekBar);
         gridLayout.addView(textView);

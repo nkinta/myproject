@@ -94,7 +94,7 @@ public class AutoShutterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_control, null);
+        View view = inflater.inflate(R.layout.fragment_auto_shutter, null);
         return view;
     }
 
@@ -110,7 +110,7 @@ public class AutoShutterFragment extends Fragment {
         // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
         // mSendButton = (Button) view.findViewById(R.id.button_send);
         GridLayout gridLayout = (GridLayout) view.findViewById(R.id.control);
-        gridLayout.setColumnCount(3);
+        gridLayout.setColumnCount(4);
 
         final MainActivity activity = (MainActivity)getActivity();
         final ArrayList<AngleInfo> angleList = new ArrayList<>();
@@ -136,7 +136,7 @@ public class AutoShutterFragment extends Fragment {
 
         GridLayout.LayoutParams params =
                 new GridLayout.LayoutParams();// gridLayout.getLayoutParams()
-        params.columnSpec = GridLayout.spec(0, 3);
+        params.columnSpec = GridLayout.spec(0, 4);
         allButton.setLayoutParams(params);
 
         allButton.setText("all");
