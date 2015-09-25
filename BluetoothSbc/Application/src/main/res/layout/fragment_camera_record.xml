@@ -63,7 +63,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <FrameLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -71,7 +71,7 @@
             <com.nkinta_pu.camera_sbgc_controller.SimpleStreamSurfaceView
                 android:id="@+id/surfaceview_liveview"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="202.5dp"
                 android:layout_weight="1" />
 
             <LinearLayout
@@ -83,14 +83,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
 
-                    android:layout_marginBottom="10dp"
                     android:layout_weight="1"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal">
 
                     <Button
                         android:id="@+id/button_zoom_out"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
                         android:drawableLeft="@android:drawable/btn_minus"
                         android:layout_weight="1">
@@ -98,8 +97,8 @@
 
                     <Button
                         android:id="@+id/button_zoom_in"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
                         android:drawableLeft="@android:drawable/btn_plus"
                         android:layout_weight="1">
@@ -119,7 +118,7 @@
                     android:visibility="invisible" />
 
             </LinearLayout>
-        </LinearLayout>
+        </FrameLayout>
     </LinearLayout>
 
     <TextView

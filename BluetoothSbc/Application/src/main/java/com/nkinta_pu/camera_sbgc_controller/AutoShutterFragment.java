@@ -72,8 +72,6 @@ public class AutoShutterFragment extends Fragment {
 
     private BluetoothChatService mChatService = null;
 
-    private ArrayBlockingQueue<byte[]> mBluetoothBlockingQueue = null;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,7 +102,6 @@ public class AutoShutterFragment extends Fragment {
 
         SampleApplication app = (SampleApplication) getActivity().getApplication();
         mChatService = app.getBluetoothChatService();
-        mBluetoothBlockingQueue = app.getBluetoothBlockingQueue();
 
         // mConversationView = (ListView) view.findViewById(R.id.in);
         // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
@@ -147,7 +144,7 @@ public class AutoShutterFragment extends Fragment {
                     @Override
                     public void run() {
                         for (final AngleInfo v : angleList) {
-                            final byte[] result = SimpleBgcUtility.moveAndWait(v.getRadian(), mChatService, mBluetoothBlockingQueue);
+                            SimpleBgcUtility.moveAndWait(v.getRadian(), mChatService);
                             try {
                                 Thread.sleep(3000);
                             } catch (InterruptedException e) {
@@ -190,20 +187,16 @@ public class AutoShutterFragment extends Fragment {
                     new Thread() {
                         @Override
                         public void run() {
-                            final byte[] result = SimpleBgcUtility.moveAndWait(v.getRadian(), mChatService, mBluetoothBlockingQueue);
+                            final boolean result = SimpleBgcUtility.moveAndWait(v.getRadian(), mChatService);
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (result == null) {
+                                    if (result == false) {
                                         Toast.makeText(activity, "Couldn't get result.", Toast.LENGTH_SHORT).show();
                                         return;
                                     }
 
                                     final StringBuffer readSb = new StringBuffer();
-                                    for (byte data: result) {
-                                        readSb.append(String.format("%02x,", data));
-                                    }
-                                    Toast.makeText(activity, readSb.toString(), Toast.LENGTH_SHORT).show();
 
                                 }
                             });

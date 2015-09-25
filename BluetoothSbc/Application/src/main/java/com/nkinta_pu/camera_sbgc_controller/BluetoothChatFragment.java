@@ -81,11 +81,6 @@ public class BluetoothChatFragment extends Fragment {
     private ArrayAdapter<String> mConversationArrayAdapter;
 
     /**
-     * String buffer for outgoing messages
-     */
-    private StringBuffer mOutStringBuffer;
-
-    /**
      * Local Bluetooth adapter
      */
     private BluetoothAdapter mBluetoothAdapter = null;
@@ -94,9 +89,6 @@ public class BluetoothChatFragment extends Fragment {
      * Member object for the chat services
      */
     private BluetoothChatService mChatService = null;
-
-
-    private ArrayBlockingQueue<byte[]> mBluetoothBlockingQueue;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -197,9 +189,6 @@ public class BluetoothChatFragment extends Fragment {
         else {
             mChatService = chatService;
         }
-        mBluetoothBlockingQueue = app.getBluetoothBlockingQueue();
-        // Initialize the buffer for outgoing messages
-        mOutStringBuffer = new StringBuffer("");
     }
 
     /**
@@ -213,45 +202,6 @@ public class BluetoothChatFragment extends Fragment {
             startActivity(discoverableIntent);
         }
     }
-
-    /**
-     * Sends a message.
-     *
-     * @param message A string of text to send.
-     */
-    public void sendMessage(byte[] send) {
-        // Check that we're actually connected before trying anything
-        if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
-            Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Check that there's actually something to send
-        if (send.length > 0) {
-            // Get the message bytes and tell the BluetoothChatService to write
-            // byte[] send = message.getBytes();
-            mChatService.write(send);
-
-            // Reset out string buffer to zero and clear the edit text field
-            mOutStringBuffer.setLength(0);
-            // mOutEditText.setText(mOutStringBuffer);
-        }
-    }
-
-    /**
-     * The action listener for the EditText widget, to listen for the return key
-     */
-    private TextView.OnEditorActionListener mWriteListener
-            = new TextView.OnEditorActionListener() {
-        public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-            // If the action is a key-up event on the return key, send the message
-            if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
-                String message = view.getText().toString();
-                // sendMessage(message);
-            }
-            return true;
-        }
-    };
 
     /**
      * Updates the status on the action bar.
@@ -309,33 +259,6 @@ public class BluetoothChatFragment extends Fragment {
                             setStatus(R.string.title_not_connected);
                             break;
                     }
-                    break;
-                case Constants.MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-
-                    /*
-                    StringBuffer writeSb = new StringBuffer();
-                    for (byte v: writeBuf) {
-                        writeSb.append(String.format("%02x,", v));
-                    }
-                    mConversationArrayAdapter.add("Me:  " + writeSb.toString());
-                    */
-                    break;
-                case Constants.MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    byte[] newData = new byte[msg.arg1];
-                    for (int i = 0; i < msg.arg1; ++i) {
-                        newData[i] = readBuf[i];
-                    }
-                    /*
-                    StringBuffer readSb = new StringBuffer();
-                    for (int i = 0; i < msg.arg1; ++i) {
-                        readSb.append(String.format("%02x,", readBuf[i]));
-                    }
-                    mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readSb.toString());
-                    */
-                    mBluetoothBlockingQueue.offer(newData);
-
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name

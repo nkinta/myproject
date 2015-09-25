@@ -24,8 +24,6 @@ public class SampleApplication extends Application {
 
     private HeadTrackHelper mHeadTrackHelper;
 
-    private ArrayBlockingQueue<byte[]> mBluetoothBlockingQueue = new ArrayBlockingQueue<byte[]>(10);
-
     /**
      * Sets a target ServerDevice object.
      *
@@ -53,14 +51,6 @@ public class SampleApplication extends Application {
 
     public SimpleRemoteApi getRemoteApi() {
         return mRemoteApi;
-    }
-
-    public ArrayBlockingQueue<byte[]> getBluetoothBlockingQueue() {
-        return mBluetoothBlockingQueue;
-    }
-
-    public void setBluetoothBlockingQueue(ArrayBlockingQueue<byte[]> queue) {
-        mBluetoothBlockingQueue = queue;
     }
 
     public void setHeadTrackHelper(HeadTrackHelper headTrackHelper) {

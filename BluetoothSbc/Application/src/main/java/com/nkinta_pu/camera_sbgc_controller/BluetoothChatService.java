@@ -33,6 +33,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 import java.lang.InterruptedException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class does all the work for setting up and managing Bluetooth
@@ -42,11 +44,11 @@ import java.lang.InterruptedException;
  */
 public class BluetoothChatService {
     // Debugging
-    private static final String TAG = "BluetoothChatService";
+    private static final String TAG = "BluetoothService";
 
     // Name for the SDP record when creating server socket
-    private static final String NAME_SECURE = "BluetoothChatSecure";
-    private static final String NAME_INSECURE = "BluetoothChatInsecure";
+    private static final String NAME_SECURE = "BluetoothSecure";
+    private static final String NAME_INSECURE = "BluetoothInsecure";
 
     // Unique UUID for this application
     private static final UUID MY_UUID_SECURE =
@@ -62,6 +64,10 @@ public class BluetoothChatService {
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int mState;
+
+    private long resultPollingTime = 100;
+
+    private final ArrayBlockingQueue<byte[]> mBluetoothBlockingQueue = new ArrayBlockingQueue<byte[]>(1);
 
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
@@ -79,6 +85,10 @@ public class BluetoothChatService {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
         mHandler = handler;
+    }
+
+    public ArrayBlockingQueue<byte[]> getBluetoothBlockingQueue() {
+        return mBluetoothBlockingQueue;
     }
 
     /**
@@ -242,7 +252,7 @@ public class BluetoothChatService {
      * @param out The bytes to write
      * @see ConnectedThread#write(byte[])
      */
-    public void write(byte[] out) {
+    private void write(byte[] out) {
         // Create temporary object
         ConnectedThread r;
         // Synchronize a copy of the ConnectedThread
@@ -253,6 +263,26 @@ public class BluetoothChatService {
         // Perform the write unsynchronized
         r.write(out);
     }
+
+    public synchronized byte[] send(byte[] commandData) {
+        mBluetoothBlockingQueue.clear();
+        write(commandData);
+        byte[] result = {};
+        try {
+            result = mBluetoothBlockingQueue.poll(resultPollingTime, TimeUnit.MILLISECONDS);
+        }
+        catch (InterruptedException e) {
+            return null;
+        }
+        if (result == null) {
+            return null;
+        }
+
+        return result;
+
+
+    }
+
 
     /**
      * Indicate that the connection attempt failed and notify the UI Activity.
@@ -486,7 +516,7 @@ public class BluetoothChatService {
             mStatus = MessageReadStatus.START;
             mCommandId = 0;
             mDataCount = 0;
-            mData = new byte[256];
+            mData = new byte[1024];
             mDataSize = 0;
             mTotalData = 0;
             mTotalHeader = 0;
@@ -530,8 +560,7 @@ public class BluetoothChatService {
                     }
                 }
                 else if (mStatus == MessageReadStatus.BODYCHECKSUM) {
-                    mHandler.obtainMessage(Constants.MESSAGE_READ, mDataSize, -1, mData)
-                            .sendToTarget();
+                    addQueue();
 
                     if ((mTotalData & 0xFF) == (int) (tempByte & 0xFF)) {
                         resetValue();
@@ -541,7 +570,15 @@ public class BluetoothChatService {
                     }
                 }
             }
+        }
 
+        private void addQueue() {
+            byte[] newData = new byte[mDataSize];
+            for (int i = 0; i <mDataSize; ++i) {
+                newData[i] = mData[i];
+            }
+
+            mBluetoothBlockingQueue.offer(newData);
         }
 
         public void run() {
@@ -577,10 +614,6 @@ public class BluetoothChatService {
         public void write(byte[] buffer) {
             try {
                 mmOutStream.write(buffer);
-
-                // Share the sent message back to the UI Activity
-                mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, buffer)
-                        .sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, "Exception during write", e);
             }

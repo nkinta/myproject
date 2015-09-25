@@ -82,10 +82,6 @@ public class MainActivity extends SampleActivityBase {
 
     }
 
-    public void send_bluetooth_message(byte[] send) {
-        mBluetoothChatFragment.sendMessage(send);
-    }
-
     public void takeAndFetchPicture() {
         mCameraFragment = (CameraFragment) getSupportFragmentManager().findFragmentById(R.id.camera_fragment);
         mCameraFragment.getCameraRecordFragment().takeAndFetchPicture();

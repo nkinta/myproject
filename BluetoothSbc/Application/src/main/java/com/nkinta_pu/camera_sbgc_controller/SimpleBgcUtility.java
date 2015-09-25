@@ -150,26 +150,14 @@ public class SimpleBgcUtility {
 
     }
 
-    static public byte[] moveAndWait(float[] angle, BluetoothChatService chatService, ArrayBlockingQueue<byte[]> bluetoothBlockingQueue) {
+    static public boolean moveAndWait(float[] angle, BluetoothChatService chatService) {
 
         CommandInfo commandInfo = getControlCommand(new float[] {1.0f, 1.0f, 1.0f}, angle);
         final byte[] commandData = commandInfo.getCommandData();
 
-        // Send a message using content of the edit text widget
-        bluetoothBlockingQueue.clear();
-        chatService.write(commandData);
-        byte[] result = {};
-        try {
-            result = bluetoothBlockingQueue.poll(1000, TimeUnit.MILLISECONDS);
-        }
-        catch (InterruptedException e) {
-            return null;
-        }
-        if (result == null) {
-            return null;
-        }
+        byte[] result = chatService.send(commandData);
 
-        return result;
+        return true;
 
     }
 

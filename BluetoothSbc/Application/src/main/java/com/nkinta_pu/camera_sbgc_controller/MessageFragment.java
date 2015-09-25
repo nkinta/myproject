@@ -58,6 +58,8 @@ import java.lang.Math;
  */
 public class MessageFragment extends Fragment {
 
+    private BluetoothChatService mChatService = null;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -68,6 +70,9 @@ public class MessageFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        SampleApplication app = (SampleApplication) getActivity().getApplication();
+        mChatService = app.getBluetoothChatService();
 
         GridLayout frameLayout = (GridLayout) view.findViewById(R.id.control);
 
@@ -99,7 +104,7 @@ public class MessageFragment extends Fragment {
                     View view = getView();
                     if (null != view) {
                         // byte[] send = {(byte) 0x3E, (byte) 0x15, (byte) 0x01, (byte) 0x16, (byte) 0x00, (byte) 0x00};
-                        activity.send_bluetooth_message(v.getCommandData());
+                        mChatService.send(v.getCommandData());
                     }
                 }
             });

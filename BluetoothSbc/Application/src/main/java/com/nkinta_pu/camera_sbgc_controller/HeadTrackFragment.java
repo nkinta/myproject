@@ -66,6 +66,8 @@ public class HeadTrackFragment extends Fragment {
     private float mRoll = 0;
     private float[] mBeforeAngle = {};
 
+    private BluetoothChatService mChatService = null;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +110,10 @@ public class HeadTrackFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        SampleApplication app = (SampleApplication) getActivity().getApplication();
+        mChatService = app.getBluetoothChatService();
+
         // mConversationView = (ListView) view.findViewById(R.id.in);
         // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
         // mSendButton = (Button) view.findViewById(R.id.button_send);
@@ -154,11 +160,11 @@ public class HeadTrackFragment extends Fragment {
                     degree[i] = angle[i] * 180 / (float)Math.PI;
                 }
 
-                headTrackParam.setText("roll = " + String.format("%8.3f", degree[0]) + ", pitch = " + String.format("%8.3f", degree[1]) + ", yaw = " + String.format("%8.3f", degree[2]));
+                headTrackParam.setText("r = " + String.format("%8.3f", degree[0]) + ", p = " + String.format("%8.3f", degree[1]) + ", y = " + String.format("%8.3f", degree[2]));
 
                 CommandInfo command = SimpleBgcUtility.getControlCommand(new float[] {0.6f, 0.6f, 0.6f}, angle);
 
-                activity.send_bluetooth_message(command.getCommandData());
+                mChatService.send(command.getCommandData());
             }
         };
 
