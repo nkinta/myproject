@@ -516,7 +516,7 @@ public class BluetoothChatService {
             mStatus = MessageReadStatus.START;
             mCommandId = 0;
             mDataCount = 0;
-            mData = new byte[1024];
+            mData = new byte[256];
             mDataSize = 0;
             mTotalData = 0;
             mTotalHeader = 0;
@@ -560,21 +560,21 @@ public class BluetoothChatService {
                     }
                 }
                 else if (mStatus == MessageReadStatus.BODYCHECKSUM) {
-                    addQueue();
 
                     if ((mTotalData & 0xFF) == (int) (tempByte & 0xFF)) {
-                        resetValue();
+                        addQueue();
                     }
                     else {
 
                     }
+                    resetValue();
                 }
             }
         }
 
         private void addQueue() {
             byte[] newData = new byte[mDataSize];
-            for (int i = 0; i <mDataSize; ++i) {
+            for (int i = 0; i < mDataSize; ++i) {
                 newData[i] = mData[i];
             }
 

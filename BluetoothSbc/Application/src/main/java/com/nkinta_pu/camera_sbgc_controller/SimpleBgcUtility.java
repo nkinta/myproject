@@ -120,10 +120,6 @@ public class SimpleBgcUtility {
             throw new IllegalArgumentException("Angle info must exist 3 element.");
         }
 
-        short x = (short) (angle[0] * 180 / Math.PI / 0.02197265625);
-        short y = (short) (angle[1] * 180 / Math.PI / 0.02197265625);
-        short z = (short) (angle[2] * 180 / Math.PI / 0.02197265625);
-
         byte data[] = new byte[13];
         data[0] = (byte) 0x02;
         int offset = 1;
@@ -142,13 +138,6 @@ public class SimpleBgcUtility {
 
     }
 
-    static public CommandInfo getGetAngleCommand() {
-        byte data[] = {};
-        CommandInfo commandInfo = new CommandInfo("control", (byte)CMD_GET_ANGLES, data);
-
-        return commandInfo;
-
-    }
 
     static public boolean moveAndWait(float[] angle, BluetoothChatService chatService) {
 
@@ -160,5 +149,34 @@ public class SimpleBgcUtility {
         return true;
 
     }
+
+    static public float[] getAngleRcSpeed(BluetoothChatService chatService) {
+        byte[] data = {};
+        CommandInfo commandInfo = new CommandInfo("control", (byte)CMD_GET_ANGLES, data);
+        final byte[] commandData =  chatService.send(commandInfo.getCommandData());
+
+        float[] imuAngle = {0f, 0f, 0f};
+        float[] rcTargetAngle = {0f, 0f, 0f};
+        float[] rcSpeed = {0f, 0f, 0f};
+
+        for (int i = 0; i < 3; ++i) {
+            imuAngle[i] = getFloatFromShort(new byte[] {commandData[6 * i + 0], commandData[6 * i + 1]}, 0.02197265625f);
+            rcTargetAngle[i] = getFloatFromShort(new byte[] {commandData[6 * i + 2], commandData[6 * i + 2]}, 0.02197265625f);
+            rcSpeed[i] = getFloatFromShort(new byte[] {commandData[6 * i + 4], commandData[6 * i + 5]}, 0.02197265625f);
+        }
+
+        
+        return rcSpeed;
+    }
+
+    static public float getFloatFromShort(byte angle[], float oneUnitDeg) {
+
+        int temp = (int)angle[0] + ((int)angle[1] >> 8) - (2 * 15);
+        float result = (float)temp * oneUnitDeg;
+
+        return result;
+
+    }
+
 
 }
