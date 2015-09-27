@@ -139,9 +139,9 @@ public class SimpleBgcUtility {
     }
 
 
-    static public boolean moveAndWait(float[] angle, BluetoothChatService chatService) {
+    static public boolean move(float[] speed, float[] angle, BluetoothChatService chatService) {
 
-        CommandInfo commandInfo = getControlCommand(new float[] {1.0f, 1.0f, 1.0f}, angle);
+        CommandInfo commandInfo = getControlCommand(speed, angle);
         final byte[] commandData = commandInfo.getCommandData();
 
         byte[] result = chatService.send(commandData);
@@ -165,7 +165,7 @@ public class SimpleBgcUtility {
             rcSpeed[i] = getFloatFromShort(new byte[] {commandData[6 * i + 4], commandData[6 * i + 5]}, 0.02197265625f);
         }
 
-        
+
         return rcSpeed;
     }
 

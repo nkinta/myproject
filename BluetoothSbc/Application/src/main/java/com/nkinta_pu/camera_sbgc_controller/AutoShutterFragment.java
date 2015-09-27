@@ -144,7 +144,7 @@ public class AutoShutterFragment extends Fragment {
                     @Override
                     public void run() {
                         for (final AngleInfo v : angleList) {
-                            SimpleBgcUtility.moveAndWait(v.getRadian(), mChatService);
+                            SimpleBgcUtility.move(new float[]{2.0f, 2.0f, 2.0f}, v.getRadian(), mChatService);
                             try {
                                 Thread.sleep(3000);
                             } catch (InterruptedException e) {
@@ -187,7 +187,7 @@ public class AutoShutterFragment extends Fragment {
                     new Thread() {
                         @Override
                         public void run() {
-                            final boolean result = SimpleBgcUtility.moveAndWait(v.getRadian(), mChatService);
+                            final boolean result = SimpleBgcUtility.move(new float[]{2.0f, 2.0f, 2.0f}, v.getRadian(), mChatService);
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
