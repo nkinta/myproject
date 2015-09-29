@@ -228,13 +228,13 @@ public class HeadTransform
 
 		if  (offset + 3 > beforeEulerAngles.length) {
 			eulerAngles[(offset + 0)] = roll1;
-			eulerAngles[(offset + 1)] = yaw1;
-			eulerAngles[(offset + 2)] = pitch1;
+			eulerAngles[(offset + 1)] = pitch1;
+			eulerAngles[(offset + 2)] = -yaw1;
 		}
 		else {
 			float bRoll = beforeEulerAngles[(offset + 0)];
-			float bYaw = beforeEulerAngles[(offset + 1)];
-			float bPitch = beforeEulerAngles[(offset + 2)];
+			float bPitch = beforeEulerAngles[(offset + 1)];
+			float bYaw = -beforeEulerAngles[(offset + 2)];
 
 			float diff1 = 0;
 			diff1 += Math.pow(getDifferenceAngle(bPitch, pitch1), 2);
@@ -257,9 +257,10 @@ public class HeadTransform
 				newRoll = roll1;
 			}
 
+			float resultRoll = removeLimitByOldAngle(bRoll, newRoll);
 			float resultPitch = removeLimitByOldAngle(bPitch, newPitch);
 			float resultYaw = removeLimitByOldAngle(bYaw, newYaw);
-			float resultRoll = removeLimitByOldAngle(bRoll, newRoll);
+
 
 			// if (bRoll > resultRoll) {
 			// 	throw new IllegalArgumentException("hi");
