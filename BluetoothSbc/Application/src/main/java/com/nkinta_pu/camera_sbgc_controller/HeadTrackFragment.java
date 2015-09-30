@@ -41,6 +41,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.support.v7.widget.GridLayout;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -61,6 +62,10 @@ import java.lang.Math;
  * This fragment controls Bluetooth to communicate with other devices.
  */
 public class HeadTrackFragment extends Fragment {
+
+    private static final float SPEED_MULTIPLE = 0.025f;
+
+    static int mSpeed = 40;
 
     private HeadTrackHelper mHeadTrackHelper = null;
     private float mRoll = 0;
@@ -103,7 +108,7 @@ public class HeadTrackFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_control, null);
+        View view = inflater.inflate(R.layout.fragment_head_track, null);
         return view;
     }
 
@@ -113,15 +118,18 @@ public class HeadTrackFragment extends Fragment {
 
         SampleApplication app = (SampleApplication) getActivity().getApplication();
         mChatService = app.getBluetoothChatService();
+        final MainActivity activity = (MainActivity)getActivity();
 
         // mConversationView = (ListView) view.findViewById(R.id.in);
         // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
         // mSendButton = (Button) view.findViewById(R.id.button_send);
+
+        // Switch switchButton = (Switch) view.findViewById(R.id.headTrackSwitch);
+        // switchButton.set
+        /*
         final MainActivity activity = (MainActivity)getActivity();
         GridLayout gridLayout = (GridLayout) view.findViewById(R.id.control);
         gridLayout.setColumnCount(2);
-        // Switch switchButton = (Switch) view.findViewById(R.id.headTrackSwitch);
-        // switchButton.set
 
         final Switch switchButton = new Switch(activity);
         switchButton.setText("HEAD_TRACK");
@@ -130,17 +138,20 @@ public class HeadTrackFragment extends Fragment {
         final TextView headTrackParam = new TextView(activity);
         headTrackParam.setText("-");
         gridLayout.addView(headTrackParam);
+        */
+
+        final Switch switchButton = (Switch) view.findViewById(R.id.start);
+        final TextView headTrackParam = (TextView) view.findViewById(R.id.rpy_param_text_view);
 
         // final TextView headTrackParam = (TextView) view.findViewById(R.id.headTrackParam);
 
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked == true) {
                     mBeforeAngle = new float[]{};
                     mHeadTrackHelper.onStart();
-                }
-                else {
+                } else {
                     mHeadTrackHelper.onStop();
                 }
             }
@@ -162,16 +173,16 @@ public class HeadTrackFragment extends Fragment {
 
                 headTrackParam.setText("r = " + String.format("%8.3f", degree[0]) + ", p = " + String.format("%8.3f", degree[1]) + ", y = " + String.format("%8.3f", degree[2]));
 
-                CommandInfo command = SimpleBgcUtility.getControlCommand(new float[] {0.6f, 0.6f, 0.6f}, angle);
+                CommandInfo command = SimpleBgcUtility.getControlCommand(new float[] {mSpeed  * SPEED_MULTIPLE, mSpeed  * SPEED_MULTIPLE, mSpeed  * SPEED_MULTIPLE}, angle);
 
                 mChatService.send(command.getCommandData());
             }
         };
 
+
         mHeadTrackHelper.setJob(job1);
 
-        final Spinner directorySpinner = new Spinner(activity);
-        gridLayout.addView(directorySpinner);
+        final Spinner directorySpinner = (Spinner) view.findViewById(R.id.direction_spinner);
         // directorySpinner.setText("HEAD_TRACK");
 
         ArrayAdapter<String> adapter;
@@ -208,6 +219,29 @@ public class HeadTrackFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+
+        final SeekBar speedSeekBar = (SeekBar) view.findViewById(R.id.speed_seek_bar);
+        final TextView speedTextView = (TextView) view.findViewById(R.id.speed_text_view);
+        speedTextView.setText(String.format("%3.2f", mSpeed * SPEED_MULTIPLE));
+
+        speedSeekBar.setProgress(mSpeed);
+        speedSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
+                speedTextView.setText(String.format("%3.2f", progress * SPEED_MULTIPLE));
+            }
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mSpeed = seekBar.getProgress();
+
+            }
+        });
+
+
     }
 
 }
