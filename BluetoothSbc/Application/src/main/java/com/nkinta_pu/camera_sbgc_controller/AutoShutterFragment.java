@@ -213,6 +213,8 @@ public class AutoShutterFragment extends Fragment {
                 }
             });
 
+
+
         }
 
 

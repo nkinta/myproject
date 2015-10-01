@@ -61,8 +61,6 @@
             android:id="@+id/speed_text_view"
             android:text="0.00"
             />
-
-
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
