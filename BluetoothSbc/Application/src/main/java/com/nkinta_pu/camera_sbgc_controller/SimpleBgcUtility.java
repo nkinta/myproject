@@ -153,18 +153,17 @@ public class SimpleBgcUtility {
     static public float[] getAngleRcSpeed(BluetoothChatService chatService) {
         byte[] data = {};
         CommandInfo commandInfo = new CommandInfo("control", (byte)CMD_GET_ANGLES, data);
-        final byte[] commandData =  chatService.send(commandInfo.getCommandData());
+        final byte[] result =  chatService.send(commandInfo.getCommandData());
 
         float[] imuAngle = {0f, 0f, 0f};
         float[] rcTargetAngle = {0f, 0f, 0f};
         float[] rcSpeed = {0f, 0f, 0f};
 
         for (int i = 0; i < 3; ++i) {
-            imuAngle[i] = getFloatFromShort(new byte[] {commandData[6 * i + 0], commandData[6 * i + 1]}, 0.02197265625f);
-            rcTargetAngle[i] = getFloatFromShort(new byte[] {commandData[6 * i + 2], commandData[6 * i + 2]}, 0.02197265625f);
-            rcSpeed[i] = getFloatFromShort(new byte[] {commandData[6 * i + 4], commandData[6 * i + 5]}, 0.02197265625f);
+            imuAngle[i] = getFloatFromShort(new byte[] {result[6 * i + 0], result[6 * i + 1]}, 0.02197265625f);
+            rcTargetAngle[i] = getFloatFromShort(new byte[] {result[6 * i + 2], result[6 * i + 2]}, 0.02197265625f);
+            rcSpeed[i] = getFloatFromShort(new byte[] {result[6 * i + 4], result[6 * i + 5]}, 0.02197265625f);
         }
-
 
         return rcSpeed;
     }

@@ -68,9 +68,11 @@ class AngleInfo {
 /**
  * This fragment controls Bluetooth to communicate with other devices.
  */
-public class AutoShutterFragment extends Fragment {
+public class AutoShutterFragment extends ControllerFragment {
 
     private BluetoothChatService mChatService = null;
+
+    private IntValue mSpeedValue = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,6 +104,8 @@ public class AutoShutterFragment extends Fragment {
 
         SampleApplication app = (SampleApplication) getActivity().getApplication();
         mChatService = app.getBluetoothChatService();
+
+        mSpeedValue = createSeekController(view, savedInstanceState, R.id.root, 40, 0.025f);
 
         // mConversationView = (ListView) view.findViewById(R.id.in);
         // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);

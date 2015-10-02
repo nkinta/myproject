@@ -40,6 +40,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.support.v7.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -61,11 +62,11 @@ import java.lang.Math;
 /**
  * This fragment controls Bluetooth to communicate with other devices.
  */
-public class HeadTrackFragment extends Fragment {
+public class HeadTrackFragment extends ControllerFragment {
 
     private static final float SPEED_MULTIPLE = 0.025f;
 
-    static int mSpeed = 40;
+    IntValue mSpeedValue = null;
 
     private HeadTrackHelper mHeadTrackHelper = null;
     private float mRoll = 0;
@@ -115,6 +116,8 @@ public class HeadTrackFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.root);
 
         SampleApplication app = (SampleApplication) getActivity().getApplication();
         mChatService = app.getBluetoothChatService();
@@ -173,7 +176,10 @@ public class HeadTrackFragment extends Fragment {
 
                 headTrackParam.setText("r = " + String.format("%8.3f", degree[0]) + ", p = " + String.format("%8.3f", degree[1]) + ", y = " + String.format("%8.3f", degree[2]));
 
-                CommandInfo command = SimpleBgcUtility.getControlCommand(new float[] {mSpeed  * SPEED_MULTIPLE, mSpeed  * SPEED_MULTIPLE, mSpeed  * SPEED_MULTIPLE}, angle);
+                if (mSpeedValue == null) {
+                    return;
+                }
+                CommandInfo command = SimpleBgcUtility.getControlCommand(new float[] {mSpeedValue.value  * SPEED_MULTIPLE, mSpeedValue.value  * SPEED_MULTIPLE, mSpeedValue.value  * SPEED_MULTIPLE}, angle);
 
                 mChatService.send(command.getCommandData());
             }
@@ -220,6 +226,9 @@ public class HeadTrackFragment extends Fragment {
             }
         });
 
+        mSpeedValue = createSeekController(view, savedInstanceState, R.id.root, 40, 0.025f);
+
+        /*
         final SeekBar speedSeekBar = (SeekBar) view.findViewById(R.id.speed_seek_bar);
         final TextView speedTextView = (TextView) view.findViewById(R.id.speed_text_view);
         speedTextView.setText(String.format("%3.2f", mSpeed * SPEED_MULTIPLE));
@@ -240,6 +249,7 @@ public class HeadTrackFragment extends Fragment {
 
             }
         });
+        */
 
 
     }
