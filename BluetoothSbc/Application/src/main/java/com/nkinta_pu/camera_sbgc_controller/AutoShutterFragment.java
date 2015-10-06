@@ -149,14 +149,10 @@ public class AutoShutterFragment extends ControllerFragment {
                     public void run() {
                         for (final AngleInfo v : angleList) {
                             SimpleBgcUtility.move(new float[]{2.0f, 2.0f, 2.0f}, v.getRadian(), mChatService);
-                            try {
-                                Thread.sleep(3000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                            SimpleBgcUtility.waitUntilStop(mChatService);
                             activity.takeAndFetchPicture();
                             try {
-                                Thread.sleep(3000);
+                                Thread.sleep(2000);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }

@@ -172,58 +172,30 @@ public class HeadTransform
 		float[] headView = new float[16];
 		Matrix.multiplyMM(headView, 0, rollOffsetMatrix, 0, mHeadView, 0);
 
-		/*
-		Matrix.rotateM(headView, 0, rollOffset, 0, 0, 1);
-		*/
-
-		/*
-		float yaw, roll, pitch = (float)Math.asin(mHeadView[6]);
-		if (FloatMath.sqrt(1.0F - mHeadView[6] * mHeadView[6]) >= 0.01F)
-		{
-			yaw = (float)Math.atan2(-mHeadView[2], mHeadView[10]);
-			roll = (float)Math.atan2(-mHeadView[4], mHeadView[5]);
-		}
-		else
-		{
-			yaw = 0.0F;
-			roll = (float)Math.atan2(mHeadView[1], mHeadView[0]);
-		}
-		*/
-
 		float yaw1, pitch1;
 		float roll1 = (float)Math.asin(headView[4]);
-		if (FloatMath.sqrt(1.0F - headView[4] * headView[4]) >= 0.01F)
+		if (FloatMath.sqrt(1.0F - headView[4] * headView[4]) >= 0.1f)
 		{
 			yaw1 = (float)Math.atan2(-headView[8], headView[0]);
 			pitch1 = (float)Math.atan2(-headView[6], headView[5]);
 		}
 		else
 		{
-			if  (offset + 3 < beforeEulerAngles.length) {
-				yaw1 = beforeEulerAngles[(offset + 1)];
-			}
-			else {
-				yaw1 = 0.0F;
-			}
-			pitch1 = (float)Math.atan2(headView[1], headView[10]) - yaw1;
+			yaw1 = beforeEulerAngles[(offset + 1)];
+			pitch1 = beforeEulerAngles[(offset + 1)];
 		}
 
 		float yaw2, pitch2;
 		float roll2 = (float)Math.PI - (float)Math.asin(headView[4]);
-		if (FloatMath.sqrt(1.0F - headView[4] * headView[4]) >= 0.01F)
+		if (FloatMath.sqrt(1.0F - headView[4] * headView[4]) >= 0.1f)
 		{
 			yaw2 = (float)Math.atan2(headView[8], -headView[0]);
 			pitch2 = (float)Math.atan2(headView[6], -headView[5]);
 		}
 		else
 		{
-			if  (offset + 3 < beforeEulerAngles.length) {
-				yaw2 = beforeEulerAngles[(offset + 1)];
-			}
-			else {
-				yaw2 = 0.0F;
-			}
-			pitch2 = (float)Math.atan2(-headView[1], -headView[10]) - yaw2;
+			yaw2 = beforeEulerAngles[(offset + 1)];
+			pitch2 = beforeEulerAngles[(offset + 1)];
 		}
 
 		if  (offset + 3 > beforeEulerAngles.length) {

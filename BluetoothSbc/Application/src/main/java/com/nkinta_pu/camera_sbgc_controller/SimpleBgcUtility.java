@@ -99,6 +99,28 @@ public class SimpleBgcUtility {
     static int CMD_BOOT_MODE_3 = 51;
     static int CMD_READ_FILE = 53;
 
+    static public void getProfile(int index, BluetoothChatService chatService) {
+        byte[] data = {(byte)index};
+        CommandInfo command = new CommandInfo("Profile", (byte) CMD_READ_PARAMS_3, data);
+        chatService.send(command.getCommandData());
+    }
+
+    static public void calibrationAcc(int imuIndex, BluetoothChatService chatService) {
+        byte[] data = new byte[12];
+        data[0] = (byte)imuIndex;
+        data[1] = (byte)1;
+        CommandInfo command = new CommandInfo("CalibAcc", (byte) CMD_CALIB_ACC, data);
+        chatService.send(command.getCommandData());
+    }
+
+    static public void calibrationGyro(int imuIndex, BluetoothChatService chatService) {
+        byte[] data = new byte[12];
+        data[0] = (byte)imuIndex;
+        data[1] = (byte)1;
+        CommandInfo command = new CommandInfo("CalibGyro", (byte) CMD_CALIB_GYRO, data);
+        chatService.send(command.getCommandData());
+    }
+
     static private byte[] floatDegreeToByte(float v, float oneUnitDeg) {
         short sv = (short) (v * 180 / Math.PI / oneUnitDeg);
         byte result[] =  {(byte) sv, (byte) (sv >> 8)};
@@ -164,8 +186,29 @@ public class SimpleBgcUtility {
             rcTargetAngle[i] = getFloatFromShort(new byte[] {result[6 * i + 2], result[6 * i + 2]}, 0.02197265625f);
             rcSpeed[i] = getFloatFromShort(new byte[] {result[6 * i + 4], result[6 * i + 5]}, 0.02197265625f);
         }
-
         return rcSpeed;
+    }
+
+    static public void waitUntilStop(BluetoothChatService chatService) {
+
+        while (true) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            float[] rcSpeed = getAngleRcSpeed(chatService);
+            float maxValue = 0;
+            for (float v : rcSpeed) {
+                if (maxValue < Math.abs(v)) {
+                    maxValue = Math.abs(v);
+                }
+            }
+            if (maxValue < 0.001) {
+                return;
+            }
+        }
     }
 
     static public float getFloatFromShort(byte angle[], float oneUnitDeg) {
