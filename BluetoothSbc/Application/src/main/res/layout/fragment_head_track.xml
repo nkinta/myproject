@@ -55,4 +55,7 @@
             android:id="@+id/direction_spinner" />
 
     </LinearLayout>
+
+    <include layout="@layout/seek_control"/>
+
 </LinearLayout>

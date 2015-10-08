@@ -25,7 +25,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 import android.widget.ViewAnimator;
 import android.support.v4.view.ViewPager;
 
@@ -34,9 +33,10 @@ import com.example.android.common.logger.Log;
 import com.example.android.common.logger.LogFragment;
 import com.example.android.common.logger.LogWrapper;
 import com.example.android.common.logger.MessageOnlyLogFilter;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.nkinta_pu.camera_sbgc_controller.camera.CameraFragment;
+import com.nkinta_pu.camera_sbgc_controller.control.BluetoothConnectFragment;
+import com.nkinta_pu.camera_sbgc_controller.control.JoyPadJob;
+import com.nkinta_pu.camera_sbgc_controller.control.PagerAdapter;
 
 /**
  * A simple launcher activity containing a summary sample description, sample log and a custom
@@ -54,7 +54,7 @@ public class MainActivity extends SampleActivityBase {
 
     ViewPager mViewPager;
     CameraFragment mCameraFragment;
-    BluetoothChatFragment mBluetoothChatFragment;
+    BluetoothConnectFragment mBluetoothChatFragment;
 
     JoyPadJob mJoyPadJob = null;
 
@@ -69,7 +69,7 @@ public class MainActivity extends SampleActivityBase {
 
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            mBluetoothChatFragment = new BluetoothChatFragment();
+            mBluetoothChatFragment = new BluetoothConnectFragment();
             transaction.add(R.id.sample_main_layout, mBluetoothChatFragment);
             transaction.commit();
 
