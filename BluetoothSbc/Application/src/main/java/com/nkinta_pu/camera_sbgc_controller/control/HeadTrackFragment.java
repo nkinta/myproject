@@ -33,7 +33,7 @@ import android.widget.TextView;
 
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
-import com.nkinta_pu.camera_sbgc_controller.camera.SampleApplication;
+import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 // import com.nkinta_pu.camera_sbgc_controller.control.HeadTrackHelper;
 
 // import com.google.vrtoolkit.cardboard.HeadTransform;
@@ -54,7 +54,7 @@ public class HeadTrackFragment extends ControllerFragment {
     private float mRoll = 0;
     private float[] mBeforeAngle = {};
 
-    private BluetoothChatService mChatService = null;
+    private SimpleBgcControl mSimpleBgcControl = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,28 +102,8 @@ public class HeadTrackFragment extends ControllerFragment {
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.root);
 
         SampleApplication app = (SampleApplication) getActivity().getApplication();
-        mChatService = app.getBluetoothChatService();
+        mSimpleBgcControl = app.getSimpleBgcControl();
         final MainActivity activity = (MainActivity)getActivity();
-
-        // mConversationView = (ListView) view.findViewById(R.id.in);
-        // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
-        // mSendButton = (Button) view.findViewById(R.id.button_send);
-
-        // Switch switchButton = (Switch) view.findViewById(R.id.headTrackSwitch);
-        // switchButton.set
-        /*
-        final MainActivity activity = (MainActivity)getActivity();
-        GridLayout gridLayout = (GridLayout) view.findViewById(R.id.control);
-        gridLayout.setColumnCount(2);
-
-        final Switch switchButton = new Switch(activity);
-        switchButton.setText("HEAD_TRACK");
-        gridLayout.addView(switchButton);
-
-        final TextView headTrackParam = new TextView(activity);
-        headTrackParam.setText("-");
-        gridLayout.addView(headTrackParam);
-        */
 
         final Switch switchButton = (Switch) view.findViewById(R.id.start);
         final TextView headTrackParam = (TextView) view.findViewById(R.id.rpy_param_text_view);
@@ -162,7 +142,7 @@ public class HeadTrackFragment extends ControllerFragment {
                     return;
                 }
                 float[] speed = new float[] {mSpeedValue.value  * SPEED_MULTIPLE, mSpeedValue.value  * SPEED_MULTIPLE, mSpeedValue.value  * SPEED_MULTIPLE};
-                SimpleBgcUtility.move(speed, angle, mChatService);
+                mSimpleBgcControl.move(speed, angle);
                 // mChatService.send(command.getCommandData());
             }
         };

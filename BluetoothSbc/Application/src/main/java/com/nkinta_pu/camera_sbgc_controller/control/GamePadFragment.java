@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
-import com.nkinta_pu.camera_sbgc_controller.camera.SampleApplication;
+import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -20,7 +20,7 @@ import java.util.concurrent.ArrayBlockingQueue;
  */
 public class GamePadFragment extends ControllerFragment {
 
-    private BluetoothChatService mChatService = null;
+    private BluetoothService mChatService = null;
 
     private ArrayBlockingQueue<byte[]> mBluetoothBlockingQueue = null;
 
@@ -84,6 +84,8 @@ public class GamePadFragment extends ControllerFragment {
                           textView.setText("x y -> " + String.format("%3.2f", v[0]) + " - " +  String.format("%3.2f", v[1]));
                       }
                   }
+
+
         );
     }
 

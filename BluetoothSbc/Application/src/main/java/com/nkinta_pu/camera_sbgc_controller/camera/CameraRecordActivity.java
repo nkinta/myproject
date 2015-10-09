@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 import com.nkinta_pu.camera_sbgc_controller.control.HeadTrackHelper;
 import com.nkinta_pu.camera_sbgc_controller.R;
 import com.nkinta_pu.camera_sbgc_controller.camera.utils.DisplayHelper;

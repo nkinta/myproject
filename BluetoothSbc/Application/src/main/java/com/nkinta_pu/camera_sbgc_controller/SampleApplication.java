@@ -2,12 +2,16 @@
  * Copyright 2014 Sony Corporation
  */
 
-package com.nkinta_pu.camera_sbgc_controller.camera;
+package com.nkinta_pu.camera_sbgc_controller;
 
 import android.app.Application;
 
-import com.nkinta_pu.camera_sbgc_controller.control.BluetoothChatService;
+import com.nkinta_pu.camera_sbgc_controller.camera.ServerDevice;
+import com.nkinta_pu.camera_sbgc_controller.camera.SimpleRemoteApi;
+import com.nkinta_pu.camera_sbgc_controller.control.BluetoothService;
+import com.nkinta_pu.camera_sbgc_controller.control.CommandDispatcher;
 import com.nkinta_pu.camera_sbgc_controller.control.HeadTrackHelper;
+import com.nkinta_pu.camera_sbgc_controller.control.SimpleBgcControl;
 
 import java.util.Set;
 
@@ -22,21 +26,33 @@ public class SampleApplication extends Application {
 
     private Set<String> mSupportedApiSet;
 
-    private BluetoothChatService mBluetoothChatService;
+    // private BluetoothService mBluetoothChatService;
+
+    private SimpleBgcControl mSimpleBgcControl;
 
     private HeadTrackHelper mHeadTrackHelper;
+
+    private CommandDispatcher mCommandDispatcher;
 
     /**
      * Sets a target ServerDevice object.
      *
      * @param device
      */
-    public void setBluetoothChatService(BluetoothChatService service) {
-        mBluetoothChatService = service;
+    public void setSimpleBgcControl(SimpleBgcControl simpleBgcControl) {
+        mSimpleBgcControl = simpleBgcControl;
     }
 
-    public BluetoothChatService getBluetoothChatService() {
-        return mBluetoothChatService;
+    public SimpleBgcControl getSimpleBgcControl() {
+        return mSimpleBgcControl;
+    }
+
+    public void setCommandDispatcher(CommandDispatcher commandDispatcher) {
+        mCommandDispatcher = commandDispatcher;
+    }
+
+    public CommandDispatcher getCommandDispatcher() {
+        return mCommandDispatcher;
     }
 
     public void setTargetServerDevice(ServerDevice device) {

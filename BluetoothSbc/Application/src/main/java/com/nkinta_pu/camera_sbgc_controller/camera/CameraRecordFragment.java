@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
+import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 import com.nkinta_pu.camera_sbgc_controller.camera.utils.DisplayHelper;
 
 import org.json.JSONArray;

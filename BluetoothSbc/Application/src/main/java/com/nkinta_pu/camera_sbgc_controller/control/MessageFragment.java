@@ -28,7 +28,7 @@ import android.support.v7.widget.GridLayout;
 
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
-import com.nkinta_pu.camera_sbgc_controller.camera.SampleApplication;
+import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 // import com.nkinta_pu.camera_sbgc_controller.control.HeadTrackHelper;
 
 // import com.google.vrtoolkit.cardboard.HeadTransform;
@@ -61,7 +61,7 @@ public class MessageFragment extends Fragment {
     }
 
 
-    private BluetoothChatService mChatService = null;
+    private SimpleBgcControl mSimpleBgcControl = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -75,7 +75,7 @@ public class MessageFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         SampleApplication app = (SampleApplication) getActivity().getApplication();
-        mChatService = app.getBluetoothChatService();
+        mSimpleBgcControl = app.getSimpleBgcControl();
 
         GridLayout frameLayout = (GridLayout) view.findViewById(R.id.control);
 
@@ -85,21 +85,21 @@ public class MessageFragment extends Fragment {
         commandList.add(new CommandInfo("calibGyro", new Runnable() {
             @Override
             public void run() {
-                SimpleBgcUtility.calibrationGyro(0, mChatService);
+                mSimpleBgcControl.calibrationGyro(0);
             }
         }));
 
         commandList.add(new CommandInfo("calibAcc", new Runnable() {
             @Override
             public void run() {
-                SimpleBgcUtility.calibrationAcc(0, mChatService);
+                mSimpleBgcControl.calibrationAcc(0);
             }
         }));
 
         commandList.add(new CommandInfo("getProfile1", new Runnable() {
             @Override
             public void run() {
-                SimpleBgcUtility.getProfile(0, mChatService);
+                mSimpleBgcControl.getProfile(0);
             }
         }));
 

@@ -40,7 +40,7 @@ import android.widget.Toast;
 
 import com.example.android.common.logger.Log;
 import com.nkinta_pu.camera_sbgc_controller.R;
-import com.nkinta_pu.camera_sbgc_controller.camera.SampleApplication;
+import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 // import com.nkinta_pu.camera_sbgc_controller.HeadTrackHelper;
 
 // import com.google.vrtoolkit.cardboard.HeadTransform;
@@ -79,7 +79,7 @@ public class BluetoothConnectFragment extends Fragment {
     /**
      * Member object for the chat services
      */
-    private BluetoothChatService mChatService = null;
+    private BluetoothService mChatService = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -131,7 +131,7 @@ public class BluetoothConnectFragment extends Fragment {
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
         if (mChatService != null) {
             // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == BluetoothChatService.STATE_NONE) {
+            if (mChatService.getState() == BluetoothService.STATE_NONE) {
                 // Start the Bluetooth chat services
                 mChatService.start();
             }
@@ -169,16 +169,17 @@ public class BluetoothConnectFragment extends Fragment {
 
         mConversationView.setAdapter(mConversationArrayAdapter);
 
-        // Initialize the BluetoothChatService to perform bluetooth connections
+        // Initialize the BluetoothService to perform bluetooth connections
         // Application application = getActivity().getApplication();
         SampleApplication app = (SampleApplication) getActivity().getApplication();
-        BluetoothChatService chatService = app.getBluetoothChatService();
-        if (chatService == null) {
-            mChatService = new BluetoothChatService(getActivity(), mHandler);
-            app.setBluetoothChatService(mChatService);
+        SimpleBgcControl simpleBgcControl = app.getSimpleBgcControl();
+        if (simpleBgcControl == null) {
+            BluetoothService service = new BluetoothService(getActivity(), mHandler);
+            app.setSimpleBgcControl(new SimpleBgcControl(service));
+            mChatService = service;
         }
         else {
-            mChatService = chatService;
+            mChatService = simpleBgcControl.getBluetoothService();
         }
     }
 
@@ -229,7 +230,7 @@ public class BluetoothConnectFragment extends Fragment {
     }
 
     /**
-     * The Handler that gets information back from the BluetoothChatService
+     * The Handler that gets information back from the BluetoothService
      */
     private final Handler mHandler = new Handler() {
         @Override
@@ -238,15 +239,15 @@ public class BluetoothConnectFragment extends Fragment {
             switch (msg.what) {
                 case Constants.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
-                        case BluetoothChatService.STATE_CONNECTED:
+                        case BluetoothService.STATE_CONNECTED:
                             setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
                             mConversationArrayAdapter.clear();
                             break;
-                        case BluetoothChatService.STATE_CONNECTING:
+                        case BluetoothService.STATE_CONNECTING:
                             setStatus(R.string.title_connecting);
                             break;
-                        case BluetoothChatService.STATE_LISTEN:
-                        case BluetoothChatService.STATE_NONE:
+                        case BluetoothService.STATE_LISTEN:
+                        case BluetoothService.STATE_NONE:
                             setStatus(R.string.title_not_connected);
                             break;
                     }

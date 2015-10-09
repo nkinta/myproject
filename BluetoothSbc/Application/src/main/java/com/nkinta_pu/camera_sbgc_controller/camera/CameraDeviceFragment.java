@@ -23,7 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nkinta_pu.camera_sbgc_controller.camera.DeviceListAdapter;
+import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
 

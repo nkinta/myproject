@@ -23,13 +23,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.support.v7.widget.GridLayout;
-import android.widget.Toast;
 
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
-import com.nkinta_pu.camera_sbgc_controller.camera.SampleApplication;
+import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 
 import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
 
 // import android.os.SytemClock;
 // import com.nkinta_pu.camera_sbgc_controller.control.HeadTrackHelper;
@@ -66,7 +66,7 @@ class AngleInfo {
  */
 public class AutoShutterFragment extends ControllerFragment {
 
-    private BluetoothChatService mChatService = null;
+    private SimpleBgcControl mSimpleBgcControl = null;
 
     private IntValue mSpeedValue = null;
 
@@ -99,7 +99,7 @@ public class AutoShutterFragment extends ControllerFragment {
         super.onViewCreated(view, savedInstanceState);
 
         SampleApplication app = (SampleApplication) getActivity().getApplication();
-        mChatService = app.getBluetoothChatService();
+        mSimpleBgcControl = app.getSimpleBgcControl();
 
         mSpeedValue = createSeekController(view, 40, 0.025f);
 
@@ -140,13 +140,17 @@ public class AutoShutterFragment extends ControllerFragment {
         gridLayout.addView(allButton);
         allButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View tempView) {
-                new Thread() {
+                final CommandDispatcher cd = mSimpleBgcControl.getCommandDispatcher();
+                Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
                         float speed = mSpeedValue.value;
                         for (final AngleInfo v : angleList) {
-                            SimpleBgcUtility.moveSync(new float[]{speed, speed, speed}, v.getRadian(), mChatService);
-                            SimpleBgcUtility.waitUntilStop(mChatService);
+                            if (cd.existNextCommand()) return;
+                            mSimpleBgcControl.moveSync(new float[]{speed, speed, speed}, v.getRadian());
+                            if (cd.existNextCommand()) return;
+                            mSimpleBgcControl.waitUntilStop();
+                            if (cd.existNextCommand()) return;
                             activity.takeAndFetchPicture();
                             try {
                                 Thread.sleep(2000);
@@ -155,12 +159,13 @@ public class AutoShutterFragment extends ControllerFragment {
                             }
                         }
                     }
-                }.start();
+                };
+                cd.setCommand(runnable);
             }
         });
 
 
-        for (final AngleInfo v: angleList) {
+        for (final AngleInfo v : angleList) {
 
             Button button = new Button(activity);
             button.setText(v.getLabel());
@@ -168,12 +173,16 @@ public class AutoShutterFragment extends ControllerFragment {
 
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View tempView) {
-                    new Thread() {
+
+                    final CommandDispatcher cd = mSimpleBgcControl.getCommandDispatcher();
+                    Runnable runnable = new Runnable() {
                         @Override
                         public void run() {
                             float speed = mSpeedValue.value;
-                            SimpleBgcUtility.moveSync(new float[]{speed, speed, speed}, v.getRadian(), mChatService);
-                            SimpleBgcUtility.waitUntilStop(mChatService);
+                            if (cd.existNextCommand()) return;
+                            mSimpleBgcControl.moveSync(new float[]{speed, speed, speed}, v.getRadian());
+                            if (cd.existNextCommand()) return;
+                            mSimpleBgcControl.waitUntilStop();
                             activity.takeAndFetchPicture();
                             try {
                                 Thread.sleep(2000);
@@ -181,7 +190,8 @@ public class AutoShutterFragment extends ControllerFragment {
                                 e.printStackTrace();
                             }
                         }
-                    }.start();
+                    };
+                    cd.setCommand(runnable);
                 }
             });
 

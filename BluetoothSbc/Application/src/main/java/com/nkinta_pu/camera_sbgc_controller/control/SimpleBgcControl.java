@@ -4,8 +4,8 @@ package com.nkinta_pu.camera_sbgc_controller.control;
  * Created by kanenao on 2015/09/18.
  */
 
-public class SimpleBgcUtility {
-    // Message types sent from the BluetoothChatService Handler
+public class SimpleBgcControl {
+    // Message types sent from the BluetoothService Handler
 
     static final int CMD_READ_PARAMS = 82;
     static final int CMD_WRITE_PARAMS = 87;
@@ -59,6 +59,23 @@ public class SimpleBgcUtility {
     static final float ANGLE_UNIT = 0.02197265625f;
     static final float ANGLE_SPEED_UNIT = 0.1220740379f;
 
+    private final BluetoothService mBluetoothService;
+    private final CommandDispatcher mCommandDispatcher;
+
+    public SimpleBgcControl(BluetoothService bluetoothService) {
+        mBluetoothService = bluetoothService;
+        mCommandDispatcher = new CommandDispatcher();
+        mCommandDispatcher.start();
+    }
+
+    public BluetoothService getBluetoothService() {
+        return mBluetoothService;
+    }
+
+    public CommandDispatcher getCommandDispatcher() {
+        return mCommandDispatcher;
+    }
+
     static public byte[] getCommandData(byte command, byte[] data) {
         int size = 5 + data.length;
         // byte[] send = { (byte)0x3E, (byte)0x15, (byte) 0x01, (byte) 0x16, (byte) 0x00, (byte) 0x00};
@@ -77,27 +94,6 @@ public class SimpleBgcUtility {
 
         return commandData;
     }
-
-
-    static public void getProfile(int index, BluetoothChatService chatService) {
-        byte[] data = {(byte)index};
-        chatService.send(getCommandData((byte) CMD_READ_PARAMS_3, data));
-    }
-
-    static public void calibrationAcc(int imuIndex, BluetoothChatService chatService) {
-        byte[] data = new byte[12];
-        data[0] = (byte)imuIndex;
-        data[1] = (byte)1;
-        chatService.send(getCommandData((byte) CMD_CALIB_ACC, data));
-    }
-
-    static public void calibrationGyro(int imuIndex, BluetoothChatService chatService) {
-        byte[] data = new byte[12];
-        data[0] = (byte)imuIndex;
-        data[1] = (byte)1;
-        chatService.send(getCommandData((byte) CMD_CALIB_GYRO, data));
-    }
-
     static private byte[] floatDegreeToByte(float v, float oneUnitDeg) {
         short sv = (short) (v * 180 / Math.PI / oneUnitDeg);
         byte result[] =  {(byte) sv, (byte) (sv >> 8)};
@@ -137,72 +133,6 @@ public class SimpleBgcUtility {
 
     }
 
-
-    static public void moveSync(float[] speed, float[] angle, BluetoothChatService chatService) {
-
-        final byte[] commandData = getControlCommand(speed, angle);
-
-        byte[] result = chatService.sendSync(commandData);
-
-        return;
-    }
-
-    static public void move(float[] speed, float[] angle, BluetoothChatService chatService) {
-
-        final byte[] commandData = getControlCommand(speed, angle);
-
-        chatService.send(commandData);
-
-        return;
-    }
-
-    static public float[] getAngleRcSpeed(BluetoothChatService chatService) {
-        byte[] data = {};
-        final byte[] result =  chatService.sendSync(getCommandData((byte) CMD_GET_ANGLES, data));
-        if (result == null) {
-            return null;
-        }
-
-        float[] imuAngle = {0f, 0f, 0f};
-        float[] rcTargetAngle = {0f, 0f, 0f};
-        float[] rcSpeed = {0f, 0f, 0f};
-
-        for (int i = 0; i < 3; ++i) {
-            imuAngle[i] = getFloatFromByte(new byte[]{result[6 * i + 0], result[6 * i + 1]}, ANGLE_UNIT);
-            rcTargetAngle[i] = getFloatFromByte(new byte[]{result[6 * i + 2], result[6 * i + 2]}, ANGLE_UNIT);
-            rcSpeed[i] = getFloatFromByte(new byte[]{result[6 * i + 4], result[6 * i + 5]}, ANGLE_SPEED_UNIT);
-        }
-        return rcSpeed;
-    }
-
-    static public void waitUntilStop(BluetoothChatService chatService) {
-
-        while (true) {
-            /*
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            */
-
-            float[] rcSpeed = getAngleRcSpeed(chatService);
-            if (rcSpeed == null) {
-                continue;
-            }
-
-            float maxValue = 0;
-            for (float v : rcSpeed) {
-                if (maxValue < Math.abs(v)) {
-                    maxValue = Math.abs(v);
-                }
-            }
-            if (maxValue < 0.001) {
-                return;
-            }
-        }
-    }
-
     static public float getFloatFromByte(byte dataList[], float oneUnitDeg) {
 
         int temp = 0;
@@ -219,8 +149,89 @@ public class SimpleBgcUtility {
         float result = (float) temp * oneUnitDeg;
 
         return result;
-
     }
 
+    public void getProfile(int index) {
+        byte[] data = {(byte)index};
+        mBluetoothService.send(getCommandData((byte) CMD_READ_PARAMS_3, data));
+    }
 
+    public void calibrationAcc(int imuIndex) {
+        byte[] data = new byte[12];
+        data[0] = (byte)imuIndex;
+        data[1] = (byte)1;
+        mBluetoothService.send(getCommandData((byte) CMD_CALIB_ACC, data));
+    }
+
+    public void calibrationGyro(int imuIndex) {
+        byte[] data = new byte[12];
+        data[0] = (byte)imuIndex;
+        data[1] = (byte)1;
+        mBluetoothService.send(getCommandData((byte) CMD_CALIB_GYRO, data));
+    }
+
+    public synchronized void moveSync(float[] speed, float[] angle) {
+
+        final byte[] commandData = getControlCommand(speed, angle);
+
+        byte[] result = mBluetoothService.sendSync(commandData);
+
+        return;
+    }
+
+    public void move(float[] speed, float[] angle) {
+
+        final byte[] commandData = getControlCommand(speed, angle);
+
+        mBluetoothService.send(commandData);
+
+        return;
+    }
+
+    public synchronized float[] getAngleRcSpeed() {
+        byte[] data = {};
+        final byte[] result =  mBluetoothService.sendSync(getCommandData((byte) CMD_GET_ANGLES, data));
+        if (result == null) {
+            return null;
+        }
+
+        float[] imuAngle = {0f, 0f, 0f};
+        float[] rcTargetAngle = {0f, 0f, 0f};
+        float[] rcSpeed = {0f, 0f, 0f};
+
+        for (int i = 0; i < 3; ++i) {
+            imuAngle[i] = getFloatFromByte(new byte[]{result[6 * i + 0], result[6 * i + 1]}, ANGLE_UNIT);
+            rcTargetAngle[i] = getFloatFromByte(new byte[]{result[6 * i + 2], result[6 * i + 2]}, ANGLE_UNIT);
+            rcSpeed[i] = getFloatFromByte(new byte[]{result[6 * i + 4], result[6 * i + 5]}, ANGLE_SPEED_UNIT);
+        }
+        return rcSpeed;
+    }
+
+    public synchronized void waitUntilStop() {
+
+        while (true) {
+            /*
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            */
+
+            float[] rcSpeed = getAngleRcSpeed();
+            if (rcSpeed == null) {
+                continue;
+            }
+
+            float maxValue = 0;
+            for (float v : rcSpeed) {
+                if (maxValue < Math.abs(v)) {
+                    maxValue = Math.abs(v);
+                }
+            }
+            if (maxValue < 0.001) {
+                return;
+            }
+        }
+    }
 }
