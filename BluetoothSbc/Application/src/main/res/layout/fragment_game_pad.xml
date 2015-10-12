@@ -19,7 +19,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <include layout="@layout/seek_control"/>
+    <include layout="@layout/seek_control"
+        android:id="@+id/speed_seek_control"
+        />
+    <include layout="@layout/seek_control"
+        android:id="@+id/offset_seek_control"
+        />
  <android.support.v7.widget.GridLayout
      android:layout_width="match_parent"
      android:layout_height="0dp"

@@ -46,9 +46,7 @@ import java.lang.Math;
  */
 public class HeadTrackFragment extends ControllerFragment {
 
-    private static final float SPEED_MULTIPLE = 0.025f;
-
-    IntValue mSpeedValue = null;
+    FloatValue mSpeedValue = null;
 
     private HeadTrackHelper mHeadTrackHelper = null;
     private float mRoll = 0;
@@ -141,7 +139,7 @@ public class HeadTrackFragment extends ControllerFragment {
                 if (mSpeedValue == null) {
                     return;
                 }
-                float[] speed = new float[] {mSpeedValue.value  * SPEED_MULTIPLE, mSpeedValue.value  * SPEED_MULTIPLE, mSpeedValue.value  * SPEED_MULTIPLE};
+                float[] speed = new float[] {mSpeedValue.value, mSpeedValue.value, mSpeedValue.value};
                 mSimpleBgcControl.move(speed, angle);
                 // mChatService.send(command.getCommandData());
             }
@@ -188,7 +186,7 @@ public class HeadTrackFragment extends ControllerFragment {
             }
         });
 
-        mSpeedValue = createSeekController(view, 40, 0.025f);
+        mSpeedValue = createSeekController(view, R.id.speed_seek_control, 40, 0.025f);
 
         /*
         final SeekBar speedSeekBar = (SeekBar) view.findViewById(R.id.speed_seek_bar);

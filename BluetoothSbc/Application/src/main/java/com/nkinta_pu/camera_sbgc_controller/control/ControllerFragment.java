@@ -44,23 +44,25 @@ import com.nkinta_pu.camera_sbgc_controller.R;
  */
 public class ControllerFragment extends Fragment {
 
-    class IntValue {
-        public int value = 0;
+    class FloatValue {
+        public float value = 0;
     }
 
-    protected IntValue createSeekController(View view, final Integer defaultValue, final float multiple) {
+
+    protected FloatValue createSeekController(View view, int id, final int defaultValue, final float multiple) {
 
         // LinearLayout linearLayout = (LinearLayout) view.findViewById(parentLayoutId);
         // View seekControlLayout = getLayoutInflater(savedInstanceState).inflate(R.layout.seek_control, linearLayout);
 
-        final IntValue seekValue = new IntValue();
-        seekValue.value = defaultValue;
+        final FloatValue seekValue = new FloatValue();
+        seekValue.value = (float)(defaultValue) * multiple;
 
-        final SeekBar seekBar = (SeekBar) view.findViewById(R.id.speed_seek_bar);
-        final TextView textView = (TextView) view.findViewById(R.id.speed_text_view);
-        textView.setText(String.format("%3.2f", seekValue.value * multiple));
+        final LinearLayout linearLayout = (LinearLayout) view.findViewById(id);
+        final SeekBar seekBar = (SeekBar) linearLayout.findViewById(R.id.speed_seek_bar);
+        final TextView textView = (TextView) linearLayout.findViewById(R.id.speed_text_view);
+        textView.setText(String.format("%3.2f", seekValue.value));
 
-        seekBar.setProgress(seekValue.value);
+        seekBar.setProgress(defaultValue);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
@@ -72,7 +74,7 @@ public class ControllerFragment extends Fragment {
             }
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                seekValue.value = seekBar.getProgress();
+                seekValue.value = seekBar.getProgress() * multiple;
             }
         });
 

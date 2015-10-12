@@ -56,6 +56,13 @@ public class SimpleBgcControl {
     static final int CMD_BOOT_MODE_3 = 51;
     static final int CMD_READ_FILE = 53;
 
+    static final byte MODE_NO_CONTROL = 0;
+    static final byte MODE_SPEED = 1;
+    static final byte MODE_ANGLE = 2;
+    static final byte MODE_SPEED_ANGLE = 3;
+    static final byte MODE_RC = 4;
+    static final byte MODE_ANGLE_REL_FRAME = 5;
+
     static final float ANGLE_UNIT = 0.02197265625f;
     static final float ANGLE_SPEED_UNIT = 0.1220740379f;
 
@@ -109,14 +116,14 @@ public class SimpleBgcControl {
         return floatDegreeToByte(v, ANGLE_SPEED_UNIT);
     }
 
-    static public byte[] getControlCommand(float[] speed, float[] angle) {
+    static public byte[] getControlCommand(byte controlMode, float[] speed, float[] angle) {
 
         if (angle.length > 3) {
             throw new IllegalArgumentException("Angle info must exist 3 element.");
         }
 
         byte data[] = new byte[13];
-        data[0] = (byte) 0x02;
+        data[0] = controlMode;
         int offset = 1;
         for (int i = 0; i < 3; ++i) {
             byte byteSpeed[] = floatSpeedDegreeToByte(speed[i]);
@@ -172,7 +179,7 @@ public class SimpleBgcControl {
 
     public synchronized void moveSync(float[] speed, float[] angle) {
 
-        final byte[] commandData = getControlCommand(speed, angle);
+        final byte[] commandData = getControlCommand(MODE_ANGLE, speed, angle);
 
         byte[] result = mBluetoothService.sendSync(commandData);
 
@@ -181,7 +188,16 @@ public class SimpleBgcControl {
 
     public void move(float[] speed, float[] angle) {
 
-        final byte[] commandData = getControlCommand(speed, angle);
+        final byte[] commandData = getControlCommand(MODE_ANGLE, speed, angle);
+
+        mBluetoothService.send(commandData);
+
+        return;
+    }
+
+    public void setSpeed(float[] speed) {
+
+        final byte[] commandData = getControlCommand(MODE_SPEED, speed, new float[] {0f, 0f, 0f});
 
         mBluetoothService.send(commandData);
 

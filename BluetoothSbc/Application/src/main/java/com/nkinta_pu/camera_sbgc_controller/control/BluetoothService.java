@@ -65,7 +65,7 @@ public class BluetoothService {
     private ConnectedThread mConnectedThread;
     private int mState;
 
-    private long resultPollingTime = 100;
+    private long resultPollingTime = 1000;
 
     private final ArrayBlockingQueue<byte[]> mBluetoothBlockingQueue = new ArrayBlockingQueue<byte[]>(1);
 

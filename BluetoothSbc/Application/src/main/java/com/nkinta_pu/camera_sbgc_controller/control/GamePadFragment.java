@@ -24,7 +24,10 @@ public class GamePadFragment extends ControllerFragment {
 
     private ArrayBlockingQueue<byte[]> mBluetoothBlockingQueue = null;
 
-    IntValue mSpeedValue = null;
+    FloatValue mSpeedValue = null;
+    FloatValue mOffsetValue = null;
+
+    private SimpleBgcControl mSimpleBgcControl = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,8 @@ public class GamePadFragment extends ControllerFragment {
         MainActivity activity = (MainActivity) getActivity();
         SampleApplication app = (SampleApplication) activity.getApplication();
 
+        mSimpleBgcControl = app.getSimpleBgcControl();
+
         final TextView speedTextView = new TextView(activity);
         speedTextView.setText("-");
 
@@ -75,18 +80,24 @@ public class GamePadFragment extends ControllerFragment {
         gridLayout.addView(speedTextView);
         gridLayout.addView(textView);
 
-        mSpeedValue = createSeekController(view, 40, 0.025f);
+        mSpeedValue = createSeekController(view, R.id.speed_seek_control, 40, 0.025f);
+        mOffsetValue = createSeekController(view, R.id.offset_seek_control, 20, 0.025f);
 
         activity.setJoyPadJob(
                 new JoyPadJob() {
-                      @Override
-                      public void doCommand(float[] v) {
-                          textView.setText("x y -> " + String.format("%3.2f", v[0]) + " - " +  String.format("%3.2f", v[1]));
-                      }
-                  }
-
-
+                    @Override
+                    public void doCommand(final float[] v) {
+                        textView.setText("x y -> " + String.format("%3.2f", v[0]) + " - " + String.format("%3.2f", v[1]));
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                mSimpleBgcControl.setSpeed(new float[]{0f, v[1] * mSpeedValue.value, v[1] * mSpeedValue.value});
+                            }
+                        }.run();
+                    }
+                }
         );
+
     }
 
     @Override

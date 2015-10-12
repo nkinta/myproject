@@ -56,6 +56,8 @@
 
     </LinearLayout>
 
-    <include layout="@layout/seek_control"/>
+    <include layout="@layout/seek_control"
+        android:id="@+id/speed_seek_control"
+        />
 
 </LinearLayout>

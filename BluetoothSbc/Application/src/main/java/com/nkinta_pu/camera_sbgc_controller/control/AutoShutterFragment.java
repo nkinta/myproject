@@ -68,7 +68,7 @@ public class AutoShutterFragment extends ControllerFragment {
 
     private SimpleBgcControl mSimpleBgcControl = null;
 
-    private IntValue mSpeedValue = null;
+    private FloatValue mSpeedValue = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,7 +101,7 @@ public class AutoShutterFragment extends ControllerFragment {
         SampleApplication app = (SampleApplication) getActivity().getApplication();
         mSimpleBgcControl = app.getSimpleBgcControl();
 
-        mSpeedValue = createSeekController(view, 40, 0.025f);
+        mSpeedValue = createSeekController(view, R.id.speed_seek_control, 40, 0.025f);
 
         // mConversationView = (ListView) view.findViewById(R.id.in);
         // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
