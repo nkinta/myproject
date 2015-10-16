@@ -26,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -186,7 +187,10 @@ public class HeadTrackFragment extends ControllerFragment {
             }
         });
 
-        mSpeedValue = createSeekController(view, R.id.speed_seek_control, 40, 0.025f);
+        mSpeedValue = createSeekController(
+                (SeekBar) view.findViewById(R.id.speed_seek_bar),
+                (TextView) view.findViewById(R.id.speed_text_view),
+                40, 0.025f);
 
         /*
         final SeekBar speedSeekBar = (SeekBar) view.findViewById(R.id.speed_seek_bar);

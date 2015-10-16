@@ -23,6 +23,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.support.v7.widget.GridLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
@@ -101,7 +103,10 @@ public class AutoShutterFragment extends ControllerFragment {
         SampleApplication app = (SampleApplication) getActivity().getApplication();
         mSimpleBgcControl = app.getSimpleBgcControl();
 
-        mSpeedValue = createSeekController(view, R.id.speed_seek_control, 40, 0.025f);
+        mSpeedValue = createSeekController(
+                (SeekBar) view.findViewById(R.id.speed_seek_bar),
+                (TextView) view.findViewById(R.id.speed_text_view),
+                40, 0.025f);
 
         // mConversationView = (ListView) view.findViewById(R.id.in);
         // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);

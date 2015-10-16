@@ -6,6 +6,7 @@ import android.support.v7.widget.GridLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -80,8 +81,14 @@ public class GamePadFragment extends ControllerFragment {
         gridLayout.addView(speedTextView);
         gridLayout.addView(textView);
 
-        mSpeedValue = createSeekController(view, R.id.speed_seek_control, 40, 0.025f);
-        mOffsetValue = createSeekController(view, R.id.offset_seek_control, 20, 0.025f);
+        mSpeedValue = createSeekController(
+                (SeekBar) view.findViewById(R.id.speed_seek_bar),
+                (TextView) view.findViewById(R.id.speed_text_view),
+                40, 0.025f);
+        mOffsetValue = createSeekController(
+                (SeekBar) view.findViewById(R.id.offset_seek_bar),
+                (TextView) view.findViewById(R.id.offset_text_view),
+                10, 0.025f);
 
         activity.setJoyPadJob(
                 new JoyPadJob() {

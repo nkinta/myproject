@@ -44,22 +44,23 @@ import com.nkinta_pu.camera_sbgc_controller.R;
  */
 public class ControllerFragment extends Fragment {
 
-    class FloatValue {
-        public float value = 0;
+    static class FloatValue {
+        public float value = 0.0f;
     }
 
 
-    protected FloatValue createSeekController(View view, int id, final int defaultValue, final float multiple) {
+    static protected FloatValue createSeekController(final SeekBar seekBar, final TextView textView, final int defaultValue, final float multiple) {
 
         // LinearLayout linearLayout = (LinearLayout) view.findViewById(parentLayoutId);
-        // View seekControlLayout = getLayoutInflater(savedInstanceState).inflate(R.layout.seek_control, linearLayout);
+        // View seekControlLayout = getLayoutInflater(savedInstanceState).inflate(R.layout.speed_seek_control, linearLayout);
 
         final FloatValue seekValue = new FloatValue();
+
         seekValue.value = (float)(defaultValue) * multiple;
 
-        final LinearLayout linearLayout = (LinearLayout) view.findViewById(id);
-        final SeekBar seekBar = (SeekBar) linearLayout.findViewById(R.id.speed_seek_bar);
-        final TextView textView = (TextView) linearLayout.findViewById(R.id.speed_text_view);
+        // final LinearLayout linearLayout = (LinearLayout) view.findViewById(id);
+        // final SeekBar seekBar = (SeekBar) linearLayout.findViewById(R.id.speed_seek_bar);
+        // final TextView textView = (TextView) linearLayout.findViewById(R.id.speed_text_view);
         textView.setText(String.format("%3.2f", seekValue.value));
 
         seekBar.setProgress(defaultValue);
@@ -77,7 +78,6 @@ public class ControllerFragment extends Fragment {
                 seekValue.value = seekBar.getProgress() * multiple;
             }
         });
-
         return seekValue;
 
     }

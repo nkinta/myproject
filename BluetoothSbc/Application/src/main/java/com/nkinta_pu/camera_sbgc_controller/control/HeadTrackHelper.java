@@ -36,6 +36,13 @@ public class HeadTrackHelper {
     }
 
 
+    public createFilter(int power) {
+
+
+
+    }
+
+
     public void onStop() {
         if (mHandler != null) {
             mHandler.removeCallbacksAndMessages(null);
@@ -53,6 +60,9 @@ public class HeadTrackHelper {
             public void run() {
                 // float[] tempFloat = new float[16];
                 mHeadTracker.getLastHeadView(mHeadTransform.getHeadView(), 0);
+
+
+
                 for (HeadTrackJob v: mHeadTrackJobList) {
                     v.doCommand(mHeadTransform);
                 }
