@@ -13,6 +13,8 @@ public class LooperManager {
 
     private Handler mHandler;
 
+    // private Handler mHandlerThread;
+
     public final int mTiming;
 
     LooperManager(Runnable runnable, int timing) {
@@ -21,26 +23,23 @@ public class LooperManager {
     }
 
     public void start() {
-        new HandlerThread("looper") {
-            // private Runnable mLooperRunnable = null;
+        HandlerThread handlerThread = new HandlerThread("looper");
+        handlerThread.start();
 
+        final Handler handler = new Handler(handlerThread.getLooper());
+        Runnable looperRunnable = new Runnable() {
             @Override
             public void run() {
-                Looper.prepare();
-                Runnable looperRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        LooperManager:mRunnable.run();
-                        mHandler.postDelayed(this, mTiming);
-                    }
-                };
-                mHandler = new Handler();
-                Looper.loop();
-                mHandler.postDelayed(looperRunnable, mTiming);
-                // mChatService.send(command.getCommandData());
+                mRunnable.run();
+                handler.postDelayed(this, mTiming);
             }
+        };
+        handler.post(looperRunnable);
 
-        }.start();
+        // Looper.prepare();
+        // mHandler = new Handler();
+        // Looper.loop();
+        // mChatService.send(command.getCommandData());
 
     }
 
