@@ -5,5 +5,5 @@ package com.nkinta_pu.camera_sbgc_controller.control;
  */
 public interface HeadTrackJob {
 
-    public void doCommand(HeadTransform t);
+    public void doCommand(float[] angle);
 }

@@ -50,10 +50,10 @@ public class HeadTrackFragment extends ControllerFragment {
     FloatValue mSpeedValue = null;
 
     private HeadTrackHelper mHeadTrackHelper = null;
-    private float mRoll = 0;
-    private float[] mBeforeAngle = {};
 
     private SimpleBgcControl mSimpleBgcControl = null;
+
+    private LooperManager mUiUpdateLooper = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -109,45 +109,47 @@ public class HeadTrackFragment extends ControllerFragment {
 
         // final TextView headTrackParam = (TextView) view.findViewById(R.id.headTrackParam);
 
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                float[] angle = mHeadTrackHelper.getLastAngle();
+
+                final float[] degree = new float[3];
+                for (int i = 0; i < angle.length; ++i) {
+                    degree[i] = angle[i] * 180 / (float) Math.PI;
+                }
+
+                if (mSpeedValue == null) {
+                    return;
+                }
+                float[] speed = new float[]{mSpeedValue.value, mSpeedValue.value, mSpeedValue.value};
+                mSimpleBgcControl.move(speed, angle);
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        headTrackParam.setText("r = " + String.format("%8.3f", degree[0]) + ", p = " + String.format("%8.3f", degree[1]) + ", y = " + String.format("%8.3f", degree[2]));
+                    }
+                });
+            }
+        };
+
+        mUiUpdateLooper = new LooperManager(runnable, 200);
+
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked == true) {
-                    mBeforeAngle = new float[]{};
                     mHeadTrackHelper.onStart();
+                    mUiUpdateLooper.start();
                 } else {
+                    mUiUpdateLooper.stop();
                     mHeadTrackHelper.onStop();
                 }
             }
 
 
         });
-
-        HeadTrackJob job1 = new HeadTrackJob() {
-            @Override
-            public void doCommand(HeadTransform t) {
-                float[] angle = new float[3];
-                t.getEulerAngles(mBeforeAngle, mRoll, angle, 0);
-                mBeforeAngle = angle;
-
-                float[] degree = new float[3];
-                for (int i = 0; i < angle.length; ++i) {
-                    degree[i] = angle[i] * 180 / (float)Math.PI;
-                }
-
-                headTrackParam.setText("r = " + String.format("%8.3f", degree[0]) + ", p = " + String.format("%8.3f", degree[1]) + ", y = " + String.format("%8.3f", degree[2]));
-
-                if (mSpeedValue == null) {
-                    return;
-                }
-                float[] speed = new float[] {mSpeedValue.value, mSpeedValue.value, mSpeedValue.value};
-                mSimpleBgcControl.move(speed, angle);
-                // mChatService.send(command.getCommandData());
-            }
-        };
-
-
-        mHeadTrackHelper.setJob(job1);
 
         final Spinner directorySpinner = (Spinner) view.findViewById(R.id.direction_spinner);
         // directorySpinner.setText("HEAD_TRACK");
@@ -171,12 +173,9 @@ public class HeadTrackFragment extends ControllerFragment {
                 } else {
                     long spinnerId = spinner.getSelectedItemId();
                     if (spinnerId == 0) {
-                        mBeforeAngle = new float[]{};
-                        mRoll = 0;
-                    }
-                    else if (spinnerId == 1) {
-                        mBeforeAngle = new float[]{};
-                        mRoll = 90;
+                        mHeadTrackHelper.setRoll(0f);
+                    } else if (spinnerId == 1) {
+                        mHeadTrackHelper.setRoll(90f);
                     }
                 }
             }
