@@ -11,22 +11,27 @@ public class LooperManager {
 
     private final Runnable mRunnable;
 
-    private Handler mHandler;
+    // private Handler mHandler = null;
 
-    // private Handler mHandlerThread;
+    private final String mThreadName;
+    private HandlerThread mHandlerThread = null;
 
     public final int mTiming;
 
-    LooperManager(Runnable runnable, int timing) {
+    LooperManager(Runnable runnable, String threadName, int timing) {
         mRunnable = runnable;
+        mThreadName = threadName;
         mTiming = timing;
+
+        mHandlerThread = new HandlerThread(mThreadName);
+
     }
 
     public void start() {
-        HandlerThread handlerThread = new HandlerThread("looper");
-        handlerThread.start();
 
-        final Handler handler = new Handler(handlerThread.getLooper());
+        mHandlerThread.start();
+
+        final Handler handler = new Handler(mHandlerThread.getLooper());
         Runnable looperRunnable = new Runnable() {
             @Override
             public void run() {
@@ -44,9 +49,7 @@ public class LooperManager {
     }
 
     public void stop() {
-        if (mHandler != null) {
-            mHandler.removeCallbacksAndMessages(null);
-        }
+        mHandlerThread.quit();
 
     }
 

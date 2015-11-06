@@ -21,7 +21,7 @@ public class HeadTrackHelper {
 
     private Deque<float[][]> mFilterValue = null;
 
-    private float[] mLastAngle = {};
+    private float[] mLastAngle = null;
 
     private LooperManager mLooper = null;
 
@@ -30,6 +30,20 @@ public class HeadTrackHelper {
     HeadTrackHelper(Activity activity) {
         mHeadTracker = HeadTracker.createFromContext(activity);
         mHeadTransform = new HeadTransform();
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                mHeadTracker.getLastHeadView(mHeadTransform.getHeadView(), 0);
+
+                float[] angle = new float[3];
+                mHeadTransform.getEulerAngles(mLastAngle, mRoll, angle, 0);
+                float[] filteredAngle = setAndGetFilterValue(angle);
+                mLastAngle = filteredAngle;
+            }
+        };
+
+        mLooper = new LooperManager(runnable, "headtrack", 50);
     }
 
     static float[] normalize(float[] vList) {
@@ -62,7 +76,7 @@ public class HeadTrackHelper {
     }
 
     public void setRoll(float value) {
-        mLastAngle = new float[]{};
+        mLastAngle = null;
         mRoll = value;
     }
 
@@ -110,26 +124,10 @@ public class HeadTrackHelper {
 
     public void onStart() {
         mHeadTracker.startTracking();
-
+        createFilter(1);
         // float[] tempFloat = new float[16];
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                mHeadTracker.getLastHeadView(mHeadTransform.getHeadView(), 0);
 
-                float[] angle = new float[3];
-                mHeadTransform.getEulerAngles(mLastAngle, mRoll, angle, 0);
-                float[] filteredAngle = setAndGetFilterValue(angle);
-                mLastAngle = filteredAngle;
-            }
-        };
-
-        mLooper = new LooperManager(runnable, 50);
-
-    }
-
-    public void run() {
-
+        mLooper.start();
 
     }
 

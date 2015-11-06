@@ -112,7 +112,10 @@ public class HeadTrackFragment extends ControllerFragment {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                float[] angle = mHeadTrackHelper.getLastAngle();
+                final float[] angle = mHeadTrackHelper.getLastAngle();
+                if (angle == null) {
+                    return;
+                }
 
                 final float[] degree = new float[3];
                 for (int i = 0; i < angle.length; ++i) {
@@ -122,19 +125,20 @@ public class HeadTrackFragment extends ControllerFragment {
                 if (mSpeedValue == null) {
                     return;
                 }
-                float[] speed = new float[]{mSpeedValue.value, mSpeedValue.value, mSpeedValue.value};
-                mSimpleBgcControl.move(speed, angle);
+                final float[] speed = new float[]{mSpeedValue.value, mSpeedValue.value, mSpeedValue.value};
 
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        mSimpleBgcControl.move(speed, angle);
                         headTrackParam.setText("r = " + String.format("%8.3f", degree[0]) + ", p = " + String.format("%8.3f", degree[1]) + ", y = " + String.format("%8.3f", degree[2]));
                     }
                 });
+
             }
         };
 
-        mUiUpdateLooper = new LooperManager(runnable, 200);
+        mUiUpdateLooper = new LooperManager(runnable, "updateui", 200);
 
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
