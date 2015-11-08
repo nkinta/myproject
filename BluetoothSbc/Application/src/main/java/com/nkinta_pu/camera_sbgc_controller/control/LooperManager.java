@@ -14,7 +14,7 @@ public class LooperManager {
     // private Handler mHandler = null;
 
     private final String mThreadName;
-    private HandlerThread mHandlerThread = null;
+    private HandlerThread mHandlerThread;
 
     public final int mTiming;
 

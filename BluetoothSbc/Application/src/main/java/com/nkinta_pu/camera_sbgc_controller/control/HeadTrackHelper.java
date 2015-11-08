@@ -23,7 +23,7 @@ public class HeadTrackHelper {
 
     private float[] mLastAngle = null;
 
-    private LooperManager mLooper = null;
+    private LooperManager mLooperManager = null;
 
     private float mRoll = 0.0f;
 
@@ -43,7 +43,7 @@ public class HeadTrackHelper {
             }
         };
 
-        mLooper = new LooperManager(runnable, "headtrack", 50);
+        mLooperManager = new LooperManager(runnable, "headtrack", 50);
     }
 
     static float[] normalize(float[] vList) {
@@ -119,15 +119,14 @@ public class HeadTrackHelper {
 
     public void onStop() {
         mHeadTracker.stopTracking();
-        mLooper.stop();
+        mLooperManager.stop();
     }
 
     public void onStart() {
         mHeadTracker.startTracking();
         createFilter(1);
         // float[] tempFloat = new float[16];
-
-        mLooper.start();
+        mLooperManager.start();
 
     }
 

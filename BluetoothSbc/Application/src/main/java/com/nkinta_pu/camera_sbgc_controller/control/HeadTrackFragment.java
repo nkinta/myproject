@@ -71,19 +71,18 @@ public class HeadTrackFragment extends ControllerFragment {
     @Override
     public void onResume() {
         super.onResume();
-        // mHeadTrackHelper.onStart();
     }
 
     @Override
     public void onPause()
     {
         super.onPause();
-        // mHeadTrackHelper.onStop();
+        mUiUpdateLooper.stop();
+        mHeadTrackHelper.onStop();
     }
 
     @Override
     public void onDestroy() {
-        mHeadTrackHelper.onStop();
         super.onDestroy();
     }
 
