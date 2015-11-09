@@ -17,6 +17,7 @@
 
 package com.nkinta_pu.camera_sbgc_controller;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.InputDevice;
@@ -130,6 +131,10 @@ public class MainActivity extends SampleActivityBase {
                     output.setVisibility(View.GONE);
                 }
                 supportInvalidateOptionsMenu();
+                return true;
+            case R.id.optionsMenu_01:
+                Intent intent1 = new android.content.Intent(this, ConnectPreferenceActivity.class);
+                startActivity(intent1);
                 return true;
         }
         return super.onOptionsItemSelected(item);

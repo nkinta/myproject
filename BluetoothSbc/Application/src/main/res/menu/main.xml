@@ -18,4 +18,9 @@
     <item android:id="@+id/menu_toggle_log"
           android:showAsAction="always"
           android:title="@string/sample_show_log" />
+    <item
+        android:id="@+id/optionsMenu_01"
+        android:title="settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        />
 </menu>
