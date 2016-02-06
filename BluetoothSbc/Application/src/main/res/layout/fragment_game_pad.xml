@@ -27,6 +27,10 @@
         android:id="@+id/offset_seek_control"
         />
 
+    <include layout="@layout/expo_seek_control"
+        android:id="@+id/expo_seek_control"
+        />
+
 
 
  <android.support.v7.widget.GridLayout

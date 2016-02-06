@@ -146,27 +146,29 @@ public class CameraDeviceFragment extends Fragment {
         List<WifiConfiguration> confList = wifiManager.getConfiguredNetworks();
         String ssidPattern = "DIRECT-.*";
         WifiConfiguration targetConf = null;
-        for (WifiConfiguration conf: confList) {
-            boolean isExist = false;
-            String ssid = conf.SSID.replace("\"", "");
-            if (!ssid.matches(ssidPattern)) {
-                continue;
-            }
-
-            for (ScanResult ap: apList) {
-                if (!ssid.equals(ap.SSID)) {
+        if (confList != null) {
+            for (WifiConfiguration conf : confList) {
+                boolean isExist = false;
+                String ssid = conf.SSID.replace("\"", "");
+                if (!ssid.matches(ssidPattern)) {
                     continue;
                 }
-                isExist = true;
+
+                for (ScanResult ap : apList) {
+                    if (!ssid.equals(ap.SSID)) {
+                        continue;
+                    }
+                    isExist = true;
+                    break;
+                }
+                if (isExist == false) {
+                    continue;
+                }
+
+                wifiManager.enableNetwork(conf.networkId, true);
+                targetConf = conf;
                 break;
             }
-            if (isExist == false) {
-                continue;
-            }
-
-            wifiManager.enableNetwork(conf.networkId, true);
-            targetConf = conf;
-            break;
         }
 
         if (targetConf != null) {
