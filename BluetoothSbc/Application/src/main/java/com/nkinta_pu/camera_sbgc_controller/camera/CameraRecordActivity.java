@@ -263,6 +263,7 @@ public class CameraRecordActivity extends Activity {
     private static boolean isShootingStatus(String currentStatus) {
         Set<String> shootingStatus = new HashSet<String>();
         shootingStatus.add("IDLE");
+        shootingStatus.add("NotReady");
         shootingStatus.add("StillCapturing");
         shootingStatus.add("StillSaving");
         shootingStatus.add("MovieWaitRecStart");
@@ -292,10 +293,11 @@ public class CameraRecordActivity extends Activity {
                             @Override
                             public void onCameraStatusChanged(String status) {
                                 Log.d(TAG, "onCameraStatusChanged:" + status);
-                                if ("IDLE".equals(status)) {
+                                if ("IDLE".equals(status) || "NotReady".equals(status)) {
                                     openConnection();
                                 }
                             }
+
                         });
 
                 mEventObserver.start();

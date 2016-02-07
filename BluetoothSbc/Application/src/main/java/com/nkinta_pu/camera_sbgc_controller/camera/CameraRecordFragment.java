@@ -486,7 +486,7 @@ public class CameraRecordFragment extends Fragment {
                             @Override
                             public void onCameraStatusChanged(String status) {
                                 Log.d(TAG, "onCameraStatusChanged:" + status);
-                                if ("IDLE".equals(status)) {
+                                if ("IDLE".equals(status) || "NotReady".equals(status)) {
                                     openConnection();
                                 }
                                 refreshUi();

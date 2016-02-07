@@ -33,42 +33,42 @@ public class SimpleCameraEventObserver {
 
         /**
          * Called when the list of available APIs is modified.
-         * 
+         *
          * @param apis a list of available APIs
          */
         void onApiListModified(List<String> apis);
 
         /**
          * Called when the value of "Camera Status" is changed.
-         * 
+         *
          * @param status camera status (ex."IDLE")
          */
         void onCameraStatusChanged(String status);
 
         /**
          * Called when the value of "Liveview Status" is changed.
-         * 
+         *
          * @param status liveview status (ex.true)
          */
         void onLiveviewStatusChanged(boolean status);
 
         /**
          * Called when the value of "Shoot Mode" is changed.
-         * 
+         *
          * @param shootMode shoot mode (ex."still")
          */
         void onShootModeChanged(String shootMode);
 
         /**
          * Called when the value of "zoomPosition" is changed.
-         * 
+         *
          * @param zoomPosition zoom position (ex.12)
          */
         void onZoomPositionChanged(int zoomPosition);
 
         /**
          * Called when the value of "storageId" is changed.
-         * 
+         *
          * @param storageId storageId (ex. "Memory Card 1")
          */
         void onStorageIdChanged(String storageId);
@@ -139,7 +139,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Constructor.
-     * 
+     *
      * @param context context to notify the changes by UI thread.
      * @param apiClient API client
      */
@@ -156,7 +156,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Starts monitoring by continuously calling getEvent API.
-     * 
+     *
      * @return true if it successfully started, false if a monitoring is already
      *         started.
      */
@@ -303,7 +303,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Checks to see whether a monitoring is already started.
-     * 
+     *
      * @return true when monitoring is started.
      */
     public boolean isStarted() {
@@ -312,7 +312,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Sets a listener object.
-     * 
+     *
      * @param listener
      */
     public void setEventChangeListener(ChangeListener listener) {
@@ -328,7 +328,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Returns the current Camera Status value.
-     * 
+     *
      * @return camera status
      */
     public String getCameraStatus() {
@@ -337,7 +337,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Returns the current Camera Status value.
-     * 
+     *
      * @return camera status
      */
     public boolean getLiveviewStatus() {
@@ -346,7 +346,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Returns the current Shoot Mode value.
-     * 
+     *
      * @return shoot mode
      */
     public String getShootMode() {
@@ -355,7 +355,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Returns the current Zoom Position value.
-     * 
+     *
      * @return zoom position
      */
     public int getZoomPosition() {
@@ -364,7 +364,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Returns the current Storage Id value.
-     * 
+     *
      * @return
      */
     public String getStorageId() {
@@ -373,7 +373,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Notify the change of available APIs
-     * 
+     *
      * @param availableApis
      */
     private void fireApiListModifiedListener(final List<String> availableApis) {
@@ -389,7 +389,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Notify the change of Camera Status.
-     * 
+     *
      * @param status
      */
     private void fireCameraStatusChangeListener(final String status) {
@@ -405,7 +405,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Notify the change of Liveview Status.
-     * 
+     *
      * @param status
      */
     private void fireLiveviewStatusChangeListener(final boolean status) {
@@ -421,7 +421,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Notify the change of Shoot Mode.
-     * 
+     *
      * @param shootMode
      */
     private void fireShootModeChangeListener(final String shootMode) {
@@ -437,7 +437,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Notify the change of Zoom Information
-     * 
+     *
      * @param zoomIndexCurrentBox
      * @param zoomNumberBox
      * @param zoomPosition
@@ -458,7 +458,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Notify the change of Storage Id.
-     * 
+     *
      * @param storageId
      */
     private void fireStorageIdChangeListener(final String storageId) {
@@ -474,7 +474,7 @@ public class SimpleCameraEventObserver {
 
     /**
      * Finds and extracts an error code from reply JSON data.
-     * 
+     *
      * @param replyJson
      * @return
      * @throws JSONException
@@ -491,7 +491,7 @@ public class SimpleCameraEventObserver {
     /**
      * Finds and extracts a list of available APIs from reply JSON data. As for
      * getEvent v1.0, results[0] => "availableApiList"
-     * 
+     *
      * @param replyJson
      * @return
      * @throws JSONException
@@ -518,7 +518,7 @@ public class SimpleCameraEventObserver {
     /**
      * Finds and extracts a value of Camera Status from reply JSON data. As for
      * getEvent v1.0, results[1] => "cameraStatus"
-     * 
+     *
      * @param replyJson
      * @return
      * @throws JSONException
@@ -542,7 +542,7 @@ public class SimpleCameraEventObserver {
     /**
      * Finds and extracts a value of Liveview Status from reply JSON data. As
      * for getEvent v1.0, results[3] => "liveviewStatus"
-     * 
+     *
      * @param replyJson
      * @return
      * @throws JSONException
@@ -566,7 +566,7 @@ public class SimpleCameraEventObserver {
     /**
      * Finds and extracts a value of Shoot Mode from reply JSON data. As for
      * getEvent v1.0, results[21] => "shootMode"
-     * 
+     *
      * @param replyJson
      * @return
      * @throws JSONException
@@ -590,7 +590,7 @@ public class SimpleCameraEventObserver {
     /**
      * Finds and extracts a value of Zoom Information from reply JSON data. As
      * for getEvent v1.0, results[2] => "zoomInformation"
-     * 
+     *
      * @param replyJson
      * @return
      * @throws JSONException
@@ -614,7 +614,7 @@ public class SimpleCameraEventObserver {
     /**
      * Finds and extracts value of Storage Id from reply JSON data. As for
      * getEvent v1.0, results[10] => "storageInformation"
-     * 
+     *
      * @param replyJson
      * @return
      * @throws JSONException

@@ -6,7 +6,10 @@ import android.support.v7.widget.GridLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.util.FloatMath;
@@ -125,23 +128,53 @@ public class GamePadFragment extends ControllerFragment {
                 (TextView) view.findViewById(R.id.expo_text_view),
                 10, 0.20f);
 
-        activity.setJoyPadJob(
-                new JoyPadJob() {
-                    @Override
-                    public void doCommand(final float[] v) {
-                        inputValueTextView.setText(INPUT_VALUE_STRING + "x y -> " + String.format("%3.2f", v[0]) + " - " + String.format("%3.2f", v[1]));
-                        final float x = filter(v[0], mSpeedValue.value, mOffsetValue.value, mExpoValue.value);
-                        final float y = filter(v[1], mSpeedValue.value, mOffsetValue.value, mExpoValue.value);
-                        outputValueTextView.setText(OUTPUT_VALUE_STRING + "x y -> " + String.format("%3.2f", x) + " - " + String.format("%3.2f", y));
+        String[] padTypeStringList = new String[] {"LX", "LY", "RX", "RY"};
 
-                        new Thread() {
-                            @Override
-                            public void run() {
-                                mSimpleBgcControl.setSpeed(new float[]{0f, y, x});
-                            }
-                        }.run();
-                    }
+        final Spinner rollPadSpinner = (Spinner)view.findViewById(R.id.roll_pad_spinner);
+        final Spinner pitchPadSpinner = (Spinner)view.findViewById(R.id.pitch_pad_spinner);
+        final Spinner yawPadSpinner = (Spinner)view.findViewById(R.id.yaw_pad_spinner);
+
+        ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter(activity, //
+                android.R.layout.simple_spinner_item, padTypeStringList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        rollPadSpinner.setAdapter(adapter);
+        rollPadSpinner.setSelection(2);
+
+        pitchPadSpinner.setAdapter(adapter);
+        pitchPadSpinner.setSelection(1);
+
+        yawPadSpinner.setAdapter(adapter);
+        yawPadSpinner.setSelection(0);
+
+        activity.setJoyPadJob(
+            new JoyPadJob() {
+                @Override
+                public void doCommand(final float[] v) {
+                    inputValueTextView.setText(INPUT_VALUE_STRING + "lx ly rx ry-> "
+                            + String.format("%3.2f", v[0]) + " - " + String.format("%3.2f", v[1])
+                            + String.format("%3.2f", v[2]) + " - " + String.format("%3.2f", v[3])
+                    );
+                    int rollSpinnerId = (int)rollPadSpinner.getSelectedItemId();
+                    int pitchSpinnerId = (int)pitchPadSpinner.getSelectedItemId();
+                    int yawSpinnerId = (int)yawPadSpinner.getSelectedItemId();
+
+                    final float roll = filter(v[rollSpinnerId], mSpeedValue.value, mOffsetValue.value, mExpoValue.value);
+                    final float pitch = filter(v[pitchSpinnerId], mSpeedValue.value, mOffsetValue.value, mExpoValue.value);
+                    final float yaw = filter(v[yawSpinnerId], mSpeedValue.value, mOffsetValue.value, mExpoValue.value);
+                    outputValueTextView.setText(OUTPUT_VALUE_STRING + "roll pitch yaw -> "
+                            + String.format("%3.2f", roll) + " - " + String.format("%3.2f", pitch) + String.format("%3.2f", yaw)
+                    );
+
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            mSimpleBgcControl.setSpeed(new float[]{roll, pitch, yaw});
+                        }
+                    }.run();
                 }
+            }
         );
 
     }

@@ -181,7 +181,7 @@ public class MainActivity extends SampleActivityBase {
         float rxaxis = motionEvent.getAxisValue(MotionEvent.AXIS_RX);
         float ryaxis = motionEvent.getAxisValue(MotionEvent.AXIS_RY);
 
-        mJoyPadJob.doCommand(new float[] {xaxis, yaxis});
+        mJoyPadJob.doCommand(new float[] {xaxis, yaxis, rxaxis, ryaxis});
             // Toast.makeText(this, "xy -> " + String.format("%3.2f",xaxis) + " - " +  String.format("%3.2f",yaxis), Toast.LENGTH_SHORT).show();
         return true;
     }
