@@ -175,13 +175,13 @@ public class MainActivity extends SampleActivityBase {
         }
         // Use the hat axis value to find the D-pad direction
         MotionEvent motionEvent = (MotionEvent) e;
-        float xaxis = motionEvent.getAxisValue(MotionEvent.AXIS_X);
-        float yaxis = motionEvent.getAxisValue(MotionEvent.AXIS_Y);
+        float lxaxis = motionEvent.getAxisValue(MotionEvent.AXIS_X);
+        float lyaxis = motionEvent.getAxisValue(MotionEvent.AXIS_Y);
 
-        float rxaxis = motionEvent.getAxisValue(MotionEvent.AXIS_RX);
-        float ryaxis = motionEvent.getAxisValue(MotionEvent.AXIS_RY);
+        float rxaxis = motionEvent.getAxisValue(MotionEvent.AXIS_Z);
+        float ryaxis = motionEvent.getAxisValue(MotionEvent.AXIS_RZ);
 
-        mJoyPadJob.doCommand(new float[] {xaxis, yaxis, rxaxis, ryaxis});
+        mJoyPadJob.doCommand(new float[] {lxaxis, lyaxis, rxaxis, ryaxis});
             // Toast.makeText(this, "xy -> " + String.format("%3.2f",xaxis) + " - " +  String.format("%3.2f",yaxis), Toast.LENGTH_SHORT).show();
         return true;
     }

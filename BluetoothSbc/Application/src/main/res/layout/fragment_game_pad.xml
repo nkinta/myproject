@@ -34,7 +34,7 @@
 
     <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/pad_map"
         android:rowCount="3">
 
@@ -114,17 +114,9 @@
 
     </GridLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
-
-    </LinearLayout>
-
     <android.support.v7.widget.GridLayout
      android:layout_width="match_parent"
-     android:layout_height="0dp"
+     android:layout_height="wrap_content"
      android:layout_gravity="center_horizontal"
      android:layout_weight="5"
      android:id="@+id/control">
