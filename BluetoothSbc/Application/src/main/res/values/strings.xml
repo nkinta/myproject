@@ -34,8 +34,9 @@
     <string name="button_scan">Scan for devices</string>
 
     <!-- Options Menu -->
-    <string name="secure_connect">Connect a device - Secure</string>
-    <string name="insecure_connect">Connect a device - Insecure</string>
+    <string name="bluetooth_connect">Connect a device - Secure</string>
+    <string name="insecure_connect">Connect a  bluetooth device - Insecure</string>
+    <string name="wifi_connect">Connect a wifi device</string>
     <string name="discoverable">Make discoverable</string>
 
 </resources>

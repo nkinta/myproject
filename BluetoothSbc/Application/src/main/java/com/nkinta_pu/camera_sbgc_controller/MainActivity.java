@@ -55,7 +55,7 @@ public class MainActivity extends SampleActivityBase {
 
     ViewPager mViewPager;
     CameraFragment mCameraFragment;
-    BluetoothConnectFragment mBluetoothChatFragment;
+    BluetoothConnectFragment mBluetoothConnectFragment;
 
     JoyPadJob mJoyPadJob = null;
 
@@ -70,8 +70,8 @@ public class MainActivity extends SampleActivityBase {
 
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            mBluetoothChatFragment = new BluetoothConnectFragment();
-            transaction.add(R.id.sample_main_layout, mBluetoothChatFragment);
+            mBluetoothConnectFragment = new BluetoothConnectFragment();
+            transaction.add(R.id.sample_main_layout, mBluetoothConnectFragment);
             transaction.commit();
 
             // FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

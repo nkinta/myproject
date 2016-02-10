@@ -134,6 +134,10 @@ public class GamePadFragment extends ControllerFragment {
         final Spinner pitchPadSpinner = (Spinner)view.findViewById(R.id.pitch_pad_spinner);
         final Spinner yawPadSpinner = (Spinner)view.findViewById(R.id.yaw_pad_spinner);
 
+        final Switch rollInverseSwitch = (Switch)view.findViewById(R.id.roll_inverse_switch);
+        final Switch pitchInverseSwitch = (Switch)view.findViewById(R.id.pitch_inverse_switch);
+        final Switch yawInverseSwitch = (Switch)view.findViewById(R.id.yaw_inverse_switch);
+
         ArrayAdapter<String> adapter;
         adapter = new ArrayAdapter(activity, //
                 android.R.layout.simple_spinner_item, padTypeStringList);
@@ -160,9 +164,13 @@ public class GamePadFragment extends ControllerFragment {
                     int pitchSpinnerId = (int)pitchPadSpinner.getSelectedItemId();
                     int yawSpinnerId = (int)yawPadSpinner.getSelectedItemId();
 
-                    final float roll = filter(v[rollSpinnerId], mSpeedValue.value, mOffsetValue.value, mExpoValue.value);
-                    final float pitch = filter(v[pitchSpinnerId], mSpeedValue.value, mOffsetValue.value, mExpoValue.value);
-                    final float yaw = filter(v[yawSpinnerId], mSpeedValue.value, mOffsetValue.value, mExpoValue.value);
+                    float rollMulipleValue = (rollInverseSwitch.isChecked()) ? -1.0f: 1.0f;
+                    float pitchMulipleValue = (pitchInverseSwitch.isChecked()) ? -1.0f: 1.0f;
+                    float yawMulipleValue = (yawInverseSwitch.isChecked()) ? -1.0f: 1.0f;
+
+                    final float roll = filter(v[rollSpinnerId], mSpeedValue.value * rollMulipleValue, mOffsetValue.value, mExpoValue.value);
+                    final float pitch = filter(v[pitchSpinnerId], mSpeedValue.value * pitchMulipleValue, mOffsetValue.value, mExpoValue.value);
+                    final float yaw = filter(v[yawSpinnerId], mSpeedValue.value * yawMulipleValue, mOffsetValue.value, mExpoValue.value);
                     outputValueTextView.setText(OUTPUT_VALUE_STRING + "roll pitch yaw -> "
                             + String.format("%3.2f", roll) + " - " + String.format("%3.2f", pitch) + String.format("%3.2f", yaw)
                     );

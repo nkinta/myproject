@@ -19,7 +19,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/root"
-    >
+    android:padding="5dp">
 
     <include layout="@layout/speed_seek_control"
         android:id="@+id/speed_seek_control"
