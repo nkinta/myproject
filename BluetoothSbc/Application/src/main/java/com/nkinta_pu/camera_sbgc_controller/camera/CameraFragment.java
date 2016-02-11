@@ -4,6 +4,7 @@
 
 package com.nkinta_pu.camera_sbgc_controller.camera;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,8 @@ public class CameraFragment extends Fragment {
     CameraRecordFragment mCameraRecordFragment;
 
     CameraDeviceFragment mCameraDeviceFragment;
+
+    private static final int REQUEST_CONNECT_DEVICE_INSECURE = 3;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -68,6 +71,9 @@ public class CameraFragment extends Fragment {
                 Toast.makeText(activity, //
                         "connect wifi", //
                         Toast.LENGTH_SHORT).show(); //
+
+                Intent serverIntent = new Intent(getActivity(), WifiListActivity.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
                 return true;
             }
         }
