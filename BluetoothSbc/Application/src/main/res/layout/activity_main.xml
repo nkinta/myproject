@@ -50,6 +50,11 @@
 
     </ViewAnimator>
 
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:name="com.nkinta_pu.camera_sbgc_controller.control.BluetoothConnectFragment"
+        android:id="@+id/control_fragment" />
 
     <ScrollView
         android:layout_width="match_parent"

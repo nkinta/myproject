@@ -5,6 +5,7 @@
 package com.nkinta_pu.camera_sbgc_controller.camera;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
@@ -15,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,6 +28,7 @@ import android.widget.Toast;
 import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
+import com.nkinta_pu.camera_sbgc_controller.control.DeviceListActivity;
 
 import java.util.List;
 
@@ -52,9 +55,6 @@ public class CameraDeviceFragment extends Fragment {
 
         Log.d(TAG, "onCreate() completed.");
     }
-
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,

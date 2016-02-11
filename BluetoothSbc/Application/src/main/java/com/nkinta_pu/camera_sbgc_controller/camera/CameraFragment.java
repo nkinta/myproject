@@ -9,9 +9,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
 
 /**
@@ -33,6 +38,7 @@ public class CameraFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -45,6 +51,27 @@ public class CameraFragment extends Fragment {
             transaction.commit();
 
         }
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.bluetooth_chat, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        final MainActivity activity = (MainActivity)getActivity();
+        switch (item.getItemId()) {
+            case R.id.wifi_connect_scan: {
+                // Launch the DeviceListActivity to see devices and do scan
+                Toast.makeText(activity, //
+                        "connect wifi", //
+                        Toast.LENGTH_SHORT).show(); //
+                return true;
+            }
+        }
+        return false;
     }
 
     public CameraRecordFragment getCameraRecordFragment() {

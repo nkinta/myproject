@@ -55,7 +55,7 @@ public class MainActivity extends SampleActivityBase {
 
     ViewPager mViewPager;
     CameraFragment mCameraFragment;
-    BluetoothConnectFragment mBluetoothConnectFragment;
+    // BluetoothConnectFragment mBluetoothConnectFragment;
 
     JoyPadJob mJoyPadJob = null;
 
@@ -69,10 +69,12 @@ public class MainActivity extends SampleActivityBase {
         // mCameraFragment = (Fragment)(getFragmentManager().findFragmentById(R.id.fragment));
 
         if (savedInstanceState == null) {
+            /*
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             mBluetoothConnectFragment = new BluetoothConnectFragment();
             transaction.add(R.id.sample_main_layout, mBluetoothConnectFragment);
             transaction.commit();
+            */
 
             // FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             // mCameraFragment = new CameraFragment();
