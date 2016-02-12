@@ -4,6 +4,8 @@
 
 package com.nkinta_pu.camera_sbgc_controller.camera;
 
+import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,8 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.android.common.logger.Log;
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
+import com.nkinta_pu.camera_sbgc_controller.control.DeviceListActivity;
 
 /**
  * An Activity class of Sample Camera screen.
@@ -41,7 +45,6 @@ public class CameraFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -56,28 +59,9 @@ public class CameraFragment extends Fragment {
         }
     }
 
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.bluetooth_chat, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        final MainActivity activity = (MainActivity)getActivity();
-        switch (item.getItemId()) {
-            case R.id.wifi_connect_scan: {
-                // Launch the DeviceListActivity to see devices and do scan
-                Toast.makeText(activity, //
-                        "connect wifi", //
-                        Toast.LENGTH_SHORT).show(); //
-
-                Intent serverIntent = new Intent(getActivity(), WifiListActivity.class);
-                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
-                return true;
-            }
-        }
-        return false;
     }
 
     public CameraRecordFragment getCameraRecordFragment() {

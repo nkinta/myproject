@@ -58,7 +58,9 @@ public class WifiListActivity extends Activity {
     /**
      * Return Intent extra
      */
-    public static String EXTRA_DEVICE_ADDRESS = "device_address";
+    public static String DEVICE_SSID = "device_ssid";
+
+    public static String DEVICE_BSSID = "device_bssid";
 
     /**
      * Member fields
@@ -132,7 +134,11 @@ public class WifiListActivity extends Activity {
         if (accessPointList.size() > 0) {
             findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
             for (ScanResult device : accessPointList) {
-                pairedDevicesArrayAdapter.add(device.SSID);
+                String ssidPattern = "DIRECT-.*";
+                if (!device.SSID.matches(ssidPattern)) {
+                    continue;
+                }
+                pairedDevicesArrayAdapter.add(device.SSID + "_" + device.BSSID);
             }
         } else {
             String noDevices = getResources().getText(R.string.none_paired).toString();
@@ -166,13 +172,8 @@ public class WifiListActivity extends Activity {
         // Turn on sub-title for new devices
         findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
 
-        // If we're already discovering, stop it
-        if (mBtAdapter.isDiscovering()) {
-            mBtAdapter.cancelDiscovery();
-        }
-
         // Request discover from BluetoothAdapter
-        mBtAdapter.startDiscovery();
+        mWifiManager.startScan();
     }
 
     /**
@@ -181,16 +182,16 @@ public class WifiListActivity extends Activity {
     private AdapterView.OnItemClickListener mDeviceClickListener
             = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
-            // Cancel discovery because it's costly and we're about to connect
-            mBtAdapter.cancelDiscovery();
 
             // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) v).getText().toString();
-            String address = info.substring(info.length() - 17);
+            String ssid = info.substring(0, info.length() - 17 - 1);
+            String bssid = info.substring(info.length() - 17);
 
             // Create the result Intent and include the MAC address
             Intent intent = new Intent();
-            intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
+            intent.putExtra(DEVICE_SSID, ssid);
+            intent.putExtra(DEVICE_BSSID, bssid);
 
             // Set result and finish this Activity
             setResult(Activity.RESULT_OK, intent);

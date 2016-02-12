@@ -4,6 +4,8 @@
 
 package com.nkinta_pu.camera_sbgc_controller.camera;
 
+import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.ScanResult;
@@ -30,6 +32,7 @@ import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
 import com.nkinta_pu.camera_sbgc_controller.control.DeviceListActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,23 +40,48 @@ import java.util.List;
  */
 public class CameraDeviceFragment extends Fragment {
 
+    // Intent request codes
+    private static final int REQUEST_CONNECT_DEVICE = 1;
+    private static final int REQUEST_ENABLE = 3;
+
     private static final String TAG = CameraDeviceFragment.class.getSimpleName();
 
     private SimpleSsdpClient mSsdpClient;
     private boolean mActivityActive;
 
-    private DeviceListAdapter mListAdapter;
+    private List<ServerDevice> mSeverDeviceList = new ArrayList<ServerDevice>() {};
+
+    private WifiManager mWifiManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
         // requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         // setProgressBarIndeterminateVisibility(false);
         final MainActivity activity = (MainActivity)getActivity();
-        mListAdapter = new DeviceListAdapter(activity);
+        // mListAdapter = new DeviceListAdapter(activity);
         mSsdpClient = new SimpleSsdpClient();
 
         Log.d(TAG, "onCreate() completed.");
+
+        mWifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        final MainActivity activity = (MainActivity)getActivity();
+        switch (item.getItemId()) {
+            case R.id.wifi_connect_scan: {
+                // Launch the DeviceListActivity to see devices and do scan
+                Intent serverIntent = new Intent(getActivity(), WifiListActivity.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -69,6 +97,7 @@ public class CameraDeviceFragment extends Fragment {
         final MainActivity activity = (MainActivity)getActivity();
 
         mActivityActive = true;
+        /*
         ListView listView = (ListView) getView().findViewById(R.id.list_device);
         listView.setAdapter(mListAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -80,18 +109,7 @@ public class CameraDeviceFragment extends Fragment {
                 connectToCamera(device);
             }
         });
-
-        getView().findViewById(R.id.button_search).setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Button btn = (Button) v;
-                if (!mSsdpClient.isSearching()) {
-                    searchDevices();
-                    btn.setEnabled(false);
-                }
-            }
-        });
+        */
 
         getView().findViewById(R.id.button_search).setOnClickListener(new View.OnClickListener() {
 
@@ -109,7 +127,7 @@ public class CameraDeviceFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                boolean connectFlag = connectWifi();
+                boolean connectFlag = false;
                 if (connectFlag) {
                     Toast.makeText(activity, //
                             "connect wifi", //
@@ -138,6 +156,7 @@ public class CameraDeviceFragment extends Fragment {
         android.util.Log.d(TAG, "onResume() completed.");
     }
 
+    /*
     private boolean connectWifi() {
         final MainActivity activity = (MainActivity)getActivity();
         WifiManager wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
@@ -181,6 +200,150 @@ public class CameraDeviceFragment extends Fragment {
         }
     }
 
+    */
+    private void connectDevice(Intent data) {
+
+        String ssidPattern = data.getExtras()
+                .getString(WifiListActivity.DEVICE_SSID);
+
+        List<WifiConfiguration> confList = mWifiManager.getConfiguredNetworks();
+        WifiConfiguration targetConf = null;
+        for (WifiConfiguration conf : confList) {
+            String ssid = conf.SSID.replace("\"", "");
+            if (!ssid.matches(ssidPattern)) {
+                continue;
+            }
+            targetConf = conf;
+            break;
+        }
+
+        if (targetConf != null) {
+            getActivity().setProgressBarIndeterminateVisibility(true);
+            mWifiManager.enableNetwork(targetConf.networkId, true);
+            try {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException e) {
+                Toast.makeText(getActivity(), " interrupted",
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            for (int i = 0; i < 20; ++i) {
+                WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+                if (wifiInfo.getSSID() == ssidPattern) {
+                    break;
+                }
+
+                //Wait to connect
+                try {
+                    Thread.sleep(1000);
+                }
+                catch (InterruptedException e) {
+                    Toast.makeText(getActivity(), " interrupted",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+            getActivity().setProgressBarIndeterminateVisibility(true);
+
+            searchDevices();
+        }
+
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == Activity.RESULT_OK) {
+                    connectDevice(data);
+                }
+                break;
+            case REQUEST_ENABLE:
+                // When the request to enable Bluetooth returns
+                if (resultCode == Activity.RESULT_OK) {
+                    // Bluetooth is now enabled, so set up a chat session
+                    // setupChat();
+                } else {
+                    // User did not enable Bluetooth or an error occurred
+                    com.example.android.common.logger.Log.d(TAG, "BT not enabled");
+                    Toast.makeText(getActivity(), R.string.bt_not_enabled_leaving,
+                            Toast.LENGTH_SHORT).show();
+                    getActivity().finish();
+                }
+        }
+    }
+    private void searchDevices() {
+        final MainActivity activity = (MainActivity)getActivity();
+        final View view = getView();
+        // mListAdapter.clearDevices();
+
+        // final ServerDevice =
+
+        activity.setProgressBarIndeterminateVisibility(true);
+        mSsdpClient.search(new SimpleSsdpClient.SearchResultHandler() {
+
+            @Override
+            public void onDeviceFound(final ServerDevice device) {
+                // Called by non-UI thread.
+                android.util.Log.d(TAG, ">> Search device found: " + device.getFriendlyName());
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSeverDeviceList.add(device);
+                    }
+                });
+            }
+
+            @Override
+            public void onFinished() {
+                // Called by non-UI thread.
+                android.util.Log.d(TAG, ">> Search finished.");
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity.setProgressBarIndeterminateVisibility(false);
+                        view.findViewById(R.id.button_search).setEnabled(true);
+                        if (mActivityActive) {
+                            if (mSeverDeviceList.isEmpty()) {
+                                Toast.makeText(activity, //
+                                        "cannot find", //
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            connectToCamera(mSeverDeviceList.get(0));
+
+                            /*
+                            Toast.makeText(activity, //
+                                    R.string.msg_device_search_finish, //
+                                    Toast.LENGTH_SHORT).show();
+                             */
+
+
+
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onErrorFinished() {
+                // Called by non-UI thread.
+                android.util.Log.d(TAG, ">> Search Error finished.");
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity.setProgressBarIndeterminateVisibility(false);
+                        view.findViewById(R.id.button_search).setEnabled(true);
+                        if (mActivityActive) Toast.makeText(activity, //
+                                R.string.msg_error_device_searching, //
+                                Toast.LENGTH_SHORT).show(); //
+                    }
+                });
+            }
+        });
+    }
+    /*
     private void searchDevices() {
         final MainActivity activity = (MainActivity)getActivity();
         final View view = getView();
@@ -235,6 +398,7 @@ public class CameraDeviceFragment extends Fragment {
             }
         });
     }
+    */
 
     /**
      * Launch a CameraFragment.
