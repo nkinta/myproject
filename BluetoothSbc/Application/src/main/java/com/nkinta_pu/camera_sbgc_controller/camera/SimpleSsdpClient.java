@@ -125,74 +125,57 @@ public class SimpleSsdpClient {
                         if (socket != null && !socket.isClosed()) {
                             socket.close();
                         }
-                        handler.onErrorFinished();
-                        return;
+                        continue;
                     } catch (IOException e) {
                         Log.e(TAG, "search() IOException :", e);
                         if (socket != null && !socket.isClosed()) {
                             socket.close();
                         }
-                        handler.onErrorFinished();
-                        return;
+                        continue;
                     } catch (InterruptedException e) {
                         // do nothing.
                         Log.d(TAG, "search() InterruptedException :", e);
                     }
 
                     // Receive reply packets
-                    mSearching = true;
                     long startTime = System.currentTimeMillis();
                     List<String> foundDevices = new ArrayList<String>();
                     byte[] array = new byte[PACKET_BUFFER_SIZE];
                     ServerDevice device = null;
+                    mSearching = true;
                     try {
 
-                        while (mSearching) {
-                            receivePacket = new DatagramPacket(array, array.length);
-                            socket.setSoTimeout(SSDP_RECEIVE_TIMEOUT);
-                            socket.receive(receivePacket);
-                            String ssdpReplyMessage = new String(receivePacket.getData(), 0, //
-                                    receivePacket.getLength(), "UTF-8");
-                            String ddUsn = findParameterValue(ssdpReplyMessage, "USN");
+                        receivePacket = new DatagramPacket(array, array.length);
+                        socket.setSoTimeout(SSDP_RECEIVE_TIMEOUT);
+                        socket.receive(receivePacket);
+                        String ssdpReplyMessage = new String(receivePacket.getData(), 0, //
+                                receivePacket.getLength(), "UTF-8");
+                        String ddUsn = findParameterValue(ssdpReplyMessage, "USN");
 
+                        if (!foundDevices.contains(ddUsn)) {
+                            String ddLocation = findParameterValue(ssdpReplyMessage, "LOCATION");
+                            foundDevices.add(ddUsn);
 
-                            // There is possibility to receive multiple packets from
-                            // a individual server.
+                            device = ServerDevice.fetch(ddLocation);
 
-                            if (!foundDevices.contains(ddUsn)) {
-                                String ddLocation = findParameterValue(ssdpReplyMessage, "LOCATION");
-                                foundDevices.add(ddUsn);
-
-                                // Fetch Device Description XML and parse it.
-                                device = ServerDevice.fetch(ddLocation);
-                                // Note that it's a irresponsible rule
-                                // for the sample application.
-                                if (device != null && device.hasApiService("camera")) {
-                                    handler.onDeviceFound(device);
-                                }
-                            }
-                            if (SSDP_RECEIVE_TIMEOUT < System.currentTimeMillis() - startTime) {
-                                break;
-                            }
                         }
 
                     } catch (InterruptedIOException e) {
                         Log.d(TAG, "search() Timeout.");
-                        if (device == null) {
-                            mSearching = false;
-                        }
+                        continue;
                     } catch (IOException e) {
                         Log.d(TAG, "search() IOException2. : " + e);
-                        mSearching = false;
+                        continue;
                     } finally {
                         Log.d(TAG, "search() Finish ");
-                        mSearching = false;
                         if (socket != null && !socket.isClosed()) {
                             socket.close();
                         }
+                        mSearching = false;
                     }
 
-                    if (mSearching) {
+                    if (device != null) {
+                        handler.onDeviceFound(device);
                         break;
                     }
 

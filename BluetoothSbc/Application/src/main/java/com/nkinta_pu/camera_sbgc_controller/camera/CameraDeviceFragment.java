@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -242,7 +243,8 @@ public class CameraDeviceFragment extends Fragment {
                 if (targetConf != null) {
                     getActivity().setProgressBarIndeterminateVisibility(true);
                     mWifiManager.enableNetwork(targetConf.networkId, true);
-
+                    successFlag = true;
+                    /*
                     for (int i = 0; i < TRY_COUNT; ++i) {
                         try {
                             Thread.sleep(TRY_INTERVAL);
@@ -268,16 +270,10 @@ public class CameraDeviceFragment extends Fragment {
                             successFlag = true;
                             break;
                         }
-                        /*
-                        WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
-                        String ssid = targetConf.SSID.trim().replace("\"", "");
-                        if (!ssid.matches(wifiInfo.getSSID().trim())) {
-                            successFlag = true;
-                            break;
-                        }
-                        */
 
                     }
+                    */
+
 
                 }
 
@@ -289,12 +285,6 @@ public class CameraDeviceFragment extends Fragment {
                 });
 
                 if (successFlag == true) {
-                    try {
-                        Thread.sleep(1000);
-                    }
-                    catch (InterruptedException e) {
-                        Log.d(TAG, e.getMessage());
-                    }
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

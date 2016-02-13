@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.ViewAnimator;
 import android.support.v4.view.ViewPager;
 
@@ -60,12 +61,15 @@ public class MainActivity extends SampleActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
         setContentView(R.layout.activity_main);
         mViewPager = (ViewPager) findViewById(R.id.viewPager);
         mViewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
 
         // mCameraFragment = (Fragment)(getFragmentManager().findFragmentById(R.id.fragment));
 
+        setProgressBarIndeterminateVisibility(true);
         if (savedInstanceState == null) {
             /*
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
