@@ -6,7 +6,6 @@ import android.support.v7.widget.GridLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -153,7 +152,7 @@ public class GamePadFragment extends ControllerFragment {
         yawPadSpinner.setSelection(0);
 
         activity.setJoyPadJob(
-            new JoyPadJob() {
+            new GamePadJob() {
                 @Override
                 public void doCommand(final float[] v) {
                     inputValueTextView.setText(INPUT_VALUE_STRING + "lx ly rx ry-> "

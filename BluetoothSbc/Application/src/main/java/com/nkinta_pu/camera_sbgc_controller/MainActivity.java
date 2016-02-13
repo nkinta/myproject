@@ -19,7 +19,6 @@ package com.nkinta_pu.camera_sbgc_controller;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.view.InputDevice;
 import android.view.InputEvent;
 import android.view.Menu;
@@ -35,8 +34,7 @@ import com.example.android.common.logger.LogFragment;
 import com.example.android.common.logger.LogWrapper;
 import com.example.android.common.logger.MessageOnlyLogFilter;
 import com.nkinta_pu.camera_sbgc_controller.camera.CameraFragment;
-import com.nkinta_pu.camera_sbgc_controller.control.BluetoothConnectFragment;
-import com.nkinta_pu.camera_sbgc_controller.control.JoyPadJob;
+import com.nkinta_pu.camera_sbgc_controller.control.GamePadJob;
 import com.nkinta_pu.camera_sbgc_controller.control.PagerAdapter;
 
 /**
@@ -57,7 +55,7 @@ public class MainActivity extends SampleActivityBase {
     CameraFragment mCameraFragment;
     // BluetoothConnectFragment mBluetoothConnectFragment;
 
-    JoyPadJob mJoyPadJob = null;
+    GamePadJob mGamePadJob = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,8 +101,8 @@ public class MainActivity extends SampleActivityBase {
         }
     }
 
-    public void setJoyPadJob(JoyPadJob job) {
-        mJoyPadJob = job;
+    public void setJoyPadJob(GamePadJob job) {
+        mGamePadJob = job;
     }
 
     @Override
@@ -172,7 +170,7 @@ public class MainActivity extends SampleActivityBase {
             return super.dispatchGenericMotionEvent(e);
         }
 
-        if (mJoyPadJob == null) {
+        if (mGamePadJob == null) {
             return false;
         }
         // Use the hat axis value to find the D-pad direction
@@ -183,7 +181,7 @@ public class MainActivity extends SampleActivityBase {
         float rxaxis = motionEvent.getAxisValue(MotionEvent.AXIS_Z);
         float ryaxis = motionEvent.getAxisValue(MotionEvent.AXIS_RZ);
 
-        mJoyPadJob.doCommand(new float[] {lxaxis, lyaxis, rxaxis, ryaxis});
+        mGamePadJob.doCommand(new float[] {lxaxis, lyaxis, rxaxis, ryaxis});
             // Toast.makeText(this, "xy -> " + String.format("%3.2f",xaxis) + " - " +  String.format("%3.2f",yaxis), Toast.LENGTH_SHORT).show();
         return true;
     }

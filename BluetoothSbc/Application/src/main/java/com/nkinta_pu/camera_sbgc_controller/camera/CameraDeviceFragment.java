@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
@@ -40,9 +42,12 @@ import java.util.List;
  */
 public class CameraDeviceFragment extends Fragment {
 
+    private static final int TRY_INTERVAL = 1000; // msec
+    private static final int TRY_COUNT = 20;
+
     // Intent request codes
     private static final int REQUEST_CONNECT_DEVICE = 1;
-    private static final int REQUEST_ENABLE = 3;
+    private static final int REQUEST_ENABLE = 2;
 
     private static final String TAG = CameraDeviceFragment.class.getSimpleName();
 
@@ -201,52 +206,120 @@ public class CameraDeviceFragment extends Fragment {
     }
 
     */
-    private void connectDevice(Intent data) {
+    private synchronized void connectDevice(Intent data) {
 
-        String ssidPattern = data.getExtras()
+        final String ssidPattern = data.getExtras()
                 .getString(WifiListActivity.DEVICE_SSID);
 
-        List<WifiConfiguration> confList = mWifiManager.getConfiguredNetworks();
-        WifiConfiguration targetConf = null;
-        for (WifiConfiguration conf : confList) {
-            String ssid = conf.SSID.replace("\"", "");
-            if (!ssid.matches(ssidPattern)) {
-                continue;
-            }
-            targetConf = conf;
-            break;
-        }
+        final String bssidPattern = data.getExtras()
+                .getString(WifiListActivity.DEVICE_BSSID);
 
-        if (targetConf != null) {
-            getActivity().setProgressBarIndeterminateVisibility(true);
-            mWifiManager.enableNetwork(targetConf.networkId, true);
-            try {
-                Thread.sleep(100);
-            }
-            catch (InterruptedException e) {
-                Toast.makeText(getActivity(), " interrupted",
-                        Toast.LENGTH_SHORT).show();
-            }
+        final MainActivity activity = (MainActivity)getActivity();
 
-            for (int i = 0; i < 20; ++i) {
-                WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
-                if (wifiInfo.getSSID() == ssidPattern) {
+        new Thread() {
+
+            @Override
+            public void run() {
+                List<WifiConfiguration> confList = mWifiManager.getConfiguredNetworks();
+                WifiConfiguration targetConf = null;
+                for (WifiConfiguration conf : confList) {
+                    String ssid = conf.SSID.trim().replace("\"", "");
+                    if (!ssid.matches(ssidPattern)) {
+                        continue;
+                    }
+                    targetConf = conf;
                     break;
                 }
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity.setProgressBarIndeterminateVisibility(true);
+                    }
+                });
 
-                //Wait to connect
-                try {
-                    Thread.sleep(1000);
-                }
-                catch (InterruptedException e) {
-                    Toast.makeText(getActivity(), " interrupted",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-            getActivity().setProgressBarIndeterminateVisibility(true);
+                Boolean successFlag = false;
 
-            searchDevices();
-        }
+                if (targetConf != null) {
+                    getActivity().setProgressBarIndeterminateVisibility(true);
+                    mWifiManager.enableNetwork(targetConf.networkId, true);
+
+                    for (int i = 0; i < TRY_COUNT; ++i) {
+                        try {
+                            Thread.sleep(TRY_INTERVAL);
+                        }
+                        catch (InterruptedException e) {
+                            Log.d(TAG, e.getMessage());
+                        }
+
+                        WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+                        String ssid = targetConf.SSID.trim().replace("\"", "");
+
+                        if (wifiInfo.getSSID().trim().equals(ssid)) {
+                            continue;
+                        }
+
+                        ConnectivityManager connectivityManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+                        NetworkInfo networkInfo = null;
+                        if (connectivityManager != null) {
+                            networkInfo = connectivityManager.getActiveNetworkInfo();
+                        }
+
+                        if (networkInfo != null && networkInfo.getDetailedState() == NetworkInfo.DetailedState.CONNECTED) {
+                            successFlag = true;
+                            break;
+                        }
+                        /*
+                        WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+                        String ssid = targetConf.SSID.trim().replace("\"", "");
+                        if (!ssid.matches(wifiInfo.getSSID().trim())) {
+                            successFlag = true;
+                            break;
+                        }
+                        */
+
+                    }
+
+                }
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity.setProgressBarIndeterminateVisibility(false);
+                    }
+                });
+
+                if (successFlag == true) {
+                    try {
+                        Thread.sleep(1000);
+                    }
+                    catch (InterruptedException e) {
+                        Log.d(TAG, e.getMessage());
+                    }
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), "wifi connect success",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    searchDevices();
+                }
+                else {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), "error",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
+
+            };
+        }.start();
+
+
 
     }
 
@@ -312,14 +385,6 @@ public class CameraDeviceFragment extends Fragment {
                             }
 
                             connectToCamera(mSeverDeviceList.get(0));
-
-                            /*
-                            Toast.makeText(activity, //
-                                    R.string.msg_device_search_finish, //
-                                    Toast.LENGTH_SHORT).show();
-                             */
-
-
 
                         }
                     }
