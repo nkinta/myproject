@@ -56,6 +56,13 @@
         android:name="com.nkinta_pu.camera_sbgc_controller.control.BluetoothConnectFragment"
         android:id="@+id/control_fragment" />
 
+    <ProgressBar
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:id="@+id/progressBar" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -109,11 +109,11 @@ public class WifiListActivity extends Activity {
         newDevicesListView.setOnItemClickListener(mDeviceClickListener);
 
         // Register for broadcasts when a device is discovered
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        IntentFilter filter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
         this.registerReceiver(mReceiver, filter);
 
         // Register for broadcasts when discovery has finished
-        filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        filter = new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
         this.registerReceiver(mReceiver, filter);
 
 
@@ -209,21 +209,10 @@ public class WifiListActivity extends Activity {
             String action = intent.getAction();
 
             // When discovery finds a device
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                // Get the BluetoothDevice object from the Intent
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // If it's already paired, skip it, because it's been listed already
-                if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
-                    mNewDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-                }
-                // When discovery is finished, change the Activity title
-            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                setProgressBarIndeterminateVisibility(false);
-                setTitle(R.string.select_device);
-                if (mNewDevicesArrayAdapter.getCount() == 0) {
-                    String noDevices = getResources().getText(R.string.none_found).toString();
-                    mNewDevicesArrayAdapter.add(noDevices);
-                }
+            if (WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION.equals(action)) {
+                Log.d(TAG, "SUPPLICANT_CONNECTION_CHANGE_ACTION");
+            } else if (WifiManager.NETWORK_IDS_CHANGED_ACTION.equals(action)) {
+                Log.d(TAG, "NETWORK_IDS_CHANGED_ACTION");
             }
         }
     };

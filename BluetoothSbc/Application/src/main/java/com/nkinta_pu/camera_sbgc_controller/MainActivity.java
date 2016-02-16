@@ -69,7 +69,6 @@ public class MainActivity extends SampleActivityBase {
 
         // mCameraFragment = (Fragment)(getFragmentManager().findFragmentById(R.id.fragment));
 
-        setProgressBarIndeterminateVisibility(true);
         if (savedInstanceState == null) {
             /*
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
