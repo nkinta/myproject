@@ -172,51 +172,6 @@ public class CameraDeviceFragment extends Fragment {
         android.util.Log.d(TAG, "onResume() completed.");
     }
 
-    /*
-    private boolean connectWifi() {
-        final MainActivity activity = (MainActivity)getActivity();
-        WifiManager wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
-        wifiManager.startScan();
-        List<ScanResult> apList = wifiManager.getScanResults();
-        List<WifiConfiguration> confList = wifiManager.getConfiguredNetworks();
-        String ssidPattern = "DIRECT-.*";
-        WifiConfiguration targetConf = null;
-        if (confList == null) {
-            return false;
-        }
-
-        for (WifiConfiguration conf : confList) {
-            boolean isExist = false;
-            String ssid = conf.SSID.replace("\"", "");
-            if (!ssid.matches(ssidPattern)) {
-                continue;
-            }
-
-            for (ScanResult ap : apList) {
-                if (!ssid.equals(ap.SSID)) {
-                    continue;
-                }
-                isExist = true;
-                break;
-            }
-            if (isExist == false) {
-                continue;
-            }
-
-            wifiManager.enableNetwork(conf.networkId, true);
-            targetConf = conf;
-            break;
-        }
-
-        if (targetConf != null) {
-            return wifiManager.enableNetwork(targetConf.networkId, true);
-        }
-        else {
-            return false;
-        }
-    }
-
-    */
     private synchronized void connectDevice(Intent data) {
 
         final String ssidPattern = data.getExtras()
@@ -417,6 +372,10 @@ public class CameraDeviceFragment extends Fragment {
                 if (info != null) {
                     com.example.android.common.logger.Log.d(TAG, info.getDetailedState().name() + info.getTypeName() + info.getSubtypeName());
                     if (info.getDetailedState() == NetworkInfo.DetailedState.CONNECTED) {
+                        String bssid =  intent.getStringExtra(WifiManager.EXTRA_BSSID);
+                        WifiInfo wifiInfo =  intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
+                        wifiInfo.getSSID();
+
                         searchDevices();
                     }
                 }
@@ -514,3 +473,48 @@ for (int i = 0; i < TRY_COUNT; ++i) {
 
 }
 */
+    /*
+    private boolean connectWifi() {
+        final MainActivity activity = (MainActivity)getActivity();
+        WifiManager wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+        wifiManager.startScan();
+        List<ScanResult> apList = wifiManager.getScanResults();
+        List<WifiConfiguration> confList = wifiManager.getConfiguredNetworks();
+        String ssidPattern = "DIRECT-.*";
+        WifiConfiguration targetConf = null;
+        if (confList == null) {
+            return false;
+        }
+
+        for (WifiConfiguration conf : confList) {
+            boolean isExist = false;
+            String ssid = conf.SSID.replace("\"", "");
+            if (!ssid.matches(ssidPattern)) {
+                continue;
+            }
+
+            for (ScanResult ap : apList) {
+                if (!ssid.equals(ap.SSID)) {
+                    continue;
+                }
+                isExist = true;
+                break;
+            }
+            if (isExist == false) {
+                continue;
+            }
+
+            wifiManager.enableNetwork(conf.networkId, true);
+            targetConf = conf;
+            break;
+        }
+
+        if (targetConf != null) {
+            return wifiManager.enableNetwork(targetConf.networkId, true);
+        }
+        else {
+            return false;
+        }
+    }
+
+    */
