@@ -120,7 +120,7 @@ public class WifiListActivity extends Activity {
         mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
         mWifiManager.startScan();
         List<ScanResult> accessPointList = mWifiManager.getScanResults();
-        List<WifiConfiguration> confList = mWifiManager.getConfiguredNetworks();
+        // List<WifiConfiguration> confList = mWifiManager.getConfiguredNetworks();
 
 
 

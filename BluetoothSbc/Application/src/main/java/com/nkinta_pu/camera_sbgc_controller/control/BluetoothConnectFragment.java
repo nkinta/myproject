@@ -248,7 +248,7 @@ public class BluetoothConnectFragment extends Fragment {
                             break;
                         case BluetoothService.STATE_LISTEN:
                         case BluetoothService.STATE_NONE:
-                            setStatus(R.string.title_not_connected);
+                            // setStatus(R.string.title_not_connected);
                             break;
                     }
                     break;

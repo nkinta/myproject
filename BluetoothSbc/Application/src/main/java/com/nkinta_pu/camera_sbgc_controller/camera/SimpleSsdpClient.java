@@ -27,7 +27,7 @@ public class SimpleSsdpClient {
 
     private static final int TRY_INTERVAL = 1000; // msec
 
-    private static final int TRY_COUNT = 10;
+    private static final int TRY_COUNT = 3;
 
     private static final int PACKET_BUFFER_SIZE = 1024;
 
@@ -54,7 +54,7 @@ public class SimpleSsdpClient {
          * Called when searching completes successfully. Note that it's
          * performed by non-UI thread.
          */
-        void onFinished();
+        void onTimeout();
 
         /**
          * Called when searching completes with some errors. Note that it's
@@ -176,12 +176,12 @@ public class SimpleSsdpClient {
 
                     if (device != null) {
                         handler.onDeviceFound(device);
-                        break;
+                        return;
                     }
-
                 }
 
-                handler.onFinished();
+                handler.onTimeout();
+
             };
         }.start();
 
