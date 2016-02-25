@@ -16,6 +16,8 @@ public class LooperManager {
     private final String mThreadName;
     private HandlerThread mHandlerThread;
 
+    private boolean mStatus;
+
     public final int mTiming;
 
     LooperManager(Runnable runnable, String threadName, int timing) {
@@ -24,17 +26,21 @@ public class LooperManager {
         mTiming = timing;
 
         mHandlerThread = new HandlerThread(mThreadName);
-
+        mHandlerThread.start();
+        mStatus = false;
     }
 
     public void start() {
 
-        mHandlerThread.start();
 
+        mStatus = true;
         final Handler handler = new Handler(mHandlerThread.getLooper());
         Runnable looperRunnable = new Runnable() {
             @Override
             public void run() {
+                if (!mStatus) {
+                    return;
+                }
                 mRunnable.run();
                 handler.postDelayed(this, mTiming);
             }
@@ -49,8 +55,7 @@ public class LooperManager {
     }
 
     public void stop() {
-        mHandlerThread.quit();
-
+        mStatus = false;
     }
 
 }
