@@ -7,6 +7,46 @@ package com.nkinta_pu.camera_sbgc_controller.control;
 public class SimpleBgcControl {
     // Message types sent from the BluetoothService Handler
 
+    static final int PARAM_P_ROLL = 0;
+    static final int PARAM_P_PITCH = 1;
+    static final int PARAM_P_YAW = 2;
+    static final int PARAM_I_ROLL = 3;
+    static final int PARAM_I_PITCH = 4;
+    static final int PARAM_I_YAW = 5;
+    static final int PARAM_D_ROLL = 6;
+    static final int PARAM_D_PITCH = 7;
+    static final int PARAM_D_YAW = 8;
+    static final int PARAM_POWER_ROLL = 9;
+    static final int PARAM_POWER_PITCH = 10;
+    static final int PARAM_POWER_YAW = 11;
+    static final int PARAM_ACC_LIMITER = 12;
+    static final int PARAM_FOLLOW_SPEED_ROLL = 13;
+    static final int PARAM_FOLLOW_SPEED_PITCH = 14;
+    static final int PARAM_FOLLOW_SPEED_YAW = 15;
+    static final int PARAM_FOLLOW_LPF_ROLL = 16;
+    static final int PARAM_FOLLOW_LPF_PITCH = 17;
+    static final int PARAM_FOLLOW_LPF_YAW = 18;
+    static final int PARAM_RC_SPEED_ROLL = 19;
+    static final int PARAM_RC_SPEED_PITCH = 20;
+    static final int PARAM_RC_SPEED_YAW = 21;
+    static final int PARAM_RC_LPF_ROLL = 22;
+    static final int PARAM_RC_LPF_PITCH = 23;
+    static final int PARAM_RC_LPF_YAW = 24;
+    static final int PARAM_RC_TRIM_ROLL = 25;
+    static final int PARAM_RC_TRIM_PITCH = 26;
+    static final int PARAM_RC_TRIM_YAW = 27;
+    static final int PARAM_RC_DEADBAND = 28;
+    static final int PARAM_RC_EXPO_RATE = 29;
+    static final int PARAM_FOLLOW_MODE = 30;
+    static final int PARAM_FOLLOW_YAW = 31;
+    static final int PARAM_FOLLOW_DEADBAND = 32;
+    static final int PARAM_FOLLOW_EXPO_RATE = 33;
+    static final int PARAM_FOLLOW_ROLL_MIX_START = 34;
+    static final int PARAM_FOLLOW_ROLL_MIX_RANGE = 35;
+    static final int PARAM_GYRO_TRUST = 36;
+    static final int PARAM_FRAME_HEADING_ANGLE = 37;
+    static final int PARAM_GYRO_HEADING_CORRECTION = 38;
+
     static final int CMD_READ_PARAMS = 82;
     static final int CMD_WRITE_PARAMS = 87;
     static final int CMD_REALTIME_DATA = 68;
@@ -37,7 +77,7 @@ public class SimpleBgcControl {
     static final int CMD_READ_PROFILE_NAMES = 28;
     static final int CMD_WRITE_PROFILE_NAMES = 29;
     static final int CMD_QUEUE_PARAMS_INFO_3 = 30;
-    static final int CMD_SET_ADJ_VARS = 31;
+    static final int CMD_SET_ADJ_VARS_VAL = 31;
     static final int CMD_SAVE_PARAMS_3 = 32;
     static final int CMD_READ_PARAMS_EXT = 33;
     static final int CMD_WRITE_PARAMS_EXT = 34;
@@ -175,6 +215,32 @@ public class SimpleBgcControl {
         data[0] = (byte)imuIndex;
         data[1] = (byte)1;
         mBluetoothService.send(getCommandData((byte) CMD_CALIB_GYRO, data));
+    }
+
+    public void followPitchRoll(boolean flag) {
+        byte[] data = new byte[6];
+        data[0] = (byte)1;
+        data[1] = (byte)PARAM_FOLLOW_MODE;
+        if (flag) {
+            data[2] = (byte)2;
+        }
+        else {
+            data[2] = (byte)1;
+        }
+        mBluetoothService.send(getCommandData((byte) CMD_SET_ADJ_VARS_VAL, data));
+    }
+
+    public void followYaw(boolean flag) {
+        byte[] data = new byte[6];
+        data[0] = (byte)1;
+        data[1] = (byte)PARAM_FOLLOW_YAW;
+        if (flag) {
+            data[2] = (byte)1;
+        }
+        else {
+            data[2] = (byte)0;
+        }
+        mBluetoothService.send(getCommandData((byte) CMD_SET_ADJ_VARS_VAL, data));
     }
 
     public synchronized void moveSync(float[] speed, float[] angle) {

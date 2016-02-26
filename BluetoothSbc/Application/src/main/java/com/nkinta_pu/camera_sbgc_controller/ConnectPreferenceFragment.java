@@ -1,22 +1,21 @@
 package com.nkinta_pu.camera_sbgc_controller;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
-import com.nkinta_pu.camera_sbgc_controller.control.DeviceListActivity;
+import com.nkinta_pu.camera_sbgc_controller.control.BluetoothListActivity;
 
 /**
  * Created by kanenao on 2015/11/09.
  */
 public class ConnectPreferenceFragment extends PreferenceFragment {
+
+    private static final String TAG = ConnectPreferenceFragment.class.getSimpleName();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,7 +45,7 @@ public class ConnectPreferenceFragment extends PreferenceFragment {
         wifi_ssid_preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Intent serverIntent = new Intent(getActivity(), DeviceListActivity.class);
+                Intent serverIntent = new Intent(getActivity(), BluetoothListActivity.class);
                 startActivityForResult(serverIntent, 1);
 
                 return true;

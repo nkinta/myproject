@@ -23,7 +23,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.support.v7.widget.GridLayout;
+import android.widget.GridLayout;
+// import android.support.v7.widget.GridLayout;
 // import android.os.SytemClock;
 
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
@@ -100,6 +101,34 @@ public class MessageFragment extends Fragment {
             @Override
             public void run() {
                 mSimpleBgcControl.getProfile(0);
+            }
+        }));
+
+        commandList.add(new CommandInfo("followPitchRoll", new Runnable() {
+            @Override
+            public void run() {
+                mSimpleBgcControl.followPitchRoll(true);
+            }
+        }));
+
+        commandList.add(new CommandInfo("followYaw", new Runnable() {
+            @Override
+            public void run() {
+                mSimpleBgcControl.followYaw(true);
+            }
+        }));
+
+        commandList.add(new CommandInfo("disableFollowPitchRoll", new Runnable() {
+            @Override
+            public void run() {
+                mSimpleBgcControl.followPitchRoll(false);
+            }
+        }));
+
+        commandList.add(new CommandInfo("disableFollowYaw", new Runnable() {
+            @Override
+            public void run() {
+                mSimpleBgcControl.followYaw(false);
             }
         }));
 

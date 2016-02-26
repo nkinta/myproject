@@ -43,12 +43,12 @@ import java.util.Set;
  * by the user, the MAC address of the device is sent back to the parent
  * Activity in the result Intent.
  */
-public class DeviceListActivity extends Activity {
+public class BluetoothListActivity extends Activity {
 
     /**
      * Tag for Log
      */
-    private static final String TAG = "DeviceListActivity";
+    private static final String TAG = BluetoothListActivity.class.getSimpleName();
 
     /**
      * Return Intent extra

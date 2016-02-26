@@ -302,13 +302,13 @@ public class BluetoothConnectFragment extends Fragment {
     /**
      * Establish connection with other divice
      *
-     * @param data   An {@link Intent} with {@link DeviceListActivity#EXTRA_DEVICE_ADDRESS} extra.
+     * @param data   An {@link Intent} with {@link BluetoothListActivity#EXTRA_DEVICE_ADDRESS} extra.
      * @param secure Socket Security type - Secure (true) , Insecure (false)
      */
     private void connectDevice(Intent data, boolean secure) {
         // Get the device MAC address
         String address = data.getExtras()
-                .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+                .getString(BluetoothListActivity.EXTRA_DEVICE_ADDRESS);
         // Get the BluetoothDevice object
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         // Attempt to connect to the device
@@ -325,13 +325,13 @@ public class BluetoothConnectFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.secure_connect_scan: {
                 // Launch the DeviceListActivity to see devices and do scan
-                Intent serverIntent = new Intent(getActivity(), DeviceListActivity.class);
+                Intent serverIntent = new Intent(getActivity(), BluetoothListActivity.class);
                 startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
                 return true;
             }
             case R.id.insecure_connect_scan: {
                 // Launch the DeviceListActivity to see devices and do scan
-                Intent serverIntent = new Intent(getActivity(), DeviceListActivity.class);
+                Intent serverIntent = new Intent(getActivity(), BluetoothListActivity.class);
                 startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);
                 return true;
             }

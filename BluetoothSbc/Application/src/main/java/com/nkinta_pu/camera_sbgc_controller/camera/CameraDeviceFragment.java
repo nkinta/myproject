@@ -5,14 +5,11 @@
 package com.nkinta_pu.camera_sbgc_controller.camera;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -25,10 +22,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +29,6 @@ import android.widget.Toast;
 import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
-import com.nkinta_pu.camera_sbgc_controller.control.DeviceListActivity;
 
 import java.util.ArrayList;
 import java.util.List;

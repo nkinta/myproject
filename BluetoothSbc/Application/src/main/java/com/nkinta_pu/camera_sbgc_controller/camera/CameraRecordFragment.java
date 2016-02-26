@@ -119,20 +119,27 @@ public class CameraRecordFragment extends Fragment {
 
     }
 
-    private boolean doSettingRemoteApi() {
+    private void doSettingRemoteApi() {
         final FragmentActivity activity = getActivity();
         SampleApplication app = (SampleApplication) activity.getApplication();
         mRemoteApi = app.getRemoteApi();
         if (mRemoteApi != null) {
             connect();
-            return true;
-        }
-        else {
-            return false;
         }
     }
 
     public void connect() {
+
+        createEvent();
+
+        createUi();
+
+        prepareOpenConnection();
+
+        Log.d(TAG, "connect() completed.");
+    }
+
+    private void createEvent() {
         final FragmentActivity activity = getActivity();
 
         mEventObserver = new SimpleCameraEventObserver(activity.getApplicationContext(), mRemoteApi);
@@ -200,27 +207,12 @@ public class CameraRecordFragment extends Fragment {
             }
         };
 
-        Log.d(TAG, "onCreate() completed.");
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        boolean settingResult = doSettingRemoteApi();
-        if (settingResult == false) {
-            return;
-        }
-
-        final FragmentActivity activity = getActivity();
-        // final FragmentActivity activity = getActivity();
         mEventObserver.activate();
+    }
+
+    private void createUi() {
+        final FragmentActivity activity = getActivity();
+
         mLiveviewSurface = (SimpleStreamSurfaceView) activity.findViewById(R.id.surfaceview_liveview);
         mSpinnerShootMode.setFocusable(false);
         mButtonContentsListMode.setEnabled(false);
@@ -354,7 +346,19 @@ public class CameraRecordFragment extends Fragment {
             }
         });
 
-        prepareOpenConnection();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        doSettingRemoteApi();
 
         Log.d(TAG, "onResume() completed.");
     }

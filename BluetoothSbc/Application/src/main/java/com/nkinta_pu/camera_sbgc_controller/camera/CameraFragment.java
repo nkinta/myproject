@@ -4,9 +4,6 @@
 
 package com.nkinta_pu.camera_sbgc_controller.camera;
 
-import android.app.Activity;
-import android.bluetooth.BluetoothDevice;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,15 +11,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.example.android.common.logger.Log;
-import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
-import com.nkinta_pu.camera_sbgc_controller.control.DeviceListActivity;
 
 /**
  * An Activity class of Sample Camera screen.

@@ -13,19 +13,25 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
+
+    <android.support.v7.widget.GridLayout
+     android:layout_width="match_parent"
+     android:layout_height="0dp"
+     android:layout_gravity="center_horizontal"
+     android:id="@+id/control"
+     android:columnCount="3">
+      </android.support.v7.widget.GridLayout>
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
- <android.support.v7.widget.GridLayout
-     android:layout_width="match_parent"
-     android:layout_height="0dp"
-     android:layout_gravity="center_horizontal"
-     android:layout_weight="5"
-     android:id="@+id/control">
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnCount="3"
+        android:id="@+id/control"></GridLayout>
 
- </android.support.v7.widget.GridLayout>
 
 </LinearLayout>
