@@ -20,8 +20,6 @@ import java.util.Set;
  */
 public class SampleApplication extends Application {
 
-    private ServerDevice mTargetDevice;
-
     private SimpleRemoteApi mRemoteApi;
 
     private Set<String> mSupportedApiSet;
@@ -53,14 +51,6 @@ public class SampleApplication extends Application {
 
     public CommandDispatcher getCommandDispatcher() {
         return mCommandDispatcher;
-    }
-
-    public void setTargetServerDevice(ServerDevice device) {
-        mTargetDevice = device;
-    }
-
-    public ServerDevice getTargetServerDevice() {
-        return mTargetDevice;
     }
 
     public void setRemoteApi(SimpleRemoteApi remoteApi) {

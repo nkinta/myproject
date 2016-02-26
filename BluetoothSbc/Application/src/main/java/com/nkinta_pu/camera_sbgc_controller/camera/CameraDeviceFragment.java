@@ -298,7 +298,11 @@ public class CameraDeviceFragment extends Fragment {
 
         // Set target ServerDevice instance to control in Activity.
         SampleApplication app = (SampleApplication) activity.getApplication();
-        app.setTargetServerDevice(device);
+        SimpleRemoteApi remoteApi = app.getRemoteApi();
+        if (remoteApi == null) {
+            app.setRemoteApi(new SimpleRemoteApi(device));
+        }
+
         // Intent intent = new Intent(this, CameraFragment.class);
         // startActivity(intent);
         activity.startCamera();

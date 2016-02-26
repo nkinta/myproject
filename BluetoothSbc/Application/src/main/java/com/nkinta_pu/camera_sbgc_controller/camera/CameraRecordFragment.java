@@ -122,16 +122,14 @@ public class CameraRecordFragment extends Fragment {
     private boolean doSettingRemoteApi() {
         final FragmentActivity activity = getActivity();
         SampleApplication app = (SampleApplication) activity.getApplication();
-        final ServerDevice device = app.getTargetServerDevice();
-        if (device == null) {
+        mRemoteApi = app.getRemoteApi();
+        if (mRemoteApi != null) {
+            connect();
+            return true;
+        }
+        else {
             return false;
         }
-        if (mRemoteApi == null) {
-            mRemoteApi = new SimpleRemoteApi(device);
-            app.setRemoteApi(mRemoteApi);
-            connect();
-        }
-        return true;
     }
 
     public void connect() {

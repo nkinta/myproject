@@ -75,7 +75,7 @@ public class CameraRecordActivity extends Activity {
 
     }
     */
-
+    /*
     private boolean doSettingRemoteApi() {
         SampleApplication app = (SampleApplication) getApplication();
         final ServerDevice device = app.getTargetServerDevice();
@@ -89,6 +89,7 @@ public class CameraRecordActivity extends Activity {
         }
         return true;
     }
+    */
 
     public void connect() {
         mEventObserver = new SimpleCameraEventObserver(getApplicationContext(), mRemoteApi);
