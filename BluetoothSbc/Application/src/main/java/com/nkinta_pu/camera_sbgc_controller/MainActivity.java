@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.TextView;
 import android.widget.ViewAnimator;
 import android.support.v4.view.ViewPager;
 
@@ -160,4 +161,24 @@ public class MainActivity extends FragmentActivity {
             return false;
         }
     }
+
+    private void setBluetoothStatus(CharSequence title) {
+        TextView textView = (TextView) findViewById(R.id.bluetooth_status);
+        textView.setText(title);
+    }
+
+    private void setBluetoothStatus(int id) {
+        TextView textView = (TextView) findViewById(R.id.bluetooth_status);
+        textView.setText(id);
+    }
+
+    private void setWifiStatus(CharSequence title) {
+        TextView textView = (TextView) findViewById(R.id.wifi_status);
+        textView.setText(title);
+    }
+    private void setWifiStatus(int id) {
+        TextView textView = (TextView) findViewById(R.id.wifi_status);
+        textView.setText(id);
+    }
+
 }

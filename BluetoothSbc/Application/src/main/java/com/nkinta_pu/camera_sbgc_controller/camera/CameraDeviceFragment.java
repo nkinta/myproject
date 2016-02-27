@@ -95,7 +95,7 @@ public class CameraDeviceFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_camera_device, null);
+        View view = inflater.inflate(R.layout.fragment_camera_connect, null);
         return view;
     }
 

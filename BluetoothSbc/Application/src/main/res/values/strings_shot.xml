@@ -5,6 +5,7 @@
     <!-- <string name="app_name">Camera Remote API Sample</string> -->
     <string name="sample_camera">Camera Remote API Sample</string>
     <string name="msg_wifi_disconnect">(Wi-Fi disconnected)</string>
+    <string name="msg_bluetooth_disconnect">(Bluetooth disconnected)</string>
     <string name="button_take_picture">Take Picture</string>
     <string name="button_rec_start">Start movie</string>
     <string name="button_rec_stop">Stop movie\nrecording</string>

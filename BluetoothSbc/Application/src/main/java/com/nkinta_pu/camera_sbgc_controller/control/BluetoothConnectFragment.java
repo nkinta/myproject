@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 // import android.os.SytemClock;
 
@@ -51,7 +52,7 @@ import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
  */
 public class BluetoothConnectFragment extends Fragment {
 
-    private static final String TAG = "BluetoothConnectFragment";
+    private static final String TAG = BluetoothConnectFragment.class.getSimpleName();
 
     // Intent request codes
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
@@ -155,7 +156,7 @@ public class BluetoothConnectFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mConversationView = (ListView) view.findViewById(R.id.in);
+        // mConversationView = (ListView) view.findViewById(R.id.in);
     }
 
     /**
@@ -165,9 +166,8 @@ public class BluetoothConnectFragment extends Fragment {
         Log.d(TAG, "setupChat()");
 
         // Initialize the array adapter for the conversation thread
-        mConversationArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.message);
-
-        mConversationView.setAdapter(mConversationArrayAdapter);
+        // mConversationArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.message);
+        // mConversationView.setAdapter(mConversationArrayAdapter);
 
         // Initialize the BluetoothService to perform bluetooth connections
         // Application application = getActivity().getApplication();
@@ -201,6 +201,11 @@ public class BluetoothConnectFragment extends Fragment {
      * @param resId a string resource ID
      */
     private void setStatus(int resId) {
+        View view = getView();
+        TextView textView = (TextView)view.findViewById(R.id.textView);
+        textView.setText(resId);
+
+        /*
         FragmentActivity activity = getActivity();
         if (null == activity) {
             return;
@@ -210,6 +215,7 @@ public class BluetoothConnectFragment extends Fragment {
             return;
         }
         actionBar.setSubtitle(resId);
+        */
     }
 
     /**
@@ -218,6 +224,11 @@ public class BluetoothConnectFragment extends Fragment {
      * @param subTitle status
      */
     private void setStatus(CharSequence subTitle) {
+
+        View view = getView();
+        TextView textView = (TextView)view.findViewById(R.id.textView);
+        textView.setText(subTitle);
+        /*
         FragmentActivity activity = getActivity();
         if (null == activity) {
             return;
@@ -227,6 +238,7 @@ public class BluetoothConnectFragment extends Fragment {
             return;
         }
         actionBar.setSubtitle(subTitle);
+        */
     }
 
     /**
