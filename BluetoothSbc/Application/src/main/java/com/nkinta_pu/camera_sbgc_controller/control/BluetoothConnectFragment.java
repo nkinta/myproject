@@ -27,6 +27,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,7 +39,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 // import android.os.SytemClock;
 
-import com.example.android.common.logger.Log;
 import com.nkinta_pu.camera_sbgc_controller.R;
 import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 // import com.nkinta_pu.camera_sbgc_controller.HeadTrackHelper;
@@ -149,7 +149,7 @@ public class BluetoothConnectFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_bluetooth_chat, null);
+        View view = inflater.inflate(R.layout.fragment_bluetooth_connect, null);
         return view;
     }
 
@@ -248,7 +248,7 @@ public class BluetoothConnectFragment extends Fragment {
                             break;
                         case BluetoothService.STATE_LISTEN:
                         case BluetoothService.STATE_NONE:
-                            // setStatus(R.string.title_not_connected);
+                            setStatus(R.string.title_not_connected);
                             break;
                     }
                     break;

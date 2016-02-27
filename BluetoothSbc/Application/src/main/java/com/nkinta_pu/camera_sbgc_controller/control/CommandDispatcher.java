@@ -1,6 +1,6 @@
 package com.nkinta_pu.camera_sbgc_controller.control;
 
-import com.example.android.common.logger.Log;
+import android.util.Log;
 
 import java.util.concurrent.ArrayBlockingQueue;
 

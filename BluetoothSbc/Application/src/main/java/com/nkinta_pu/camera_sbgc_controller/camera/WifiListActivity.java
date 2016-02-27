@@ -27,6 +27,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -35,7 +36,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.android.common.logger.Log;
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
 

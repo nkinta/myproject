@@ -324,7 +324,7 @@ public class CameraDeviceFragment extends Fragment {
                 Log.d(TAG, "NETWORK_STATE_CHANGED_ACTION");
                 NetworkInfo info =  intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
                 if (info != null) {
-                    com.example.android.common.logger.Log.d(TAG, info.getDetailedState().name() + info.getTypeName() + info.getSubtypeName());
+                    Log.d(TAG, info.getDetailedState().name() + info.getTypeName() + info.getSubtypeName());
                     if (info.getDetailedState() == NetworkInfo.DetailedState.CONNECTED) {
                         String bssid =  intent.getStringExtra(WifiManager.EXTRA_BSSID);
                         WifiInfo wifiInfo =  intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
