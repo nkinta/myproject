@@ -162,16 +162,16 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    private void setBluetoothStatus(CharSequence title) {
-        TextView textView = (TextView) findViewById(R.id.bluetooth_status);
+    public void setStatus(int textViewResource, int title) {
+        TextView textView = (TextView) findViewById(textViewResource);
         textView.setText(title);
     }
 
-    private void setBluetoothStatus(int id) {
-        TextView textView = (TextView) findViewById(R.id.bluetooth_status);
-        textView.setText(id);
+    public void setStatus(int textViewResource, CharSequence title) {
+        TextView textView = (TextView) findViewById(textViewResource);
+        textView.setText(title);
     }
-
+    /*
     private void setWifiStatus(CharSequence title) {
         TextView textView = (TextView) findViewById(R.id.wifi_status);
         textView.setText(title);
@@ -180,5 +180,6 @@ public class MainActivity extends FragmentActivity {
         TextView textView = (TextView) findViewById(R.id.wifi_status);
         textView.setText(id);
     }
+    */
 
 }

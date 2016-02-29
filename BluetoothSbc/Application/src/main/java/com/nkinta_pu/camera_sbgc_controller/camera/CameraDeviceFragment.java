@@ -43,6 +43,7 @@ public class CameraDeviceFragment extends Fragment {
     private static final int REQUEST_ENABLE = 2;
 
     private static final String TAG = CameraDeviceFragment.class.getSimpleName();
+    private static final int STATUS_MESSAGE_RESOURCE = R.id.wifi_status;
 
     private SimpleSsdpClient mSsdpClient;
     private boolean mActivityActive;
@@ -128,16 +129,15 @@ public class CameraDeviceFragment extends Fragment {
     }
 
     private void updateSsid() {
-        TextView textWifiSsid = (TextView)  getView().findViewById(R.id.text_wifi_ssid);
-        WifiManager wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
-
+        MainActivity activity = (MainActivity) getActivity();
+        WifiManager wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
         // Show Wi-Fi SSID.
         if (wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            String htmlLabel = String.format("SSID: <b>%s</b>", wifiInfo.getSSID());
-            textWifiSsid.setText(Html.fromHtml(htmlLabel));
+            // String htmlLabel = String.format("SSID: <b>%s</b>", wifiInfo.getSSID());
+            activity.setStatus(STATUS_MESSAGE_RESOURCE, wifiInfo.getSSID());
         } else {
-            textWifiSsid.setText(R.string.msg_wifi_disconnect);
+            activity.setStatus(STATUS_MESSAGE_RESOURCE, R.string.msg_wifi_disconnect);
         }
 
         android.util.Log.d(TAG, "onResume() completed.");
@@ -278,7 +278,22 @@ public class CameraDeviceFragment extends Fragment {
     }
 
     /**
-     * Launch a CameraFragment.
+     * @param id a string resource ID
+     */
+    private void setStatus(int id) {
+        MainActivity activity = (MainActivity)getActivity();
+        activity.setStatus(R.id.bluetooth_status, id);
+    }
+
+    /**
+     * @param status
+     */
+    private void setStatus(CharSequence status) {
+        MainActivity activity = (MainActivity)getActivity();
+        activity.setStatus(R.id.bluetooth_status, status);
+    }
+
+    /**
      *
      * @param device
      */
@@ -480,4 +495,22 @@ for (int i = 0; i < TRY_COUNT; ++i) {
         activity.registerReceiver(mReceiver, filter);
         filter = new IntentFilter(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
         activity.registerReceiver(mReceiver, filter);
+
+            private void updateSsid() {
+        TextView textWifiSsid = (TextView)  getView().findViewById(R.id.text_wifi_ssid);
+        WifiManager wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
+
+        // Show Wi-Fi SSID.
+        if (wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            String htmlLabel = String.format("SSID: <b>%s</b>", wifiInfo.getSSID());
+            textWifiSsid.setText(Html.fromHtml(htmlLabel));
+        } else {
+            textWifiSsid.setText(R.string.msg_wifi_disconnect);
+        }
+
+        android.util.Log.d(TAG, "onResume() completed.");
+    }
+
+
     */

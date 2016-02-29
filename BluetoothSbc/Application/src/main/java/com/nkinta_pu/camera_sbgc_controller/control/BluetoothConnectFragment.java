@@ -40,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 // import android.os.SytemClock;
 
+import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
 import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 // import com.nkinta_pu.camera_sbgc_controller.HeadTrackHelper;
@@ -53,6 +54,7 @@ import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 public class BluetoothConnectFragment extends Fragment {
 
     private static final String TAG = BluetoothConnectFragment.class.getSimpleName();
+    private static final int STATUS_MESSAGE_RESOURCE = R.id.bluetooth_status;
 
     // Intent request codes
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
@@ -196,49 +198,19 @@ public class BluetoothConnectFragment extends Fragment {
     }
 
     /**
-     * Updates the status on the action bar.
-     *
-     * @param resId a string resource ID
+     * @param id a string resource ID
      */
-    private void setStatus(int resId) {
-        View view = getView();
-        TextView textView = (TextView)view.findViewById(R.id.textView);
-        textView.setText(resId);
-
-        /*
-        FragmentActivity activity = getActivity();
-        if (null == activity) {
-            return;
-        }
-        final ActionBar actionBar = activity.getActionBar();
-        if (null == actionBar) {
-            return;
-        }
-        actionBar.setSubtitle(resId);
-        */
+    private void setStatus(int id) {
+        MainActivity activity = (MainActivity)getActivity();
+        activity.setStatus(STATUS_MESSAGE_RESOURCE, id);
     }
 
     /**
-     * Updates the status on the action bar.
-     *
-     * @param subTitle status
+     * @param status
      */
-    private void setStatus(CharSequence subTitle) {
-
-        View view = getView();
-        TextView textView = (TextView)view.findViewById(R.id.textView);
-        textView.setText(subTitle);
-        /*
-        FragmentActivity activity = getActivity();
-        if (null == activity) {
-            return;
-        }
-        final ActionBar actionBar = activity.getActionBar();
-        if (null == actionBar) {
-            return;
-        }
-        actionBar.setSubtitle(subTitle);
-        */
+    private void setStatus(CharSequence status) {
+        MainActivity activity = (MainActivity)getActivity();
+        activity.setStatus(STATUS_MESSAGE_RESOURCE, status);
     }
 
     /**
@@ -357,3 +329,17 @@ public class BluetoothConnectFragment extends Fragment {
     }
 
 }
+// TextView textView = (TextView)view.findViewById(R.id.textView);
+// textView.setText(resId);
+
+        /*
+        FragmentActivity activity = getActivity();
+        if (null == activity) {
+            return;
+        }
+        final ActionBar actionBar = activity.getActionBar();
+        if (null == actionBar) {
+            return;
+        }
+        actionBar.setSubtitle(resId);
+        */
