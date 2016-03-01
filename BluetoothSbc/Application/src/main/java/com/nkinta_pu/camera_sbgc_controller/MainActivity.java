@@ -171,6 +171,7 @@ public class MainActivity extends FragmentActivity {
         TextView textView = (TextView) findViewById(textViewResource);
         textView.setText(title);
     }
+
     /*
     private void setWifiStatus(CharSequence title) {
         TextView textView = (TextView) findViewById(R.id.wifi_status);

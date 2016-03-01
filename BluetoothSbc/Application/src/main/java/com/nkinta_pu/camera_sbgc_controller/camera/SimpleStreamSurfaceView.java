@@ -282,7 +282,7 @@ public class SimpleStreamSurfaceView extends SurfaceView implements SurfaceHolde
             return;
         }
 
-        canvas.drawARGB(0, 0, 0, 0);
+        canvas.drawARGB(255, 0, 0, 0);
 
         int w = frame.getWidth();
         int h = frame.getHeight();

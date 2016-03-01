@@ -278,22 +278,6 @@ public class CameraDeviceFragment extends Fragment {
     }
 
     /**
-     * @param id a string resource ID
-     */
-    private void setStatus(int id) {
-        MainActivity activity = (MainActivity)getActivity();
-        activity.setStatus(R.id.bluetooth_status, id);
-    }
-
-    /**
-     * @param status
-     */
-    private void setStatus(CharSequence status) {
-        MainActivity activity = (MainActivity)getActivity();
-        activity.setStatus(R.id.bluetooth_status, status);
-    }
-
-    /**
      *
      * @param device
      */

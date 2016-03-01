@@ -35,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
@@ -55,6 +56,15 @@ public class WifiListActivity extends Activity {
      */
     private static final String TAG = "DeviceListActivity";
 
+    private static final int TRY_INTERVAL = 1000; // msec
+
+    private static final int TRY_COUNT = 10;
+
+    private static final int DISCOVERY_START = 0;
+
+    private static final int DISCOVERY_FINISHED = 1;
+
+    private static final int FOUND = 2;
     /**
      * Return Intent extra
      */
@@ -70,6 +80,8 @@ public class WifiListActivity extends Activity {
     /**
      * Newly discovered devices
      */
+    private ArrayAdapter<String> mPairedDevicesArrayAdapter;
+
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
 
     @Override
@@ -87,20 +99,57 @@ public class WifiListActivity extends Activity {
         Button scanButton = (Button) findViewById(R.id.button_scan);
         scanButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                doDiscovery();
                 v.setVisibility(View.GONE);
+                new Thread() {
+
+                    @Override
+                    public void run() {
+                        try {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    setStatus(DISCOVERY_START);
+                                }
+                            });
+                            for (int i = 0; i < TRY_COUNT; ++i) {
+                                final List<ScanResult> accessPointList = doDiscovery();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        updateListUi(accessPointList);
+                                    }
+                                });
+                                sleep(TRY_INTERVAL);
+                            }
+                        }
+                        catch (InterruptedException e) {
+                            // do nothing.
+                            Log.d(TAG, "search() InterruptedException :", e);
+                        }
+                        finally {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    setStatus(DISCOVERY_FINISHED);
+                                }
+                            });
+                        }
+
+                    }
+                }.start();
+
             }
         });
 
         // Initialize array adapters. One for already paired devices and
         // one for newly discovered devices
-        ArrayAdapter<String> pairedDevicesArrayAdapter =
+        mPairedDevicesArrayAdapter =
                 new ArrayAdapter<String>(this, R.layout.device_name);
         mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
 
         // Find and set up the ListView for paired devices
         ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
-        pairedListView.setAdapter(pairedDevicesArrayAdapter);
+        pairedListView.setAdapter(mPairedDevicesArrayAdapter);
         pairedListView.setOnItemClickListener(mDeviceClickListener);
 
         // Find and set up the ListView for newly discovered devices
@@ -120,17 +169,11 @@ public class WifiListActivity extends Activity {
         mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
         mWifiManager.startScan();
         List<ScanResult> accessPointList = mWifiManager.getScanResults();
-        // List<WifiConfiguration> confList = mWifiManager.getConfiguredNetworks();
 
+        updateListUi(accessPointList);
+    }
 
-
-        // Get the local Bluetooth adapter
-        // mBtAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        // Get a set of currently paired devices
-        // Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
-
-        // If there are paired devices, add each one to the ArrayAdapter
+    private void updateListUi(List<ScanResult> accessPointList) {
         if (accessPointList.size() > 0) {
             findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
             for (ScanResult device : accessPointList) {
@@ -138,11 +181,11 @@ public class WifiListActivity extends Activity {
                 if (!device.SSID.matches(ssidPattern)) {
                     continue;
                 }
-                pairedDevicesArrayAdapter.add(device.SSID + "_" + device.BSSID);
+                mPairedDevicesArrayAdapter.add(device.SSID + "_" + device.BSSID);
             }
         } else {
             String noDevices = getResources().getText(R.string.none_paired).toString();
-            pairedDevicesArrayAdapter.add(noDevices);
+            mPairedDevicesArrayAdapter.add(noDevices);
         }
     }
 
@@ -159,21 +202,34 @@ public class WifiListActivity extends Activity {
         this.unregisterReceiver(mReceiver);
     }
 
+    private void setStatus(int status) {
+        // Indicate scanning in the title
+        if (status == DISCOVERY_START) {
+            Log.d(TAG, "doDiscovery()");
+            setProgressBarIndeterminateVisibility(true);
+            setTitle(R.string.scanning);
+            findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
+        }
+        else if (status == DISCOVERY_FINISHED) {
+            Log.d(TAG, "doDiscovery()");
+            setProgressBarIndeterminateVisibility(true);
+            setTitle(R.string.scanning);
+            findViewById(R.id.title_new_devices).setVisibility(View.INVISIBLE);
+        }
+        else {
+
+        }
+        // Turn on sub-title for new devices
+
+    }
+
     /**
      * Start device discover with the BluetoothAdapter
      */
-    private void doDiscovery() {
-        Log.d(TAG, "doDiscovery()");
-
-        // Indicate scanning in the title
-        setProgressBarIndeterminateVisibility(true);
-        setTitle(R.string.scanning);
-
-        // Turn on sub-title for new devices
-        findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
-
-        // Request discover from BluetoothAdapter
+    private List<ScanResult> doDiscovery() {
         mWifiManager.startScan();
+        List<ScanResult> accessPointList = mWifiManager.getScanResults();
+        return accessPointList;
     }
 
     /**
@@ -218,3 +274,11 @@ public class WifiListActivity extends Activity {
     };
 
 }
+
+
+// List<WifiConfiguration> confList = mWifiManager.getConfiguredNetworks();
+// Get the local Bluetooth adapter
+// mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+// Get a set of currently paired devices
+// Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
+// If there are paired devices, add each one to the ArrayAdapter
