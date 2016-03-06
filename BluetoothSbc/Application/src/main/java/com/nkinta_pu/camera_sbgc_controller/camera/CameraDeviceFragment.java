@@ -14,8 +14,11 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +32,7 @@ import android.widget.Toast;
 import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
+import com.nkinta_pu.camera_sbgc_controller.control.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,14 +139,59 @@ public class CameraDeviceFragment extends Fragment {
         if (wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             // String htmlLabel = String.format("SSID: <b>%s</b>", wifiInfo.getSSID());
-            activity.setStatus(STATUS_MESSAGE_RESOURCE, wifiInfo.getSSID());
+            setStatus(wifiInfo.getSSID());
         } else {
-            activity.setStatus(STATUS_MESSAGE_RESOURCE, R.string.msg_wifi_disconnect);
+            setStatus(R.string.msg_wifi_disconnect);
         }
 
         android.util.Log.d(TAG, "onResume() completed.");
     }
 
+    private void connectionFailed() {
+        // Send a failure message back to the Activity
+        Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.TOAST, "Unable to connect device");
+        msg.setData(bundle);
+        mHandler.sendMessage(msg);
+    }
+
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            FragmentActivity activity = getActivity();
+            switch (msg.what) {
+                case Constants.MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case BluetoothService.STATE_CONNECTED:
+                            setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+                            break;
+                        case BluetoothService.STATE_CONNECTING:
+                            setStatus(R.string.title_connecting);
+                            break;
+                        case BluetoothService.STATE_LISTEN:
+                        case BluetoothService.STATE_NONE:
+                            setStatus(R.string.title_not_connected);
+                            break;
+                    }
+                    break;
+                case Constants.MESSAGE_DEVICE_NAME:
+                    // save the connected device's name
+                    mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
+                    if (null != activity) {
+                        Toast.makeText(activity, "Connected to "
+                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case Constants.MESSAGE_TOAST:
+                    if (null != activity) {
+                        Toast.makeText(activity, msg.getData().getString(Constants.TOAST),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+            }
+        }
+    };
 
     private synchronized void connectDevice(Intent data) {
 
@@ -171,6 +220,7 @@ public class CameraDeviceFragment extends Fragment {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        setStatus(R.string.title_connecting);
                         activity.setProgressBarIndeterminateVisibility(true);
                     }
                 });
@@ -183,14 +233,16 @@ public class CameraDeviceFragment extends Fragment {
                         searchDevices();
                     }
                     else {
-                        mWifiManager.enableNetwork(targetConf.networkId, true);
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mProgressBar.setVisibility(View.VISIBLE);
-                                getActivity().setProgressBarIndeterminateVisibility(true);
-                            }
-                        });
+                        boolean result = mWifiManager.enableNetwork(targetConf.networkId, true);
+                        if (result) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mProgressBar.setVisibility(View.VISIBLE);
+                                    getActivity().setProgressBarIndeterminateVisibility(true);
+                                }
+                            });
+                        }
                     }
                 }
                 else {
@@ -276,7 +328,21 @@ public class CameraDeviceFragment extends Fragment {
             }
         });
     }
+    /**
+     * @param id a string resource ID
+     */
+    private void setStatus(int id) {
+        MainActivity activity = (MainActivity)getActivity();
+        activity.setStatus(STATUS_MESSAGE_RESOURCE, id);
+    }
 
+    /**
+     * @param status
+     */
+    private void setStatus(CharSequence status) {
+        MainActivity activity = (MainActivity)getActivity();
+        activity.setStatus(STATUS_MESSAGE_RESOURCE, status);
+    }
     /**
      *
      * @param device

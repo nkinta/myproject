@@ -56,6 +56,8 @@ public class WifiListActivity extends Activity {
      */
     private static final String TAG = "DeviceListActivity";
 
+    private static final String DEVICE_FILTER = ".*DIRECT-.*";
+
     private static final int TRY_INTERVAL = 1000; // msec
 
     private static final int TRY_COUNT = 10;
@@ -116,7 +118,7 @@ public class WifiListActivity extends Activity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        updateListUi(accessPointList);
+                                        updateListUiNew(accessPointList, mNewDevicesArrayAdapter);
                                     }
                                 });
                                 sleep(TRY_INTERVAL);
@@ -168,24 +170,51 @@ public class WifiListActivity extends Activity {
 
         mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
         mWifiManager.startScan();
-        List<ScanResult> accessPointList = mWifiManager.getScanResults();
+        List<WifiConfiguration> accessPointList = mWifiManager.getConfiguredNetworks();
 
-        updateListUi(accessPointList);
+        updateListUiPaired(accessPointList, mPairedDevicesArrayAdapter);
     }
 
-    private void updateListUi(List<ScanResult> accessPointList) {
+    private void updateListUiPaired(List<WifiConfiguration> accessPointList, ArrayAdapter<String> arrayAdapter) {
+        arrayAdapter.clear();
         if (accessPointList.size() > 0) {
             findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
-            for (ScanResult device : accessPointList) {
-                String ssidPattern = "DIRECT-.*";
-                if (!device.SSID.matches(ssidPattern)) {
+            for (WifiConfiguration device : accessPointList) {
+                String ssidPattern = DEVICE_FILTER;
+                String ssid = device.SSID.replace("\"", "");
+                String bssid = "00:00:00:00:00:00";
+
+                if (!ssid.matches(ssidPattern)) {
                     continue;
                 }
-                mPairedDevicesArrayAdapter.add(device.SSID + "_" + device.BSSID);
+                arrayAdapter.add(ssid + "_" + bssid);
             }
         } else {
             String noDevices = getResources().getText(R.string.none_paired).toString();
-            mPairedDevicesArrayAdapter.add(noDevices);
+            arrayAdapter.add(noDevices);
+        }
+    }
+
+    private void updateListUiNew(List<ScanResult> accessPointList, ArrayAdapter<String> arrayAdapter) {
+        arrayAdapter.clear();
+        if (accessPointList.size() > 0) {
+            findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
+            for (ScanResult device : accessPointList) {
+                String ssidPattern = DEVICE_FILTER;
+                String ssid = device.SSID.replace("\"", "");
+                String bssid = "00:00:00:00:00:00";
+                if (device.BSSID != null) {
+                    bssid = device.BSSID;
+                }
+
+                if (!ssid.matches(ssidPattern)) {
+                    continue;
+                }
+                arrayAdapter.add(ssid + "_" + bssid);
+            }
+        } else {
+            String noDevices = getResources().getText(R.string.none_paired).toString();
+            arrayAdapter.add(noDevices);
         }
     }
 
@@ -212,12 +241,12 @@ public class WifiListActivity extends Activity {
         }
         else if (status == DISCOVERY_FINISHED) {
             Log.d(TAG, "doDiscovery()");
-            setProgressBarIndeterminateVisibility(true);
-            setTitle(R.string.scanning);
-            findViewById(R.id.title_new_devices).setVisibility(View.INVISIBLE);
-        }
-        else {
-
+            setProgressBarIndeterminateVisibility(false);
+            setTitle(R.string.select_device);
+            if (mNewDevicesArrayAdapter.getCount() == 0) {
+                String noDevices = getResources().getText(R.string.none_found).toString();
+                mNewDevicesArrayAdapter.add(noDevices);
+            }
         }
         // Turn on sub-title for new devices
 
