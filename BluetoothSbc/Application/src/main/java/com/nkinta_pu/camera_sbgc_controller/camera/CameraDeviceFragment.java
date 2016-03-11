@@ -52,10 +52,15 @@ public class CameraDeviceFragment extends Fragment {
     private SimpleSsdpClient mSsdpClient;
     private boolean mActivityActive;
 
+    private String mConnectedDeviceName = null;
+
     private List<ServerDevice> mSeverDeviceList = new ArrayList<ServerDevice>() {};
 
     private WifiManager mWifiManager = null;
     private ProgressBar mProgressBar = null;
+
+    private WifiService mWifiService;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +74,8 @@ public class CameraDeviceFragment extends Fragment {
 
         Log.d(TAG, "onCreate() completed.");
 
-        mWifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+        WifiManager wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+        mWifiService = new WifiService(wifiManager, mHandler);
 
         IntentFilter filter = new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         activity.registerReceiver(mReceiver, filter);
@@ -163,14 +169,15 @@ public class CameraDeviceFragment extends Fragment {
             switch (msg.what) {
                 case Constants.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
-                        case BluetoothService.STATE_CONNECTED:
+                        case WifiService.STATE_CONNECTED:
                             setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
                             break;
-                        case BluetoothService.STATE_CONNECTING:
+                        case WifiService.STATE_CONNECTING:
                             setStatus(R.string.title_connecting);
+                            // activity.setProgressBarIndeterminateVisibility(true);
                             break;
-                        case BluetoothService.STATE_LISTEN:
-                        case BluetoothService.STATE_NONE:
+                        case WifiService.STATE_LISTEN:
+                        case WifiService.STATE_NONE:
                             setStatus(R.string.title_not_connected);
                             break;
                     }
@@ -201,6 +208,77 @@ public class CameraDeviceFragment extends Fragment {
         final String bssidPattern = data.getExtras()
                 .getString(WifiListActivity.DEVICE_BSSID);
 
+
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE:
+                if (resultCode == Activity.RESULT_OK) {
+                    connectDevice(data);
+                }
+                break;
+            case REQUEST_ENABLE:
+                if (resultCode == Activity.RESULT_OK) {
+                    //
+                }
+        }
+    }
+
+    /**
+     * @param id a string resource ID
+     */
+    private void setStatus(int id) {
+        MainActivity activity = (MainActivity)getActivity();
+        activity.setStatus(STATUS_MESSAGE_RESOURCE, id);
+    }
+
+    /**
+     * @param status
+     */
+    private void setStatus(CharSequence status) {
+        MainActivity activity = (MainActivity)getActivity();
+        activity.setStatus(STATUS_MESSAGE_RESOURCE, status);
+    }
+    /**
+     *
+     * @param device
+     */
+
+    private void connectToCamera(ServerDevice device) {
+        // Go to CameraSampleActivity.
+        final MainActivity activity = (MainActivity)getActivity();
+        Toast.makeText(activity, device.getFriendlyName(), Toast.LENGTH_SHORT).show();
+
+        // Set target ServerDevice instance to control in Activity.
+        SampleApplication app = (SampleApplication) activity.getApplication();
+        SimpleRemoteApi remoteApi = app.getRemoteApi();
+        if (remoteApi == null) {
+            app.setRemoteApi(new SimpleRemoteApi(device));
+        }
+
+        // Intent intent = new Intent(this, CameraFragment.class);
+        // startActivity(intent);
+        activity.startCamera();
+    }
+
+    /**
+     * Adapter class for DeviceList
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        mActivityActive = false;
+        if (mSsdpClient != null && mSsdpClient.isSearching()) {
+            mSsdpClient.cancelSearching();
+        }
+
+        Log.d(TAG, "onPause() completed.");
+    }
+
+}
+
+/*
         final MainActivity activity = (MainActivity)getActivity();
 
         new Thread() {
@@ -217,6 +295,13 @@ public class CameraDeviceFragment extends Fragment {
                     targetConf = conf;
                     break;
                 }
+
+                Message msg = mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE);
+                Bundle bundle = new Bundle();
+                bundle.putString(Constants.TOAST, "Unable to connect device");
+                msg.setData(bundle);
+                mHandler.sendMessage(msg);
+
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -258,21 +343,6 @@ public class CameraDeviceFragment extends Fragment {
 
             };
         }.start();
-    }
-
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CONNECT_DEVICE:
-                if (resultCode == Activity.RESULT_OK) {
-                    connectDevice(data);
-                }
-                break;
-            case REQUEST_ENABLE:
-                if (resultCode == Activity.RESULT_OK) {
-                    //
-                }
-        }
-    }
     private void searchDevices() {
         final MainActivity activity = (MainActivity)getActivity();
         final View view = getView();
@@ -328,56 +398,6 @@ public class CameraDeviceFragment extends Fragment {
             }
         });
     }
-    /**
-     * @param id a string resource ID
-     */
-    private void setStatus(int id) {
-        MainActivity activity = (MainActivity)getActivity();
-        activity.setStatus(STATUS_MESSAGE_RESOURCE, id);
-    }
-
-    /**
-     * @param status
-     */
-    private void setStatus(CharSequence status) {
-        MainActivity activity = (MainActivity)getActivity();
-        activity.setStatus(STATUS_MESSAGE_RESOURCE, status);
-    }
-    /**
-     *
-     * @param device
-     */
-
-    private void connectToCamera(ServerDevice device) {
-        // Go to CameraSampleActivity.
-        final MainActivity activity = (MainActivity)getActivity();
-        Toast.makeText(activity, device.getFriendlyName(), Toast.LENGTH_SHORT).show();
-
-        // Set target ServerDevice instance to control in Activity.
-        SampleApplication app = (SampleApplication) activity.getApplication();
-        SimpleRemoteApi remoteApi = app.getRemoteApi();
-        if (remoteApi == null) {
-            app.setRemoteApi(new SimpleRemoteApi(device));
-        }
-
-        // Intent intent = new Intent(this, CameraFragment.class);
-        // startActivity(intent);
-        activity.startCamera();
-    }
-
-    /**
-     * Adapter class for DeviceList
-     */
-    @Override
-    public void onPause() {
-        super.onPause();
-        mActivityActive = false;
-        if (mSsdpClient != null && mSsdpClient.isSearching()) {
-            mSsdpClient.cancelSearching();
-        }
-
-        Log.d(TAG, "onPause() completed.");
-    }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -408,9 +428,6 @@ public class CameraDeviceFragment extends Fragment {
             }
         }
     };
-}
-
-/*
 private void searchDevices() {
     final MainActivity activity = (MainActivity)getActivity();
     final View view = getView();
