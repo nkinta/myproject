@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
+import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
 import com.nkinta_pu.camera_sbgc_controller.control.Constants;
 
 import java.io.IOException;
@@ -36,6 +37,8 @@ public class WifiService {
     private Thread mConnectThread = null;
     private int mState;
 
+    SampleApplication mApp;
+
     private final WifiManager mWifiManager;
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
@@ -48,7 +51,9 @@ public class WifiService {
     public static final int STATE_CONNECTED = 6;  // now connected to a remote device
 
 
-    public WifiService(WifiManager wifiManager, Handler handler) {
+    public WifiService(WifiManager wifiManager, SampleApplication app, Handler handler) {
+
+        mApp = app;
 
         mWifiManager = wifiManager;
         mState = STATE_NONE;
@@ -81,15 +86,20 @@ public class WifiService {
         bundle.putString(Constants.DEVICE_NAME, name);
         msg.setData(bundle);
         mHandler.sendMessage(msg);
+
+        SimpleRemoteApi remoteApi = mApp.getRemoteApi();
+        if (remoteApi == null) {
+            mApp.setRemoteApi(new SimpleRemoteApi(device));
+        }
     }
 
 
-    private synchronized void connect(Intent data) {
-        final String ssidPattern = data.getExtras()
-                .getString(WifiListActivity.DEVICE_SSID);
+    public synchronized void connect(final String ssid) {
 
+        /*
         final String bssidPattern = data.getExtras()
                 .getString(WifiListActivity.DEVICE_BSSID);
+        */
 
         mConnectThread = new Thread() {
 
@@ -100,8 +110,8 @@ public class WifiService {
                 List<WifiConfiguration> confList = mWifiManager.getConfiguredNetworks();
                 WifiConfiguration targetConf = null;
                 for (WifiConfiguration conf : confList) {
-                    String ssid = conf.SSID.trim().replace("\"", "");
-                    if (!ssid.matches(ssidPattern)) {
+                    String tempSsid = conf.SSID.trim().replace("\"", "");
+                    if (!tempSsid.matches(ssid)) {
                         continue;
                     }
                     targetConf = conf;
@@ -166,12 +176,12 @@ public class WifiService {
                         String bssid =  intent.getStringExtra(WifiManager.EXTRA_BSSID);
                         WifiInfo wifiInfo =  intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
                         wifiInfo.getSSID();
-                        mConnectThread = new Thread() {
+                        new Thread() {
                             @Override
                             public void run() {
                                 searchDevices();
                             }
-                        };
+                        }.start();
                     }
                 }
                 else {
