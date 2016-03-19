@@ -1,6 +1,7 @@
 package com.nkinta_pu.camera_sbgc_controller.camera;
 
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.NetworkInfo;
@@ -18,6 +19,8 @@ import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
 import com.nkinta_pu.camera_sbgc_controller.control.Constants;
 
+import java.io.IOException;
+import java.net.SocketException;
 import java.util.List;
 
 /**
@@ -27,6 +30,8 @@ public class WifiService {
 
     private static final String TAG = "WifiService";
 
+    private SimpleSsdpClient mSsdpClient;
+
     private final Handler mHandler;
     private Thread mConnectThread = null;
     private int mState;
@@ -34,10 +39,14 @@ public class WifiService {
     private final WifiManager mWifiManager;
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
-    public static final int STATE_LISTEN = 1;     // now listening for incoming connections
-    public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
-    public static final int STATE_SEARCH_DEVICE = 3; // now initiating an outgoing connection
-    public static final int STATE_CONNECTED = 4;  // now connected to a remote device
+    public static final int STATE_SEARCH = 1;     // now listening for incoming connections
+    public static final int STATE_NO_CONF_EXIST = 2;     // now listening for incoming connections
+    public static final int STATE_CONNECTING = 3; // now initiating an outgoing connection
+    public static final int STATE_CONNECTING_ERROR = 4; // now initiating an outgoing connection
+    public static final int STATE_SEARCH_DEVICE = 5; // now initiating an outgoing connection
+    public static final int STATE_SEARCH_ERROR = 7;  // now connected to a remote device
+    public static final int STATE_CONNECTED = 6;  // now connected to a remote device
+
 
     public WifiService(WifiManager wifiManager, Handler handler) {
 
@@ -46,8 +55,15 @@ public class WifiService {
         mHandler = handler;
 
         IntentFilter filter = new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        activity.registerReceiver(mReceiver, filter);
+
+        mSsdpClient = new SimpleSsdpClient();
+
     }
+
+    public BroadcastReceiver getReceiver() {
+        return mReceiver;
+    }
+
 
     private synchronized void setState(int state) {
         Log.d(TAG, "setState() " + mState + " -> " + state);
@@ -56,6 +72,17 @@ public class WifiService {
         // Give the new state to the Handler so the UI Activity can update
         mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
     }
+
+    private synchronized  void setDevice(ServerDevice device) {
+        String name = device.getFriendlyName();
+        Log.d(TAG, "setDevice() " + name);
+        Message msg = mHandler.obtainMessage(Constants.MESSAGE_DEVICE_NAME);
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.DEVICE_NAME, name);
+        msg.setData(bundle);
+        mHandler.sendMessage(msg);
+    }
+
 
     private synchronized void connect(Intent data) {
         final String ssidPattern = data.getExtras()
@@ -68,6 +95,8 @@ public class WifiService {
 
             @Override
             public void run() {
+                setState(STATE_SEARCH);
+
                 List<WifiConfiguration> confList = mWifiManager.getConfiguredNetworks();
                 WifiConfiguration targetConf = null;
                 for (WifiConfiguration conf : confList) {
@@ -79,37 +108,87 @@ public class WifiService {
                     break;
                 }
 
-                setState(STATE_CONNECTING);
+                if (targetConf == null) {
+                    setState(STATE_NO_CONF_EXIST);
+                    return;
+                }
 
-                if (targetConf != null) {
-                    // mProgressBar.setVisibility(View.GONE);
-                    WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+                // mProgressBar.setVisibility(View.GONE);
+                WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
 
-                    if (wifiInfo.getBSSID() == wifiInfo.getSSID()) {
-                        searchDevices();
+                if (wifiInfo.getBSSID() != targetConf.BSSID) {
+                    boolean result = mWifiManager.enableNetwork(targetConf.networkId, true);
+                    if (!result) {
+                        setState(STATE_CONNECTING_ERROR);
+                        return;
                     }
                     else {
-                        boolean result = mWifiManager.enableNetwork(targetConf.networkId, true);
-                        if (!result) {
-                            setState(STATE_NONE);
-                        }
+                        setState(STATE_CONNECTING);
                     }
                 }
                 else {
-                    setState(STATE_NONE);
-
+                    searchDevices();
                 }
-
             };
         };
         mConnectThread.start();
 
     }
 
-    private void searchDevices() {
+    public void searchDevices() {
         setState(STATE_SEARCH_DEVICE);
 
-        mSsdpClient.search(new SimpleSsdpClient.SearchResultHandler() {
+        ServerDevice device = null;
+        try {
+            device = mSsdpClient.search();
+        }
+        catch (IOException e) {
+            setState(STATE_SEARCH_ERROR);
+            return;
+        }
+
+        setDevice(device);
+        setState(STATE_CONNECTED);
+    }
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            // When discovery finds a device
+            if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action)) {
+                Log.d(TAG, "NETWORK_STATE_CHANGED_ACTION");
+                NetworkInfo info =  intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+                if (info != null) {
+                    Log.d(TAG, info.getDetailedState().name() + info.getTypeName() + info.getSubtypeName());
+                    if (info.getDetailedState() == NetworkInfo.DetailedState.CONNECTED) {
+                        String bssid =  intent.getStringExtra(WifiManager.EXTRA_BSSID);
+                        WifiInfo wifiInfo =  intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
+                        wifiInfo.getSSID();
+                        mConnectThread = new Thread() {
+                            @Override
+                            public void run() {
+                                searchDevices();
+                            }
+                        };
+                    }
+                }
+                else {
+                    Log.d(TAG, "null state");
+                }
+            }
+        }
+    };
+    /**
+     * Return the current connection state.
+     */
+    public synchronized int getState() {
+        return mState;
+    }
+}
+
+/*
 
             @Override
             public void onDeviceFound(final ServerDevice device) {
@@ -160,41 +239,6 @@ public class WifiService {
                 });
             }
         });
-    }
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
 
-            // When discovery finds a device
-            if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action)) {
-                Log.d(TAG, "NETWORK_STATE_CHANGED_ACTION");
-                NetworkInfo info =  intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-                if (info != null) {
-                    Log.d(TAG, info.getDetailedState().name() + info.getTypeName() + info.getSubtypeName());
-                    if (info.getDetailedState() == NetworkInfo.DetailedState.CONNECTED) {
-                        String bssid =  intent.getStringExtra(WifiManager.EXTRA_BSSID);
-                        WifiInfo wifiInfo =  intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
-                        wifiInfo.getSSID();
-                        if (mProgressBar != null) {
-                            mProgressBar.setVisibility(View.GONE);
-                            Toast.makeText(getActivity(), "Search device", Toast.LENGTH_SHORT).show();
-                        }
-                        updateSsid();
-                        searchDevices();
-                    }
-                }
-                else {
-                    Log.d(TAG, "null state");
-                }
-            }
-        }
-    };
-    /**
-     * Return the current connection state.
-     */
-    public synchronized int getState() {
-        return mState;
-    }
-}
+ */

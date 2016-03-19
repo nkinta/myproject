@@ -49,7 +49,6 @@ public class CameraDeviceFragment extends Fragment {
     private static final String TAG = CameraDeviceFragment.class.getSimpleName();
     private static final int STATUS_MESSAGE_RESOURCE = R.id.wifi_status;
 
-    private SimpleSsdpClient mSsdpClient;
     private boolean mActivityActive;
 
     private String mConnectedDeviceName = null;
@@ -70,7 +69,6 @@ public class CameraDeviceFragment extends Fragment {
         // requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         // setProgressBarIndeterminateVisibility(false);
         final MainActivity activity = (MainActivity)getActivity();
-        mSsdpClient = new SimpleSsdpClient();
 
         Log.d(TAG, "onCreate() completed.");
 
@@ -78,7 +76,7 @@ public class CameraDeviceFragment extends Fragment {
         mWifiService = new WifiService(wifiManager, mHandler);
 
         IntentFilter filter = new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        activity.registerReceiver(mReceiver, filter);
+        activity.registerReceiver(mWifiService.getReceiver(), filter);
 
     }
 
@@ -176,7 +174,7 @@ public class CameraDeviceFragment extends Fragment {
                             setStatus(R.string.title_connecting);
                             // activity.setProgressBarIndeterminateVisibility(true);
                             break;
-                        case WifiService.STATE_LISTEN:
+                        case WifiService.STATE_NO_CONF_EXIST:
                         case WifiService.STATE_NONE:
                             setStatus(R.string.title_not_connected);
                             break;
@@ -268,17 +266,21 @@ public class CameraDeviceFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+
+    }
+
+}
+
+/*
+
         mActivityActive = false;
         if (mSsdpClient != null && mSsdpClient.isSearching()) {
             mSsdpClient.cancelSearching();
         }
 
         Log.d(TAG, "onPause() completed.");
-    }
 
-}
 
-/*
         final MainActivity activity = (MainActivity)getActivity();
 
         new Thread() {
