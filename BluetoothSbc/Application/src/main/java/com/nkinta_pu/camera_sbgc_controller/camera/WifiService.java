@@ -42,12 +42,11 @@ public class WifiService {
     private final WifiManager mWifiManager;
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
-    public static final int STATE_SEARCH = 1;     // now listening for incoming connections
     public static final int STATE_NO_CONF_EXIST = 2;     // now listening for incoming connections
     public static final int STATE_CONNECTING = 3; // now initiating an outgoing connection
     public static final int STATE_CONNECTING_ERROR = 4; // now initiating an outgoing connection
-    public static final int STATE_SEARCH_DEVICE = 5; // now initiating an outgoing connection
-    public static final int STATE_SEARCH_ERROR = 7;  // now connected to a remote device
+    public static final int STATE_SEARCHING = 5; // now initiating an outgoing connection
+    public static final int STATE_SEARCHING_ERROR = 7;  // now connected to a remote device
     public static final int STATE_CONNECTED = 6;  // now connected to a remote device
 
 
@@ -105,7 +104,7 @@ public class WifiService {
 
             @Override
             public void run() {
-                setState(STATE_SEARCH);
+                setState(STATE_SEARCHING);
 
                 List<WifiConfiguration> confList = mWifiManager.getConfiguredNetworks();
                 WifiConfiguration targetConf = null;
@@ -125,8 +124,10 @@ public class WifiService {
 
                 // mProgressBar.setVisibility(View.GONE);
                 WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+                String checkSsid1 = targetConf.SSID.trim().replace("\"", "");
+                String checkSsid2 = wifiInfo.getSSID().trim().replace("\"", "");
 
-                if (wifiInfo.getBSSID() != targetConf.BSSID) {
+                if (!checkSsid1.equals(checkSsid2)) {
                     boolean result = mWifiManager.enableNetwork(targetConf.networkId, true);
                     if (!result) {
                         setState(STATE_CONNECTING_ERROR);
@@ -146,14 +147,14 @@ public class WifiService {
     }
 
     public void searchDevices() {
-        setState(STATE_SEARCH_DEVICE);
+        setState(STATE_SEARCHING);
 
         ServerDevice device = null;
         try {
             device = mSsdpClient.search();
         }
         catch (IOException e) {
-            setState(STATE_SEARCH_ERROR);
+            setState(STATE_SEARCHING_ERROR);
             return;
         }
 
@@ -173,15 +174,15 @@ public class WifiService {
                 if (info != null) {
                     Log.d(TAG, info.getDetailedState().name() + info.getTypeName() + info.getSubtypeName());
                     if (info.getDetailedState() == NetworkInfo.DetailedState.CONNECTED) {
-                        String bssid =  intent.getStringExtra(WifiManager.EXTRA_BSSID);
-                        WifiInfo wifiInfo =  intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
-                        wifiInfo.getSSID();
                         new Thread() {
                             @Override
                             public void run() {
                                 searchDevices();
                             }
                         }.start();
+                    }
+                    if (info.getDetailedState() == NetworkInfo.DetailedState.DISCONNECTED) {
+                        setState(STATE_NONE);
                     }
                 }
                 else {
@@ -199,7 +200,9 @@ public class WifiService {
 }
 
 /*
-
+                        String bssid =  intent.getStringExtra(WifiManager.EXTRA_BSSID);
+                        WifiInfo wifiInfo =  intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
+                        wifiInfo.getSSID();
             @Override
             public void onDeviceFound(final ServerDevice device) {
                 // Called by non-UI thread.

@@ -182,12 +182,12 @@ public class WifiListActivity extends Activity {
             for (WifiConfiguration device : accessPointList) {
                 String ssidPattern = DEVICE_FILTER;
                 String ssid = device.SSID.replace("\"", "");
-                String bssid = "00:00:00:00:00:00";
+                // String bssid = "00:00:00:00:00:00";
 
                 if (!ssid.matches(ssidPattern)) {
                     continue;
                 }
-                arrayAdapter.add(ssid + "_" + bssid);
+                arrayAdapter.add(ssid);
             }
         } else {
             String noDevices = getResources().getText(R.string.none_paired).toString();
@@ -270,8 +270,16 @@ public class WifiListActivity extends Activity {
 
             // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) v).getText().toString();
-            String ssid = info.substring(0, info.length() - 17 - 1);
-            String bssid = info.substring(info.length() - 17);
+
+            String ssid = null;
+            String bssid = null;
+            if (info.matches(".*([0-9a-fA-F]{2}:){5}:[0-9a-fA-F]{2}$")) {
+                ssid = info.substring(0, info.length() - 17 - 1);
+                bssid = info.substring(info.length() - 17);
+            }
+            else {
+                ssid = info;
+            }
 
             // Create the result Intent and include the MAC address
             Intent intent = new Intent();

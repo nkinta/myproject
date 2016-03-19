@@ -119,17 +119,8 @@ public class CameraDeviceFragment extends Fragment {
 
     private void updateSsid() {
         MainActivity activity = (MainActivity) getActivity();
-        WifiManager wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
         // Show Wi-Fi SSID.
-        if (wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
-            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            // String htmlLabel = String.format("SSID: <b>%s</b>", wifiInfo.getSSID());
-            setStatus(wifiInfo.getSSID());
-        } else {
-            setStatus(R.string.msg_wifi_disconnect);
-        }
-
-        android.util.Log.d(TAG, "onResume() completed.");
+        setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
     }
 
     private void startCamera() {
@@ -146,19 +137,28 @@ public class CameraDeviceFragment extends Fragment {
                     switch (msg.arg1) {
                         case WifiService.STATE_CONNECTED:
                             setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+                            mProgressBar.setVisibility(View.GONE);
                             break;
                         case WifiService.STATE_CONNECTING:
                             setStatus(R.string.title_connecting);
+                            mProgressBar.setVisibility(View.VISIBLE);
+                            // activity.setProgressBarIndeterminateVisibility(true);
+                            break;
+                        case WifiService.STATE_SEARCHING:
+                            setStatus("searching");
+                            mProgressBar.setVisibility(View.VISIBLE);
                             // activity.setProgressBarIndeterminateVisibility(true);
                             break;
                         case WifiService.STATE_CONNECTING_ERROR:
                             setStatus("connecting error");
+                            mProgressBar.setVisibility(View.VISIBLE);
                             if (null != activity) {
                                 Toast.makeText(activity, "Connecting Error", Toast.LENGTH_SHORT).show();
                             }
                             break;
-                        case WifiService.STATE_SEARCH_ERROR:
-                            setStatus("search error");
+                        case WifiService.STATE_SEARCHING_ERROR:
+                            setStatus("searching error");
+                            mProgressBar.setVisibility(View.GONE);
                             if (null != activity) {
                                 Toast.makeText(activity, "Searching Error", Toast.LENGTH_SHORT).show();
                             }
@@ -166,6 +166,7 @@ public class CameraDeviceFragment extends Fragment {
                         case WifiService.STATE_NO_CONF_EXIST:
                         case WifiService.STATE_NONE:
                             setStatus(R.string.title_not_connected);
+                            mProgressBar.setVisibility(View.GONE);
                             break;
                     }
                     break;
