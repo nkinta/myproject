@@ -110,12 +110,12 @@ public class WifiService {
             @Override
             public void run() {
                 try {
-                    setState(STATE_SEARCHING);
+                    setState(STATE_CONNECTING);
 
                     List<WifiConfiguration> confList = mWifiManager.getConfiguredNetworks();
                     WifiConfiguration targetConf = null;
                     for (WifiConfiguration conf : confList) {
-                        if (isEqualSsid(ssid, conf.SSID)) {
+                        if (!isEqualSsid(ssid, conf.SSID)) {
                             continue;
                         }
                         targetConf = conf;
@@ -130,7 +130,7 @@ public class WifiService {
                     // mProgressBar.setVisibility(View.GONE);
                     WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
 
-                    if (isEqualSsid(targetConf.SSID, wifiInfo.getSSID())) {
+                    if (!isEqualSsid(targetConf.SSID, wifiInfo.getSSID())) {
                         boolean result = mWifiManager.enableNetwork(targetConf.networkId, true);
                         if (!result) {
                             setState(STATE_CONNECTING_ERROR);

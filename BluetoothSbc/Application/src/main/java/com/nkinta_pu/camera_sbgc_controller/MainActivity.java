@@ -19,8 +19,8 @@ package com.nkinta_pu.camera_sbgc_controller;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.InputDevice;
 import android.view.InputEvent;
 import android.view.Menu;
@@ -29,7 +29,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
-import android.widget.ViewAnimator;
 import android.support.v4.view.ViewPager;
 
 import com.nkinta_pu.camera_sbgc_controller.camera.CameraFragment;
@@ -48,7 +47,7 @@ public class MainActivity extends FragmentActivity {
     public static final String TAG = "MainActivity";
 
     // Whether the Log Fragment is currently shown
-    private boolean mLogShown;
+    private boolean mCameraControllerShownFlag = true;
 
     ViewPager mViewPager;
     CameraFragment mCameraFragment;
@@ -114,6 +113,10 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem cameraControllerToggle = menu.findItem(R.id.show_camera_controller);
+
+        cameraControllerToggle.setTitle(mCameraControllerShownFlag ? R.string.hide_camera_controller : R.string.show_camera_controller);
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -123,6 +126,19 @@ public class MainActivity extends FragmentActivity {
             case R.id.optionsMenu_01:
                 Intent intent1 = new android.content.Intent(this, ConnectPreferenceActivity.class);
                 startActivity(intent1);
+                return true;
+            case R.id.show_camera_controller:
+                mCameraControllerShownFlag = !mCameraControllerShownFlag;
+                //
+                Fragment cameraControllerToggle = getSupportFragmentManager().findFragmentById(R.id.camera_fragment);
+                if (mCameraControllerShownFlag) {
+                    cameraControllerToggle.getView().setVisibility(View.VISIBLE);
+                }
+                else {
+                    cameraControllerToggle.getView().setVisibility(View.GONE);
+                }
+
+                supportInvalidateOptionsMenu();
                 return true;
         }
         return super.onOptionsItemSelected(item);

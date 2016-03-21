@@ -2,20 +2,22 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/preference_bluetooth_title">
-        <CheckBoxPreference
-            android:key="checkbox_01_key"
-            android:title="@string/checkbox_01_title"
-            android:summary="@string/checkbox_01_summary" />
+        <EditTextPreference
+            android:key="edittext_preference"
+            android:title="EditTextPreference"
+            android:summary="EditTextPreference"
+            android:dialogTitle="EditTextPreference" />
         <CheckBoxPreference
             android:key="checkbox_02_key"
             android:title="@string/checkbox_02_title"
             android:summary="@string/checkbox_02_summary" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/preference_wifi_title">
-        <CheckBoxPreference
-            android:key="checkbox_01_key"
-            android:title="@string/checkbox_01_title"
-            android:summary="@string/checkbox_01_summary" />
+        <EditTextPreference
+            android:key="search_filter"
+            android:title="SearchFilter"
+            android:summary="SearchFilter"
+            android:dialogTitle="SearchFilter" />
         <Preference
             android:key="wifi_ssid"
             android:title="wifi_ssid"
