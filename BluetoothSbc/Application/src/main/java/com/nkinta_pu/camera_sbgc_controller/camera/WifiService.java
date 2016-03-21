@@ -49,6 +49,11 @@ public class WifiService {
     public static final int STATE_SEARCHING_ERROR = 7;  // now connected to a remote device
     public static final int STATE_CONNECTED = 6;  // now connected to a remote device
 
+    static private boolean isEqualSsid(String ssid1, String ssid2) {
+        String checkSsid1 = ssid1.trim().replace("\"", "");
+        String checkSsid2 = ssid2.trim().replace("\"", "");
+        return checkSsid1.equals(checkSsid2);
+    }
 
     public WifiService(WifiManager wifiManager, SampleApplication app, Handler handler) {
 
@@ -109,8 +114,7 @@ public class WifiService {
                 List<WifiConfiguration> confList = mWifiManager.getConfiguredNetworks();
                 WifiConfiguration targetConf = null;
                 for (WifiConfiguration conf : confList) {
-                    String tempSsid = conf.SSID.trim().replace("\"", "");
-                    if (!tempSsid.matches(ssid)) {
+                    if (isEqualSsid(ssid, conf.SSID)) {
                         continue;
                     }
                     targetConf = conf;
@@ -124,10 +128,9 @@ public class WifiService {
 
                 // mProgressBar.setVisibility(View.GONE);
                 WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
-                String checkSsid1 = targetConf.SSID.trim().replace("\"", "");
-                String checkSsid2 = wifiInfo.getSSID().trim().replace("\"", "");
 
-                if (!checkSsid1.equals(checkSsid2)) {
+
+                if (isEqualSsid(targetConf.SSID, wifiInfo.getSSID())) {
                     boolean result = mWifiManager.enableNetwork(targetConf.networkId, true);
                     if (!result) {
                         setState(STATE_CONNECTING_ERROR);
