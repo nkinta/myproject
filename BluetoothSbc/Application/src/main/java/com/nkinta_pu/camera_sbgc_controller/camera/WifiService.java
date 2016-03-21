@@ -45,9 +45,11 @@ public class WifiService {
     public static final int STATE_NO_CONF_EXIST = 2;     // now listening for incoming connections
     public static final int STATE_CONNECTING = 3; // now initiating an outgoing connection
     public static final int STATE_CONNECTING_ERROR = 4; // now initiating an outgoing connection
-    public static final int STATE_SEARCHING = 5; // now initiating an outgoing connection
+    public static final int STATE_CONNECTING_UNKNOWN_ERROR = 5;  // now connected to a remote device
+    public static final int STATE_SEARCHING = 6; // now initiating an outgoing connection
     public static final int STATE_SEARCHING_ERROR = 7;  // now connected to a remote device
-    public static final int STATE_CONNECTED = 6;  // now connected to a remote device
+    public static final int STATE_SEARCHING_UNKNOWN_ERROR = 8;  // now connected to a remote device
+    public static final int STATE_CONNECTED = 9;  // now connected to a remote device
 
     static private boolean isEqualSsid(String ssid1, String ssid2) {
         String checkSsid1 = ssid1.trim().replace("\"", "");
@@ -62,8 +64,6 @@ public class WifiService {
         mWifiManager = wifiManager;
         mState = STATE_NONE;
         mHandler = handler;
-
-        IntentFilter filter = new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION);
 
         mSsdpClient = new SimpleSsdpClient();
 
@@ -109,39 +109,42 @@ public class WifiService {
 
             @Override
             public void run() {
-                setState(STATE_SEARCHING);
+                try {
+                    setState(STATE_SEARCHING);
 
-                List<WifiConfiguration> confList = mWifiManager.getConfiguredNetworks();
-                WifiConfiguration targetConf = null;
-                for (WifiConfiguration conf : confList) {
-                    if (isEqualSsid(ssid, conf.SSID)) {
-                        continue;
+                    List<WifiConfiguration> confList = mWifiManager.getConfiguredNetworks();
+                    WifiConfiguration targetConf = null;
+                    for (WifiConfiguration conf : confList) {
+                        if (isEqualSsid(ssid, conf.SSID)) {
+                            continue;
+                        }
+                        targetConf = conf;
+                        break;
                     }
-                    targetConf = conf;
-                    break;
-                }
 
-                if (targetConf == null) {
-                    setState(STATE_NO_CONF_EXIST);
-                    return;
-                }
-
-                // mProgressBar.setVisibility(View.GONE);
-                WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
-
-
-                if (isEqualSsid(targetConf.SSID, wifiInfo.getSSID())) {
-                    boolean result = mWifiManager.enableNetwork(targetConf.networkId, true);
-                    if (!result) {
-                        setState(STATE_CONNECTING_ERROR);
+                    if (targetConf == null) {
+                        setState(STATE_NO_CONF_EXIST);
                         return;
                     }
-                    else {
-                        setState(STATE_CONNECTING);
+
+                    // mProgressBar.setVisibility(View.GONE);
+                    WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+
+                    if (isEqualSsid(targetConf.SSID, wifiInfo.getSSID())) {
+                        boolean result = mWifiManager.enableNetwork(targetConf.networkId, true);
+                        if (!result) {
+                            setState(STATE_CONNECTING_ERROR);
+                            return;
+                        } else {
+                            setState(STATE_CONNECTING);
+                        }
+                    } else {
+                        searchDevices();
                     }
                 }
-                else {
-                    searchDevices();
+                catch (Exception e) {
+                    setState(STATE_CONNECTING_ERROR);
+                    return;
                 }
             };
         };
@@ -150,19 +153,18 @@ public class WifiService {
     }
 
     public void searchDevices() {
-        setState(STATE_SEARCHING);
-
-        ServerDevice device = null;
         try {
-            device = mSsdpClient.search();
+            setState(STATE_SEARCHING);
+            ServerDevice device = mSsdpClient.search();
+            setDevice(device);
+            setState(STATE_CONNECTED);
         }
-        catch (IOException e) {
+        catch (Exception e) {
             setState(STATE_SEARCHING_ERROR);
             return;
         }
 
-        setDevice(device);
-        setState(STATE_CONNECTED);
+
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
