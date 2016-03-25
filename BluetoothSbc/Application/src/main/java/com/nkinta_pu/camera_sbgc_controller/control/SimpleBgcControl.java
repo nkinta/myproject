@@ -203,6 +203,34 @@ public class SimpleBgcControl {
         mBluetoothService.send(getCommandData((byte) CMD_READ_PARAMS_3, data));
     }
 
+    public void setMotorPower(boolean value) {
+        byte[] data = {'_'};
+        if (value) {
+            data[0] = 'M';
+        }
+        else {
+            data[0] = 'm';
+        }
+        mBluetoothService.send(getCommandData((byte) CMD_MOTORS_ON, data));
+    }
+
+    public void setCurrentProfile(int index) {
+        byte[] data = {(byte)index};
+        mBluetoothService.send(getCommandData((byte) CMD_WRITE_PARAMS_3, data));
+    }
+
+    public void getFirmwareVer(int index) {
+        byte[] data = {};
+        byte[] result = mBluetoothService.sendSync(getCommandData((byte) CMD_BOARD_INFO, data));
+        float boardVer = (float)(result[0]) * 0.1f;
+
+        int firmwareVer = result[1] + result[2] * 256;
+        int majorVer = (int)(firmwareVer / 1000);
+        int minorVer = (int)((firmwareVer % 1000) / 10);
+        int beta_ver = firmwareVer % 10;
+
+    }
+
     public void calibrationAcc(int imuIndex) {
         byte[] data = new byte[12];
         data[0] = (byte)imuIndex;

@@ -31,7 +31,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
+        android:text="mortor"
         android:id="@+id/textView3" />
 
     <LinearLayout
@@ -43,13 +43,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="MOTOR TOGGLE"
-            android:id="@+id/button4" />
+            android:id="@+id/button_motor_toggle" />
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
+        android:text="follow_mode"
         android:id="@+id/textView2" />
 
     <LinearLayout
@@ -60,15 +60,15 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="FOLLOW PITCH ROLL"
-            android:id="@+id/button3"
+            android:text="PITCH ROLL ON"
+            android:id="@+id/button_follow_pitch_roll_on"
             android:layout_weight="1" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="OFF FOLLOW PITCH ROLL"
-            android:id="@+id/button5"
+            android:text="PITCH ROLL OFF"
+            android:id="@+id/button_follow_pitch_roll_off"
             android:layout_weight="1" />
     </LinearLayout>
 
@@ -80,46 +80,77 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="FOLLOW YAW"
-            android:id="@+id/button6"
+            android:text="YAW ON"
+            android:id="@+id/button_follow_yaw_on"
             android:layout_weight="1" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="OFF FOLLOW YAW"
-            android:id="@+id/button7"
+            android:text="YAW OFF"
+            android:id="@+id/button_follow_yaw_off"
             android:layout_weight="1" />
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
+        android:text="calib"
         android:id="@+id/textView" />
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CALIB GYRO"
-            android:id="@+id/button" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CALIB ACC"
-            android:id="@+id/button2" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CAM ACC"
+                android:id="@+id/button_calib_camera_acc"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CAM GYRO"
+                android:id="@+id/button_calib_camera_gyro"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="FRAME ACC"
+                android:id="@+id/button_calib_frame_acc"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="FRAME GYRO"
+                android:id="@+id/button_calib_frame_gyro"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
+        android:text="profile"
         android:id="@+id/textView4" />
 
     <LinearLayout
@@ -131,35 +162,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="1"
-            android:id="@+id/set_profile_button"
+            android:id="@+id/set_profile_button_1"
             android:layout_weight="1" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="2"
-            android:id="@+id/button8"
+            android:id="@+id/set_profile_button_2"
             android:layout_weight="1" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="3"
-            android:id="@+id/button9"
+            android:id="@+id/set_profile_button_3"
             android:layout_weight="1" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="4"
-            android:id="@+id/button10"
+            android:id="@+id/set_profile_button_4"
             android:layout_weight="1" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="5"
-            android:id="@+id/button11"
+            android:id="@+id/set_profile_button_5"
             android:layout_weight="1" />
     </LinearLayout>
 

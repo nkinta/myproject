@@ -67,7 +67,7 @@ public class MessageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_control, null);
+        View view = inflater.inflate(R.layout.fragment_message, null);
         return view;
     }
 
@@ -78,77 +78,89 @@ public class MessageFragment extends Fragment {
         SampleApplication app = (SampleApplication) getActivity().getApplication();
         mSimpleBgcControl = app.getSimpleBgcControl();
 
-        GridLayout frameLayout = (GridLayout) view.findViewById(R.id.control);
+        // GridLayout frameLayout = (GridLayout) view.findViewById(R.id.control);
 
         final MainActivity activity = (MainActivity)getActivity();
         ArrayList<CommandInfo> commandList = new ArrayList<CommandInfo>();
 
-        commandList.add(new CommandInfo("calibGyro", new Runnable() {
-            @Override
-            public void run() {
-                mSimpleBgcControl.calibrationGyro(0);
+        Button tempButton;
+        tempButton = (Button) view.findViewById(R.id.button_motor_toggle);
+        tempButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View tempView) {
+                mSimpleBgcControl.setMotorPower(true);
             }
-        }));
+        });
 
-        commandList.add(new CommandInfo("calibAcc", new Runnable() {
-            @Override
-            public void run() {
+        tempButton = (Button) view.findViewById(R.id.button_calib_camera_acc);
+        tempButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View tempView) {
                 mSimpleBgcControl.calibrationAcc(0);
             }
-        }));
+        });
 
-        commandList.add(new CommandInfo("getProfile1", new Runnable() {
-            @Override
-            public void run() {
-                mSimpleBgcControl.getProfile(0);
+        tempButton = (Button) view.findViewById(R.id.button_calib_camera_gyro);
+        tempButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View tempView) {
+                mSimpleBgcControl.calibrationGyro(0);
             }
-        }));
+        });
 
-        commandList.add(new CommandInfo("followPitchRoll", new Runnable() {
-            @Override
-            public void run() {
-                mSimpleBgcControl.followPitchRoll(true);
+        tempButton = (Button) view.findViewById(R.id.button_calib_frame_acc);
+        tempButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View tempView) {
+                mSimpleBgcControl.calibrationAcc(1);
             }
-        }));
+        });
 
-        commandList.add(new CommandInfo("followYaw", new Runnable() {
-            @Override
-            public void run() {
+        tempButton = (Button) view.findViewById(R.id.button_calib_frame_gyro);
+        tempButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View tempView) {
+                mSimpleBgcControl.calibrationGyro(1);
+            }
+        });
+
+        tempButton = (Button) view.findViewById(R.id.button_follow_yaw_on);
+        tempButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View tempView) {
                 mSimpleBgcControl.followYaw(true);
             }
-        }));
+        });
 
-        commandList.add(new CommandInfo("disableFollowPitchRoll", new Runnable() {
-            @Override
-            public void run() {
-                mSimpleBgcControl.followPitchRoll(false);
+        tempButton = (Button) view.findViewById(R.id.button_follow_pitch_roll_on);
+        tempButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View tempView) {
+                mSimpleBgcControl.followPitchRoll(true);
             }
-        }));
+        });
 
-        commandList.add(new CommandInfo("disableFollowYaw", new Runnable() {
-            @Override
-            public void run() {
+        tempButton = (Button) view.findViewById(R.id.button_follow_yaw_off);
+        tempButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View tempView) {
                 mSimpleBgcControl.followYaw(false);
             }
-        }));
+        });
 
-        if (frameLayout == null) {
-            return;
-        }
+        tempButton = (Button) view.findViewById(R.id.button_follow_pitch_roll_off);
+        tempButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View tempView) {
+                mSimpleBgcControl.followPitchRoll(false);
+            }
+        });
 
-        for (final CommandInfo v: commandList) {
-            Button button = new Button(activity);
-            button.setText(v.getLabel());
-            frameLayout.addView(button);
+        tempButton = (Button) view.findViewById(R.id.set_profile_button_1);
+        tempButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View tempView) {
+                mSimpleBgcControl.setCurrentProfile(0);
+            }
+        });
 
-            button.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View tempView) {
-                    // Send a message using content of the edit text widget
-                    v.getRunnable().run();
-                }
-            });
+        tempButton = (Button) view.findViewById(R.id.set_profile_button_2);
+        tempButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View tempView) {
+                mSimpleBgcControl.setCurrentProfile(1);
+            }
+        });
 
-        }
         // mProfileButton = (Button) view.findViewById(R.id.button);
     }
 
