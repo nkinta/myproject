@@ -3,9 +3,12 @@ package com.nkinta_pu.camera_sbgc_controller.control;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.view.MotionEvent;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
+
     FragmentManager mFm;
+
     public PagerAdapter(FragmentManager fm) {
         super(fm);
         mFm = fm;
@@ -26,18 +29,22 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 return new AutoShutterFragment();
             case 2:
                 return new GamePadFragment();
+            case 3:
+                return new VirtualGamePadFragment();
             default:
                 return new MessageFragment();
+
         }
     }
 
     @Override
     public int getCount() {
-        return 4;
+        return 5;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
         return "Page " + position;
     }
+
 }
