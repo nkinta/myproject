@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.support.v4.view.ViewPager;
 
 import com.nkinta_pu.camera_sbgc_controller.camera.CameraFragment;
+import com.nkinta_pu.camera_sbgc_controller.control.ControlViewPager;
 import com.nkinta_pu.camera_sbgc_controller.control.GamePadJob;
 import com.nkinta_pu.camera_sbgc_controller.control.PagerAdapter;
 
@@ -61,7 +62,7 @@ public class MainActivity extends FragmentActivity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
         setContentView(R.layout.activity_main);
-        mViewPager = (ViewPager) findViewById(R.id.viewPager);
+        mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
 
         // mCameraFragment = (Fragment)(getFragmentManager().findFragmentById(R.id.fragment));

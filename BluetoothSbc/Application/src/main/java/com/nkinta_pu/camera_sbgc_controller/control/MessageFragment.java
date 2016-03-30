@@ -61,7 +61,6 @@ public class MessageFragment extends Fragment {
 
     }
 
-
     private SimpleBgcControl mSimpleBgcControl = null;
 
     @Override

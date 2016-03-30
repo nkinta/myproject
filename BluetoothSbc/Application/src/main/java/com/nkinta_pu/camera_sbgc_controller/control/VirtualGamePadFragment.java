@@ -35,6 +35,8 @@ public class VirtualGamePadFragment extends ControllerFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final ControlScrollView scrollView = (ControlScrollView)getActivity().findViewById(R.id.scroll_view);
+        final ControlViewPager viewPager = (ControlViewPager)getActivity().findViewById(R.id.view_pager);
 
         textView1 = (TextView)view.findViewById(R.id.textView1);
         textView2 = (TextView)view.findViewById(R.id.textView2);
@@ -57,6 +59,8 @@ public class VirtualGamePadFragment extends ControllerFragment {
                 js.drawStick(arg1);
                 if(arg1.getAction() == MotionEvent.ACTION_DOWN
                         || arg1.getAction() == MotionEvent.ACTION_MOVE) {
+                    viewPager.setScrollingEnabled(false);
+                    scrollView.setScrollingEnabled(false);
                     textView1.setText("X : " + String.valueOf(js.getX()));
                     textView2.setText("Y : " + String.valueOf(js.getY()));
                     textView3.setText("Angle : " + String.valueOf(js.getAngle()));
@@ -83,6 +87,8 @@ public class VirtualGamePadFragment extends ControllerFragment {
                         textView5.setText("Direction : Center");
                     }
                 } else if(arg1.getAction() == MotionEvent.ACTION_UP) {
+                    viewPager.setScrollingEnabled(true);
+                    scrollView.setScrollingEnabled(true);
                     textView1.setText("X :");
                     textView2.setText("Y :");
                     textView3.setText("Angle :");
