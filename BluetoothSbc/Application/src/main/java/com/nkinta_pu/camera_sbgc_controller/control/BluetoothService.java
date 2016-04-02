@@ -251,24 +251,26 @@ public class BluetoothService {
      * @see ConnectedThread#write(byte[])
      */
     private void write(byte[] out) {
-        // Create temporary object
-        ConnectedThread r;
-        // Synchronize a copy of the ConnectedThread
-        synchronized (this) {
-            if (mState != STATE_CONNECTED) return;
-            r = mConnectedThread;
-        }
         // Perform the write unsynchronized
-        r.write(out);
+        mConnectedThread.write(out);
     }
 
     public synchronized void send(byte[] commandData) {
+        if (mState != STATE_CONNECTED) {
+            connectionLostMessage();
+            return;
+        }
+
         mBluetoothBlockingQueue.clear();
         write(commandData);
         return;
     }
 
     public synchronized byte[] sendSync(byte[] commandData) {
+        if (mState != STATE_CONNECTED) {
+            connectionLostMessage();
+            return null;
+        }
         mBluetoothBlockingQueue.clear();
         write(commandData);
         byte[] result;
@@ -302,14 +304,18 @@ public class BluetoothService {
      */
     private void connectionLost() {
         // Send a failure message back to the Activity
+        connectionLostMessage();
+        // Start the service over to restart listening mode
+        BluetoothService.this.start();
+    }
+
+    private void connectionLostMessage() {
+        // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
         bundle.putString(Constants.TOAST, "Device connection was lost");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
-
-        // Start the service over to restart listening mode
-        BluetoothService.this.start();
     }
 
     /**

@@ -204,14 +204,29 @@ public class SimpleBgcControl {
     }
 
     public void setMotorPower(boolean value) {
-        byte[] data = {'_'};
+        byte[] result;
+        byte[] empty = new byte[0];
         if (value) {
-            data[0] = 'M';
+            // empty[0] = 'M';
+            result = mBluetoothService.sendSync(getCommandData((byte) CMD_MOTORS_ON, empty));
         }
         else {
-            data[0] = 'm';
+            // empty[0] = 'm';
+            result = mBluetoothService.sendSync(getCommandData((byte) CMD_MOTORS_OFF, empty));
         }
-        mBluetoothService.send(getCommandData((byte) CMD_MOTORS_ON, data));
+
+        /*
+        byte[] data = {CMD_MOTORS_ON, '_'};
+        if (value) {
+            data[1] = 'M';
+        }
+        else {
+            data[1] = 'm';
+        }
+        byte[] empty = new byte[0];
+        byte[] result = mBluetoothService.sendSync(getCommandData((byte) CMD_MOTORS_ON, empty));
+        mBluetoothService.send(getCommandData((byte) CMD_CONFIRM, data));
+        */
     }
 
     public void setCurrentProfile(int index) {
@@ -245,7 +260,7 @@ public class SimpleBgcControl {
         mBluetoothService.send(getCommandData((byte) CMD_CALIB_GYRO, data));
     }
 
-    public void followPitchRoll(boolean flag) {
+    public void setFollowPitchRoll(boolean flag) {
         byte[] data = new byte[6];
         data[0] = (byte)1;
         data[1] = (byte)PARAM_FOLLOW_MODE;
@@ -255,10 +270,10 @@ public class SimpleBgcControl {
         else {
             data[2] = (byte)1;
         }
-        mBluetoothService.send(getCommandData((byte) CMD_SET_ADJ_VARS_VAL, data));
+        byte result[] = mBluetoothService.sendSync(getCommandData((byte) CMD_SET_ADJ_VARS_VAL, data));
     }
 
-    public void followYaw(boolean flag) {
+    public void setFollowYaw(boolean flag) {
         byte[] data = new byte[6];
         data[0] = (byte)1;
         data[1] = (byte)PARAM_FOLLOW_YAW;
@@ -268,7 +283,7 @@ public class SimpleBgcControl {
         else {
             data[2] = (byte)0;
         }
-        mBluetoothService.send(getCommandData((byte) CMD_SET_ADJ_VARS_VAL, data));
+        byte result[] = mBluetoothService.sendSync(getCommandData((byte) CMD_SET_ADJ_VARS_VAL, data));
     }
 
     public synchronized void moveSync(float[] speed, float[] angle) {
@@ -330,7 +345,7 @@ public class SimpleBgcControl {
 
             float[] rcSpeed = getAngleRcSpeed();
             if (rcSpeed == null) {
-                continue;
+                return;
             }
 
             float maxValue = 0;

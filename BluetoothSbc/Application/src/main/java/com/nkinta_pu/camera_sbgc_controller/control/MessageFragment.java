@@ -23,7 +23,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.GridLayout;
 // import android.support.v7.widget.GridLayout;
 // import android.os.SytemClock;
 
@@ -86,7 +85,7 @@ public class MessageFragment extends Fragment {
         tempButton = (Button) view.findViewById(R.id.button_motor_toggle);
         tempButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View tempView) {
-                mSimpleBgcControl.setMotorPower(true);
+                mSimpleBgcControl.setMotorPower(false);
             }
         });
 
@@ -121,28 +120,28 @@ public class MessageFragment extends Fragment {
         tempButton = (Button) view.findViewById(R.id.button_follow_yaw_on);
         tempButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View tempView) {
-                mSimpleBgcControl.followYaw(true);
+                mSimpleBgcControl.setFollowYaw(true);
             }
         });
 
         tempButton = (Button) view.findViewById(R.id.button_follow_pitch_roll_on);
         tempButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View tempView) {
-                mSimpleBgcControl.followPitchRoll(true);
+                mSimpleBgcControl.setFollowPitchRoll(true);
             }
         });
 
         tempButton = (Button) view.findViewById(R.id.button_follow_yaw_off);
         tempButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View tempView) {
-                mSimpleBgcControl.followYaw(false);
+                mSimpleBgcControl.setFollowYaw(false);
             }
         });
 
         tempButton = (Button) view.findViewById(R.id.button_follow_pitch_roll_off);
         tempButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View tempView) {
-                mSimpleBgcControl.followPitchRoll(false);
+                mSimpleBgcControl.setFollowPitchRoll(false);
             }
         });
 
