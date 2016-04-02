@@ -49,21 +49,28 @@ public class ControllerFragment extends Fragment {
     }
 
 
-    static protected FloatValue createSeekController(final SeekBar seekBar, final TextView textView, final int defaultValue, final float multiple) {
+    static protected FloatValue createSeekController(
+            final SeekBar seekBar,
+            final TextView textView,
+            final float min,
+            final float defaultValue,
+            final float max) {
 
         // LinearLayout linearLayout = (LinearLayout) view.findViewById(parentLayoutId);
         // View seekControlLayout = getLayoutInflater(savedInstanceState).inflate(R.layout.speed_seek_control, linearLayout);
 
         final FloatValue seekValue = new FloatValue();
 
-        seekValue.value = (float)(defaultValue) * multiple;
+        seekValue.value = defaultValue;
+
+        final float multiple = (max - min) / 100;
 
         // final LinearLayout linearLayout = (LinearLayout) view.findViewById(id);
         // final SeekBar seekBar = (SeekBar) linearLayout.findViewById(R.id.speed_seek_bar);
         // final TextView textView = (TextView) linearLayout.findViewById(R.id.speed_text_view);
         textView.setText(String.format("%3.2f", seekValue.value));
 
-        seekBar.setProgress(defaultValue);
+        seekBar.setProgress((int)(defaultValue / multiple));
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
@@ -71,11 +78,11 @@ public class ControllerFragment extends Fragment {
             }
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
-                textView.setText(String.format("%3.2f", progress * multiple));
+                textView.setText(String.format("%3.2f", min + progress * multiple));
             }
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                seekValue.value = seekBar.getProgress() * multiple;
+                seekValue.value = min + seekBar.getProgress() * multiple;
             }
         });
         return seekValue;

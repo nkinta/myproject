@@ -12,6 +12,7 @@ import com.nkinta_pu.camera_sbgc_controller.control.BluetoothService;
 import com.nkinta_pu.camera_sbgc_controller.control.CommandDispatcher;
 import com.nkinta_pu.camera_sbgc_controller.control.HeadTrackHelper;
 import com.nkinta_pu.camera_sbgc_controller.control.SimpleBgcControl;
+import com.nkinta_pu.camera_sbgc_controller.param.MainParameter;
 
 import java.util.Set;
 
@@ -31,6 +32,8 @@ public class SampleApplication extends Application {
     private HeadTrackHelper mHeadTrackHelper;
 
     private CommandDispatcher mCommandDispatcher;
+
+    private MainParameter mMainParameter = new MainParameter();
 
     /**
      * Sets a target ServerDevice object.
@@ -67,6 +70,10 @@ public class SampleApplication extends Application {
 
     public HeadTrackHelper getHeadTrackHelper() {
         return mHeadTrackHelper;
+    }
+
+    public MainParameter getMainParameter() {
+        return mMainParameter;
     }
 
     public void setSupportedApiList(Set<String> apiList) {

@@ -192,7 +192,7 @@ public class HeadTrackFragment extends ControllerFragment {
         mSpeedValue = createSeekController(
                 (SeekBar) view.findViewById(R.id.speed_seek_bar),
                 (TextView) view.findViewById(R.id.speed_text_view),
-                40, 0.025f);
+                0f, 1.0f, 2.5f);
 
         /*
         final SeekBar speedSeekBar = (SeekBar) view.findViewById(R.id.speed_seek_bar);

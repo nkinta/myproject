@@ -16,6 +16,7 @@ import android.util.FloatMath;
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
 import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
+import com.nkinta_pu.camera_sbgc_controller.param.MainParameter;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -113,19 +114,23 @@ public class GamePadFragment extends ControllerFragment {
 
         gridLayout.addView(outputValueTextView);
 
+        MainParameter mainParameter = app.getMainParameter();
+
+
         mSpeedValue = createSeekController(
                 (SeekBar) view.findViewById(R.id.speed_seek_bar),
                 (TextView) view.findViewById(R.id.speed_text_view),
-                40, 0.025f);
+                0.0f, 1.0f, 2.5f);
+
         mOffsetValue = createSeekController(
                 (SeekBar) view.findViewById(R.id.offset_seek_bar),
                 (TextView) view.findViewById(R.id.offset_text_view),
-                10, 0.010f);
+                0.0f, 0.1f, 1.0f);
 
         mExpoValue = createSeekController(
                 (SeekBar) view.findViewById(R.id.expo_seek_bar),
                 (TextView) view.findViewById(R.id.expo_text_view),
-                10, 0.20f);
+                0.0f, 2.0f, 20.0f);
 
         String[] padTypeStringList = new String[] {"LX", "LY", "RX", "RY"};
 
@@ -151,6 +156,9 @@ public class GamePadFragment extends ControllerFragment {
         yawPadSpinner.setAdapter(adapter);
         yawPadSpinner.setSelection(0);
 
+        // SampleApplication app = (SampleApplication)getActivity().getApplication();
+
+
         activity.setJoyPadJob(
             new GamePadJob() {
                 @Override
@@ -163,13 +171,13 @@ public class GamePadFragment extends ControllerFragment {
                     int pitchSpinnerId = (int)pitchPadSpinner.getSelectedItemId();
                     int yawSpinnerId = (int)yawPadSpinner.getSelectedItemId();
 
-                    float rollMulipleValue = (rollInverseSwitch.isChecked()) ? -1.0f: 1.0f;
-                    float pitchMulipleValue = (pitchInverseSwitch.isChecked()) ? -1.0f: 1.0f;
-                    float yawMulipleValue = (yawInverseSwitch.isChecked()) ? -1.0f: 1.0f;
+                    float rollMultipleValue = (rollInverseSwitch.isChecked()) ? -1.0f: 1.0f;
+                    float pitchMultipleValue = (pitchInverseSwitch.isChecked()) ? -1.0f: 1.0f;
+                    float yawMultipleValue = (yawInverseSwitch.isChecked()) ? -1.0f: 1.0f;
 
-                    final float roll = filter(v[rollSpinnerId], mSpeedValue.value * rollMulipleValue, mOffsetValue.value, mExpoValue.value);
-                    final float pitch = filter(v[pitchSpinnerId], mSpeedValue.value * pitchMulipleValue, mOffsetValue.value, mExpoValue.value);
-                    final float yaw = filter(v[yawSpinnerId], mSpeedValue.value * yawMulipleValue, mOffsetValue.value, mExpoValue.value);
+                    final float roll = filter(v[rollSpinnerId], mSpeedValue.value * rollMultipleValue, mOffsetValue.value, mExpoValue.value);
+                    final float pitch = filter(v[pitchSpinnerId], mSpeedValue.value * pitchMultipleValue, mOffsetValue.value, mExpoValue.value);
+                    final float yaw = filter(v[yawSpinnerId], mSpeedValue.value * yawMultipleValue, mOffsetValue.value, mExpoValue.value);
                     outputValueTextView.setText(OUTPUT_VALUE_STRING + "roll pitch yaw -> "
                             + String.format("%3.2f", roll) + " - " + String.format("%3.2f", pitch) + String.format("%3.2f", yaw)
                     );
