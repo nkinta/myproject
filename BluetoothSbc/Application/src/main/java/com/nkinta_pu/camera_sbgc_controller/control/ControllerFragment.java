@@ -16,21 +16,15 @@
 
 package com.nkinta_pu.camera_sbgc_controller.control;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import com.nkinta_pu.camera_sbgc_controller.param.MainParameter;
 
 import com.nkinta_pu.camera_sbgc_controller.R;
 
@@ -44,31 +38,26 @@ import com.nkinta_pu.camera_sbgc_controller.R;
  */
 public class ControllerFragment extends Fragment {
 
-    static class FloatValue {
-        public float value = 0.0f;
-    }
-
-
-    static protected FloatValue createSeekController(
+    static protected void createSeekController(
             final SeekBar seekBar,
             final TextView textView,
             final float min,
             final float defaultValue,
-            final float max) {
+            final float max,
+            final MainParameter.FloatValue storedValue
+    ) {
 
         // LinearLayout linearLayout = (LinearLayout) view.findViewById(parentLayoutId);
         // View seekControlLayout = getLayoutInflater(savedInstanceState).inflate(R.layout.speed_seek_control, linearLayout);
 
-        final FloatValue seekValue = new FloatValue();
-
-        seekValue.value = defaultValue;
+        storedValue.value = defaultValue;
 
         final float multiple = (max - min) / 100;
 
         // final LinearLayout linearLayout = (LinearLayout) view.findViewById(id);
         // final SeekBar seekBar = (SeekBar) linearLayout.findViewById(R.id.speed_seek_bar);
         // final TextView textView = (TextView) linearLayout.findViewById(R.id.speed_text_view);
-        textView.setText(String.format("%3.2f", seekValue.value));
+        textView.setText(String.format("%3.2f", storedValue.value));
 
         seekBar.setProgress((int)(defaultValue / multiple));
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -76,17 +65,43 @@ public class ControllerFragment extends Fragment {
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
                 textView.setText(String.format("%3.2f", min + progress * multiple));
             }
+
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                seekValue.value = min + seekBar.getProgress() * multiple;
+                storedValue.value = min + seekBar.getProgress() * multiple;
             }
         });
-        return seekValue;
 
     }
 
+    static protected void createStoreCallbackSpinner(final Spinner spinner, final MainParameter.IntValue storedValue) {
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                int rollSpinnerId = (int) rollPadSpinner.getSelectedItemId();
+            }
+        });
+    }
+
+    static protected void createStoreCallbackSwitch(final Switch switchView, final MainParameter.BooleanValue storedValue) {
+
+        switchView.setOnFocusChangeListener(new View.OnTouchListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
+                textView.setText(String.format("%3.2f", min + progress * multiple));
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                storedValue.value = min + seekBar.getProgress() * multiple;
+            }
+        });
+    }
 }

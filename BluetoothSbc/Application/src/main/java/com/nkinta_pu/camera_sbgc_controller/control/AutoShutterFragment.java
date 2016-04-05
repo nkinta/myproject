@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
 import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
+import com.nkinta_pu.camera_sbgc_controller.param.MainParameter;
 
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -70,7 +71,7 @@ public class AutoShutterFragment extends ControllerFragment {
 
     private SimpleBgcControl mSimpleBgcControl = null;
 
-    private FloatValue mSpeedValue = null;
+    // private FloatValue mSpeedValue = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,11 +103,12 @@ public class AutoShutterFragment extends ControllerFragment {
 
         SampleApplication app = (SampleApplication) getActivity().getApplication();
         mSimpleBgcControl = app.getSimpleBgcControl();
+        final MainParameter.AutoShutterParam param = app.getMainParameter().mAutoShutterParam;
 
-        mSpeedValue = createSeekController(
+        createSeekController(
                 (SeekBar) view.findViewById(R.id.speed_seek_bar),
                 (TextView) view.findViewById(R.id.speed_text_view),
-                0f, 1.0f, 2.5f);
+                0f, 1.0f, 2.5f, param.mSpeed);
 
         // mConversationView = (ListView) view.findViewById(R.id.in);
         // mOutEditText = (EditText) view.findViewById(R.id.edit_text_out);
@@ -149,7 +151,7 @@ public class AutoShutterFragment extends ControllerFragment {
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
-                        float speed = mSpeedValue.value;
+                        float speed = param.mSpeed.value;
                         for (final AngleInfo v : angleList) {
                             if (cd.existNextCommand()) return;
                             mSimpleBgcControl.moveSync(new float[]{speed, speed, speed}, v.getRadian());
@@ -183,7 +185,7 @@ public class AutoShutterFragment extends ControllerFragment {
                     Runnable runnable = new Runnable() {
                         @Override
                         public void run() {
-                            float speed = mSpeedValue.value;
+                            float speed = param.mSpeed.value;
                             if (cd.existNextCommand()) return;
                             mSimpleBgcControl.moveSync(new float[]{speed, speed, speed}, v.getRadian());
                             if (cd.existNextCommand()) return;

@@ -29,10 +29,6 @@ public class GamePadFragment extends ControllerFragment {
 
     private ArrayBlockingQueue<byte[]> mBluetoothBlockingQueue = null;
 
-    FloatValue mSpeedValue = null;
-    FloatValue mOffsetValue = null;
-    FloatValue mExpoValue = null;
-
     private static final String OUTPUT_VALUE_STRING = "OUTPUT_VALUE";
     private static final String INPUT_VALUE_STRING = "INPUT_VALUE";
 
@@ -60,19 +56,6 @@ public class GamePadFragment extends ControllerFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_game_pad, null);
         return view;
-    }
-
-    static float filter(float v, float speed, float offset, float expo) {
-        float pv = speed * FloatMath.pow(Math.max(0.0f, Math.abs(v) - offset), expo);
-        float rv;
-        if (v > 0) {
-            rv = pv;
-        }
-        else {
-            rv = -pv;
-        }
-
-        return rv;
     }
 
 
@@ -115,32 +98,38 @@ public class GamePadFragment extends ControllerFragment {
         gridLayout.addView(outputValueTextView);
 
         MainParameter mainParameter = app.getMainParameter();
+        final MainParameter.ControlGamePadParam param = mainParameter.mControlGamePadParam;
 
-
-        mSpeedValue = createSeekController(
+        createSeekController(
                 (SeekBar) view.findViewById(R.id.speed_seek_bar),
                 (TextView) view.findViewById(R.id.speed_text_view),
-                0.0f, 1.0f, 2.5f);
+                0.0f, param.mSpeed.value, 2.5f, param.mSpeed);
 
-        mOffsetValue = createSeekController(
+        createSeekController(
                 (SeekBar) view.findViewById(R.id.offset_seek_bar),
                 (TextView) view.findViewById(R.id.offset_text_view),
-                0.0f, 0.1f, 1.0f);
+                0.0f, param.mDeadBand.value, 1.0f, param.mDeadBand);
 
-        mExpoValue = createSeekController(
+        createSeekController(
                 (SeekBar) view.findViewById(R.id.expo_seek_bar),
                 (TextView) view.findViewById(R.id.expo_text_view),
-                0.0f, 2.0f, 20.0f);
+                0.0f, param.mExpo.value, 20.0f, param.mExpo);
 
         String[] padTypeStringList = new String[] {"LX", "LY", "RX", "RY"};
 
         final Spinner rollPadSpinner = (Spinner)view.findViewById(R.id.roll_pad_spinner);
+        createStoreCallbackSpinner(rollPadSpinner, param.mRollId);
         final Spinner pitchPadSpinner = (Spinner)view.findViewById(R.id.pitch_pad_spinner);
+        createStoreCallbackSpinner(pitchPadSpinner, param.mPitchId);
         final Spinner yawPadSpinner = (Spinner)view.findViewById(R.id.yaw_pad_spinner);
+        createStoreCallbackSpinner(yawPadSpinner, param.mYawId);
 
         final Switch rollInverseSwitch = (Switch)view.findViewById(R.id.roll_inverse_switch);
+        createStoreCallbackSwitch(rollInverseSwitch, param.mRollInverseFlag);
         final Switch pitchInverseSwitch = (Switch)view.findViewById(R.id.pitch_inverse_switch);
+        createStoreCallbackSwitch(pitchInverseSwitch, param.mPitchInverseFlag);
         final Switch yawInverseSwitch = (Switch)view.findViewById(R.id.yaw_inverse_switch);
+        createStoreCallbackSwitch(yawInverseSwitch, param.mYawInverseFlag);
 
         ArrayAdapter<String> adapter;
         adapter = new ArrayAdapter(activity, //
@@ -163,31 +152,16 @@ public class GamePadFragment extends ControllerFragment {
             new GamePadJob() {
                 @Override
                 public void doCommand(final float[] v) {
+
                     inputValueTextView.setText(INPUT_VALUE_STRING + "lx ly rx ry-> "
-                            + String.format("%3.2f", v[0]) + " - " + String.format("%3.2f", v[1])
-                            + String.format("%3.2f", v[2]) + " - " + String.format("%3.2f", v[3])
+                                    + String.format("%3.2f", v[0]) + " - " + String.format("%3.2f", v[1])
+                                    + String.format("%3.2f", v[2]) + " - " + String.format("%3.2f", v[3])
                     );
                     int rollSpinnerId = (int)rollPadSpinner.getSelectedItemId();
                     int pitchSpinnerId = (int)pitchPadSpinner.getSelectedItemId();
                     int yawSpinnerId = (int)yawPadSpinner.getSelectedItemId();
+                    yawInverseSwitch.isChecked()
 
-                    float rollMultipleValue = (rollInverseSwitch.isChecked()) ? -1.0f: 1.0f;
-                    float pitchMultipleValue = (pitchInverseSwitch.isChecked()) ? -1.0f: 1.0f;
-                    float yawMultipleValue = (yawInverseSwitch.isChecked()) ? -1.0f: 1.0f;
-
-                    final float roll = filter(v[rollSpinnerId], mSpeedValue.value * rollMultipleValue, mOffsetValue.value, mExpoValue.value);
-                    final float pitch = filter(v[pitchSpinnerId], mSpeedValue.value * pitchMultipleValue, mOffsetValue.value, mExpoValue.value);
-                    final float yaw = filter(v[yawSpinnerId], mSpeedValue.value * yawMultipleValue, mOffsetValue.value, mExpoValue.value);
-                    outputValueTextView.setText(OUTPUT_VALUE_STRING + "roll pitch yaw -> "
-                            + String.format("%3.2f", roll) + " - " + String.format("%3.2f", pitch) + String.format("%3.2f", yaw)
-                    );
-
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            mSimpleBgcControl.setSpeed(new float[]{roll, pitch, yaw});
-                        }
-                    }.run();
                 }
             }
         );

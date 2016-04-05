@@ -76,6 +76,10 @@ public class SampleApplication extends Application {
         return mMainParameter;
     }
 
+    public void setMainParameter(MainParameter mainParameter) {
+        mMainParameter = mainParameter;
+    }
+
     public void setSupportedApiList(Set<String> apiList) {
         mSupportedApiSet = apiList;
     }

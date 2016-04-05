@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
 import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
+import com.nkinta_pu.camera_sbgc_controller.param.MainParameter;
 // import com.nkinta_pu.camera_sbgc_controller.control.HeadTrackHelper;
 
 // import com.google.vrtoolkit.cardboard.HeadTransform;
@@ -46,8 +47,6 @@ import java.lang.Math;
  * This fragment controls Bluetooth to communicate with other devices.
  */
 public class HeadTrackFragment extends ControllerFragment {
-
-    FloatValue mSpeedValue = null;
 
     private HeadTrackHelper mHeadTrackHelper = null;
 
@@ -101,6 +100,9 @@ public class HeadTrackFragment extends ControllerFragment {
 
         SampleApplication app = (SampleApplication) getActivity().getApplication();
         mSimpleBgcControl = app.getSimpleBgcControl();
+        final MainParameter.HeadTrackParam param = app.getMainParameter().mHeadTrackParam;
+
+
         final MainActivity activity = (MainActivity)getActivity();
 
         final Switch switchButton = (Switch) view.findViewById(R.id.start);
@@ -121,10 +123,10 @@ public class HeadTrackFragment extends ControllerFragment {
                     degree[i] = angle[i] * 180 / (float) Math.PI;
                 }
 
-                if (mSpeedValue == null) {
+                if (param.mSpeed == null) {
                     return;
                 }
-                final float[] speed = new float[]{mSpeedValue.value, mSpeedValue.value, mSpeedValue.value};
+                final float[] speed = new float[]{param.mSpeed.value, param.mSpeed.value, param.mSpeed.value};
 
                 activity.runOnUiThread(new Runnable() {
                     @Override
@@ -189,10 +191,10 @@ public class HeadTrackFragment extends ControllerFragment {
             }
         });
 
-        mSpeedValue = createSeekController(
+        createSeekController(
                 (SeekBar) view.findViewById(R.id.speed_seek_bar),
                 (TextView) view.findViewById(R.id.speed_text_view),
-                0f, 1.0f, 2.5f);
+                0f, param.mSpeed.value, 2.5f, param.mSpeed);
 
         /*
         final SeekBar speedSeekBar = (SeekBar) view.findViewById(R.id.speed_seek_bar);

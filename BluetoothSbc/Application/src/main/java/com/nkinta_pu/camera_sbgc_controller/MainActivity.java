@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.InputDevice;
 import android.view.InputEvent;
 import android.view.Menu;
@@ -35,6 +36,12 @@ import com.nkinta_pu.camera_sbgc_controller.camera.CameraFragment;
 import com.nkinta_pu.camera_sbgc_controller.control.ControlViewPager;
 import com.nkinta_pu.camera_sbgc_controller.control.GamePadJob;
 import com.nkinta_pu.camera_sbgc_controller.control.PagerAdapter;
+import com.nkinta_pu.camera_sbgc_controller.param.MainParameter;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * A simple launcher activity containing a summary sample description, sample log and a custom
@@ -141,8 +148,43 @@ public class MainActivity extends FragmentActivity {
 
                 supportInvalidateOptionsMenu();
                 return true;
+            case R.id.store_parameter:
+                storeParameter();
+                return true;
+            case R.id.restore_parameter:
+                restoreParameter();
+            return true;
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void storeParameter() {
+        SampleApplication app = (SampleApplication)getApplication();
+
+        try {
+            MainParameter param =  app.getMainParameter();
+            FileOutputStream fos = openFileOutput("SaveData.dat", MODE_PRIVATE);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(param);
+            oos.close();
+        } catch (Exception e) {
+            Log.d(TAG, "Store Error");
+        }
+    }
+
+    private void restoreParameter() {
+        SampleApplication app = (SampleApplication)getApplication();
+        try {
+            FileInputStream fis = openFileInput("SaveData.dat");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            MainParameter data = (MainParameter) ois.readObject();
+            ois.close();
+            app.setMainParameter(data);
+        } catch (Exception e) {
+            Log.d(TAG, "Restore Error");
+        }
+
     }
 
     @Override
@@ -153,18 +195,6 @@ public class MainActivity extends FragmentActivity {
             return super.dispatchGenericMotionEvent(e);
         }
 
-        if (mGamePadJob == null) {
-            return false;
-        }
-        // Use the hat axis value to find the D-pad direction
-        MotionEvent motionEvent = (MotionEvent) e;
-        float lxaxis = motionEvent.getAxisValue(MotionEvent.AXIS_X);
-        float lyaxis = motionEvent.getAxisValue(MotionEvent.AXIS_Y);
-
-        float rxaxis = motionEvent.getAxisValue(MotionEvent.AXIS_Z);
-        float ryaxis = motionEvent.getAxisValue(MotionEvent.AXIS_RZ);
-
-        mGamePadJob.doCommand(new float[] {lxaxis, lyaxis, rxaxis, ryaxis});
             // Toast.makeText(this, "xy -> " + String.format("%3.2f",xaxis) + " - " +  String.format("%3.2f",yaxis), Toast.LENGTH_SHORT).show();
         return true;
     }

@@ -40,6 +40,18 @@
         android:icon="@android:drawable/ic_menu_preferences"
         />
 
+    <item
+        android:id="@+id/store_parameter"
+        android:title="store"
+        android:icon="@android:drawable/ic_menu_preferences"
+        />
+
+    <item
+        android:id="@+id/restore_parameter"
+        android:title="restore"
+        android:icon="@android:drawable/ic_menu_preferences"
+        />
+
     <item android:id="@+id/show_camera_controller"
         android:showAsAction="always"
         android:title="@string/show_camera_controller" />
