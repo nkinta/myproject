@@ -10,6 +10,7 @@ import com.nkinta_pu.camera_sbgc_controller.camera.ServerDevice;
 import com.nkinta_pu.camera_sbgc_controller.camera.SimpleRemoteApi;
 import com.nkinta_pu.camera_sbgc_controller.control.BluetoothService;
 import com.nkinta_pu.camera_sbgc_controller.control.CommandDispatcher;
+import com.nkinta_pu.camera_sbgc_controller.control.GamePadControl;
 import com.nkinta_pu.camera_sbgc_controller.control.HeadTrackHelper;
 import com.nkinta_pu.camera_sbgc_controller.control.SimpleBgcControl;
 import com.nkinta_pu.camera_sbgc_controller.param.MainParameter;
@@ -34,6 +35,8 @@ public class SampleApplication extends Application {
     private CommandDispatcher mCommandDispatcher;
 
     private MainParameter mMainParameter = new MainParameter();
+
+    private GamePadControl mGamePadControl = new GamePadControl(mMainParameter);
 
     /**
      * Sets a target ServerDevice object.
@@ -75,6 +78,8 @@ public class SampleApplication extends Application {
     public MainParameter getMainParameter() {
         return mMainParameter;
     }
+
+    public GamePadControl getGamePadControl() {return mGamePadControl;}
 
     public void setMainParameter(MainParameter mainParameter) {
         mMainParameter = mainParameter;

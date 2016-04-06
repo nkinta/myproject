@@ -14,16 +14,16 @@ public class GamePadControl {
 
     MainParameter.ControlGamePadParam mControlGamePadParam = null;
 
-    void setSimpleBgcControl(SimpleBgcControl simpleBgcControl, MainParameter.ControlGamePadParam controlGamePadParam) {
-        mSimpleBgcControl = simpleBgcControl;
-        mControlGamePadParam = controlGamePadParam;
+    public GamePadControl(MainParameter mainParameter) {
+        mControlGamePadParam = mainParameter.mControlGamePadParam;
     }
 
-    void dispatchGenericMotionEvent(MotionEvent e) {
+    public void setSimpleBgcControl(SimpleBgcControl simpleBgcControl) {
+        mSimpleBgcControl = simpleBgcControl;
+    }
 
-        if (mGamePadJob == null) {
-            return false;
-        }
+    public void dispatchGenericMotionEvent(MotionEvent e) {
+
         // Use the hat axis value to find the D-pad direction
         MotionEvent motionEvent = (MotionEvent) e;
         float lxaxis = motionEvent.getAxisValue(MotionEvent.AXIS_X);
@@ -32,7 +32,7 @@ public class GamePadControl {
         float rxaxis = motionEvent.getAxisValue(MotionEvent.AXIS_Z);
         float ryaxis = motionEvent.getAxisValue(MotionEvent.AXIS_RZ);
 
-        mGamePadJob.doCommand(new float[] {lxaxis, lyaxis, rxaxis, ryaxis});
+        doCommand(new float[] {lxaxis, lyaxis, rxaxis, ryaxis});
 
     }
 
@@ -59,22 +59,23 @@ public class GamePadControl {
         float d = mControlGamePadParam.mDeadBand.value;
         float e = mControlGamePadParam.mExpo.value;
 
-        final float roll = filter(v[mControlGamePadParam.mRollId.value], s, d, e);
-        final float pitch = filter(v[mControlGamePadParam.mPitchId.value], s, d, e);
-        final float yaw = filter(v[mControlGamePadParam.mYawId.value], s, d, e);
+        final float roll = filter(v[mControlGamePadParam.mRollId.value], s, d, e) * rollMultipleValue;
+        final float pitch = filter(v[mControlGamePadParam.mPitchId.value], s, d, e) * pitchMultipleValue;
+        final float yaw = filter(v[mControlGamePadParam.mYawId.value], s, d, e) * yawMultipleValue;
 
         /*
         outputValueTextView.setText(OUTPUT_VALUE_STRING + "roll pitch yaw -> "
                         + String.format("%3.2f", roll) + " - " + String.format("%3.2f", pitch) + String.format("%3.2f", yaw)
         );
         */
-
-        new Thread() {
-            @Override
-            public void run() {
-                mSimpleBgcControl.setSpeed(new float[]{roll, pitch, yaw});
-            }
-        }.run();
+        if (mSimpleBgcControl != null) {
+            new Thread() {
+                @Override
+                public void run() {
+                    mSimpleBgcControl.setSpeed(new float[]{roll, pitch, yaw});
+                }
+            }.run();
+        }
 
     }
 

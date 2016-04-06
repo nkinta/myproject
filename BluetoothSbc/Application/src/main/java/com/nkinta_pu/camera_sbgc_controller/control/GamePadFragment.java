@@ -137,17 +137,17 @@ public class GamePadFragment extends ControllerFragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         rollPadSpinner.setAdapter(adapter);
-        rollPadSpinner.setSelection(2);
+        // rollPadSpinner.setSelection(2);
 
         pitchPadSpinner.setAdapter(adapter);
-        pitchPadSpinner.setSelection(1);
+        // pitchPadSpinner.setSelection(1);
 
         yawPadSpinner.setAdapter(adapter);
-        yawPadSpinner.setSelection(0);
+        // yawPadSpinner.setSelection(0);
 
         // SampleApplication app = (SampleApplication)getActivity().getApplication();
 
-
+        /*
         activity.setJoyPadJob(
             new GamePadJob() {
                 @Override
@@ -165,6 +165,7 @@ public class GamePadFragment extends ControllerFragment {
                 }
             }
         );
+        */
 
     }
 
@@ -177,7 +178,7 @@ public class GamePadFragment extends ControllerFragment {
     @Override
     public  void onDestroyView () {
         MainActivity activity = (MainActivity) getActivity();
-        activity.setJoyPadJob(null);
+        // activity.setJoyPadJob(null);
         super.onDestroyView();
     }
 

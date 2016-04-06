@@ -19,6 +19,7 @@ package com.nkinta_pu.camera_sbgc_controller.control;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -81,26 +82,26 @@ public class ControllerFragment extends Fragment {
 
     static protected void createStoreCallbackSpinner(final Spinner spinner, final MainParameter.IntValue storedValue) {
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemClickListener() {
+        spinner.setSelection(storedValue.value);
 
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                int rollSpinnerId = (int) rollPadSpinner.getSelectedItemId();
+            public void onItemSelected(AdapterView parent, View view, int position,long id) {
+                Spinner spinner = (Spinner) parent;
+                // String str = spinner.getSelectedItem().toString();
+                storedValue.value = (int)spinner.getSelectedItemId();
+            }
+            @Override
+            public void onNothingSelected(AdapterView parent) {
             }
         });
     }
 
     static protected void createStoreCallbackSwitch(final Switch switchView, final MainParameter.BooleanValue storedValue) {
 
-        switchView.setOnFocusChangeListener(new View.OnTouchListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
-                textView.setText(String.format("%3.2f", min + progress * multiple));
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                storedValue.value = min + seekBar.getProgress() * multiple;
+        switchView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                storedValue.value = isChecked;
             }
         });
     }

@@ -34,6 +34,7 @@ import android.support.v4.view.ViewPager;
 
 import com.nkinta_pu.camera_sbgc_controller.camera.CameraFragment;
 import com.nkinta_pu.camera_sbgc_controller.control.ControlViewPager;
+import com.nkinta_pu.camera_sbgc_controller.control.GamePadControl;
 import com.nkinta_pu.camera_sbgc_controller.control.GamePadJob;
 import com.nkinta_pu.camera_sbgc_controller.control.PagerAdapter;
 import com.nkinta_pu.camera_sbgc_controller.param.MainParameter;
@@ -60,8 +61,8 @@ public class MainActivity extends FragmentActivity {
     ViewPager mViewPager;
     CameraFragment mCameraFragment;
     // BluetoothConnectFragment mBluetoothConnectFragment;
-
-    GamePadJob mGamePadJob = null;
+    // GamePadJob mGamePadJob = null;
+    private GamePadControl mGamePadControl = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,9 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mViewPager.setAdapter(new PagerAdapter(getSupportFragmentManager()));
+
+        SampleApplication app = (SampleApplication)getApplication();
+        mGamePadControl = app.getGamePadControl();
 
         // mCameraFragment = (Fragment)(getFragmentManager().findFragmentById(R.id.fragment));
 
@@ -109,9 +113,11 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    /*
     public void setJoyPadJob(GamePadJob job) {
         mGamePadJob = job;
     }
+    */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -195,6 +201,7 @@ public class MainActivity extends FragmentActivity {
             return super.dispatchGenericMotionEvent(e);
         }
 
+        mGamePadControl.dispatchGenericMotionEvent(e);
             // Toast.makeText(this, "xy -> " + String.format("%3.2f",xaxis) + " - " +  String.format("%3.2f",yaxis), Toast.LENGTH_SHORT).show();
         return true;
     }
@@ -203,6 +210,7 @@ public class MainActivity extends FragmentActivity {
         // Check that input comes from a device with directional pads.
         if ((event.getSource() & InputDevice.SOURCE_DPAD)
                 != InputDevice.SOURCE_DPAD) {
+
             return true;
         } else {
             return false;
