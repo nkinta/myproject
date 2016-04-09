@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 import android.support.v4.view.ViewPager;
+import android.widget.Toast;
 
 import com.nkinta_pu.camera_sbgc_controller.camera.CameraFragment;
 import com.nkinta_pu.camera_sbgc_controller.control.ControlViewPager;
@@ -200,6 +201,10 @@ public class MainActivity extends FragmentActivity {
                 != InputDevice.SOURCE_DPAD)) {
             return super.dispatchGenericMotionEvent(e);
         }
+
+
+        // Toast.makeText(this, "hei joy pad", Toast.LENGTH_SHORT).show();
+
 
         mGamePadControl.dispatchGenericMotionEvent(e);
             // Toast.makeText(this, "xy -> " + String.format("%3.2f",xaxis) + " - " +  String.format("%3.2f",yaxis), Toast.LENGTH_SHORT).show();

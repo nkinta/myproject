@@ -1,7 +1,11 @@
 package com.nkinta_pu.camera_sbgc_controller.control;
 
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.FloatMath;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import com.nkinta_pu.camera_sbgc_controller.param.MainParameter;
 
@@ -10,12 +14,22 @@ import com.nkinta_pu.camera_sbgc_controller.param.MainParameter;
  */
 public class GamePadControl {
 
+    public static final int UPDATE_PARAMETER = 1;
+    public static final String LX_RX_LY_RY = "LX_RX_LY_RY";
+    public static final String ROLL_PITCH_YAW_STRING = "ROLL_PITCH_YAW";
+
     SimpleBgcControl mSimpleBgcControl = null;
 
     MainParameter.ControlGamePadParam mControlGamePadParam = null;
 
+    private Handler mHandler = null;
+
     public GamePadControl(MainParameter mainParameter) {
         mControlGamePadParam = mainParameter.mControlGamePadParam;
+    }
+
+    public void setHandler(Handler handler) {
+        mHandler = handler;
     }
 
     public void setSimpleBgcControl(SimpleBgcControl simpleBgcControl) {
@@ -76,6 +90,15 @@ public class GamePadControl {
                 }
             }.run();
         }
+
+        if (mHandler != null) {
+            Message msg = mHandler.obtainMessage(UPDATE_PARAMETER);
+            Bundle bundle = new Bundle();
+            bundle.putFloatArray(ROLL_PITCH_YAW_STRING, new float[]{roll, pitch, yaw});
+            msg.setData(bundle);
+            mHandler.sendMessage(msg);
+        }
+
 
     }
 

@@ -60,7 +60,7 @@ public class ControllerFragment extends Fragment {
         // final TextView textView = (TextView) linearLayout.findViewById(R.id.speed_text_view);
         textView.setText(String.format("%3.2f", storedValue.value));
 
-        seekBar.setProgress((int)(defaultValue / multiple));
+        seekBar.setProgress((int) (defaultValue / multiple));
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             @Override
@@ -82,6 +82,7 @@ public class ControllerFragment extends Fragment {
 
     static protected void createStoreCallbackSpinner(final Spinner spinner, final MainParameter.IntValue storedValue) {
 
+        spinner.setOnItemSelectedListener(null);
         spinner.setSelection(storedValue.value);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

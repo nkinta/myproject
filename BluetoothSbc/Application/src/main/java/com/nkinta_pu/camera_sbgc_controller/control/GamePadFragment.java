@@ -1,6 +1,8 @@
 package com.nkinta_pu.camera_sbgc_controller.control;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayout;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.util.FloatMath;
+import android.widget.Toast;
 
 import com.nkinta_pu.camera_sbgc_controller.MainActivity;
 import com.nkinta_pu.camera_sbgc_controller.R;
@@ -31,6 +34,8 @@ public class GamePadFragment extends ControllerFragment {
 
     private static final String OUTPUT_VALUE_STRING = "OUTPUT_VALUE";
     private static final String INPUT_VALUE_STRING = "INPUT_VALUE";
+
+    private TextView mInputValueTextView = null;
 
     private SimpleBgcControl mSimpleBgcControl = null;
 
@@ -67,6 +72,9 @@ public class GamePadFragment extends ControllerFragment {
         SampleApplication app = (SampleApplication) activity.getApplication();
 
         mSimpleBgcControl = app.getSimpleBgcControl();
+        GamePadControl gamePadControl = app.getGamePadControl();
+        gamePadControl.setHandler(mHandler);
+
 
         final TextView speedTextView = new TextView(activity);
         speedTextView.setText("-");
@@ -74,7 +82,9 @@ public class GamePadFragment extends ControllerFragment {
         final Switch switchButton = new Switch(activity);
         switchButton.setText("GAME_PAD");
 
-        final TextView inputValueTextView = new TextView(activity);
+        // final TextView inputValueTextView
+        mInputValueTextView = new TextView(activity);
+        final TextView inputValueTextView = mInputValueTextView;
         inputValueTextView.setText(OUTPUT_VALUE_STRING);
 
         final TextView outputValueTextView = new TextView(activity);
@@ -118,11 +128,8 @@ public class GamePadFragment extends ControllerFragment {
         String[] padTypeStringList = new String[] {"LX", "LY", "RX", "RY"};
 
         final Spinner rollPadSpinner = (Spinner)view.findViewById(R.id.roll_pad_spinner);
-        createStoreCallbackSpinner(rollPadSpinner, param.mRollId);
         final Spinner pitchPadSpinner = (Spinner)view.findViewById(R.id.pitch_pad_spinner);
-        createStoreCallbackSpinner(pitchPadSpinner, param.mPitchId);
         final Spinner yawPadSpinner = (Spinner)view.findViewById(R.id.yaw_pad_spinner);
-        createStoreCallbackSpinner(yawPadSpinner, param.mYawId);
 
         final Switch rollInverseSwitch = (Switch)view.findViewById(R.id.roll_inverse_switch);
         createStoreCallbackSwitch(rollInverseSwitch, param.mRollInverseFlag);
@@ -137,13 +144,12 @@ public class GamePadFragment extends ControllerFragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         rollPadSpinner.setAdapter(adapter);
-        // rollPadSpinner.setSelection(2);
-
         pitchPadSpinner.setAdapter(adapter);
-        // pitchPadSpinner.setSelection(1);
-
         yawPadSpinner.setAdapter(adapter);
-        // yawPadSpinner.setSelection(0);
+
+        createStoreCallbackSpinner(rollPadSpinner, param.mRollId);
+        createStoreCallbackSpinner(pitchPadSpinner, param.mPitchId);
+        createStoreCallbackSpinner(yawPadSpinner, param.mYawId);
 
         // SampleApplication app = (SampleApplication)getActivity().getApplication();
 
@@ -181,5 +187,32 @@ public class GamePadFragment extends ControllerFragment {
         // activity.setJoyPadJob(null);
         super.onDestroyView();
     }
+
+
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case GamePadControl.UPDATE_PARAMETER:
+                    float v[] = msg.getData().getFloatArray(GamePadControl.ROLL_PITCH_YAW_STRING);
+                    mInputValueTextView.setText(OUTPUT_VALUE_STRING + "roll pitch yaw -> "
+                                    + String.format("%3.2f", v[0]) + " - " + String.format("%3.2f", v[1]) + String.format("%3.2f", v[2])
+                    );
+                    /*
+                    mInputValueTextView.setText(INPUT_VALUE_STRING + "lx ly rx ry-> "
+                                    + String.format("%3.2f", v[0]) + " - " + String.format("%3.2f", v[1])
+                                    + String.format("%3.2f", v[2]) + " - " + String.format("%3.2f", v[3])
+                    );
+                    */
+                    break;
+                case Constants.MESSAGE_DEVICE_NAME:
+                    break;
+                case Constants.MESSAGE_TOAST:
+
+                    break;
+            }
+        }
+    };
+
 
 }
