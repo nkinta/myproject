@@ -178,6 +178,7 @@ public class MainActivity extends FragmentActivity {
         } catch (Exception e) {
             Log.d(TAG, "Store Error");
         }
+        Toast.makeText(this, "Parameter Stored", Toast.LENGTH_SHORT).show();
     }
 
     private void restoreParameter() {
@@ -191,7 +192,7 @@ public class MainActivity extends FragmentActivity {
         } catch (Exception e) {
             Log.d(TAG, "Restore Error");
         }
-
+        Toast.makeText(this, "Parameter Restored", Toast.LENGTH_SHORT).show();
     }
 
     @Override

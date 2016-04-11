@@ -37,8 +37,6 @@ public class GamePadFragment extends ControllerFragment {
 
     private TextView mInputValueTextView = null;
 
-    private SimpleBgcControl mSimpleBgcControl = null;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,10 +69,8 @@ public class GamePadFragment extends ControllerFragment {
         MainActivity activity = (MainActivity) getActivity();
         SampleApplication app = (SampleApplication) activity.getApplication();
 
-        mSimpleBgcControl = app.getSimpleBgcControl();
         GamePadControl gamePadControl = app.getGamePadControl();
         gamePadControl.setHandler(mHandler);
-
 
         final TextView speedTextView = new TextView(activity);
         speedTextView.setText("-");

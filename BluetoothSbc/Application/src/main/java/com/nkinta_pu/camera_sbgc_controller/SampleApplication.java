@@ -45,6 +45,7 @@ public class SampleApplication extends Application {
      */
     public void setSimpleBgcControl(SimpleBgcControl simpleBgcControl) {
         mSimpleBgcControl = simpleBgcControl;
+        mGamePadControl.setSimpleBgcControl(mSimpleBgcControl);
     }
 
     public SimpleBgcControl getSimpleBgcControl() {

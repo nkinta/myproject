@@ -33,6 +33,7 @@ public class MainParameter implements Serializable {
     public ControlGamePadParam mControlGamePadParam = new ControlGamePadParam();
     public AutoShutterParam mAutoShutterParam = new AutoShutterParam();
     public HeadTrackParam mHeadTrackParam = new HeadTrackParam();
+    public ControlVirtualGamePadParam mControlVirtualGamePadParam = new ControlVirtualGamePadParam();
 
     public class ControlGamePadParam implements Serializable {
         public FloatValue mSpeed = new FloatValue(1.0f);
@@ -50,6 +51,12 @@ public class MainParameter implements Serializable {
 
     public class AutoShutterParam implements Serializable {
         public FloatValue mSpeed = new FloatValue(1.0f);
+    }
+
+    public class ControlVirtualGamePadParam implements Serializable {
+        public FloatValue mSpeed = new FloatValue(1.0f);
+        public FloatValue mExpo = new FloatValue(2.0f);
+        public FloatValue mDeadBand = new FloatValue(0.1f);
     }
 
     public class HeadTrackParam implements Serializable {
