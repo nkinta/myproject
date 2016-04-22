@@ -203,24 +203,9 @@ public class MainActivity extends FragmentActivity {
             return super.dispatchGenericMotionEvent(e);
         }
 
-
-        // Toast.makeText(this, "hei joy pad", Toast.LENGTH_SHORT).show();
-
-
         mGamePadControl.dispatchGenericMotionEvent(e);
             // Toast.makeText(this, "xy -> " + String.format("%3.2f",xaxis) + " - " +  String.format("%3.2f",yaxis), Toast.LENGTH_SHORT).show();
         return true;
-    }
-
-    public static boolean isDpadDevice(InputEvent event) {
-        // Check that input comes from a device with directional pads.
-        if ((event.getSource() & InputDevice.SOURCE_DPAD)
-                != InputDevice.SOURCE_DPAD) {
-
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public void setStatus(int textViewResource, int title) {

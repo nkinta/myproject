@@ -7,11 +7,14 @@ package com.nkinta_pu.camera_sbgc_controller.camera;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.InputDevice;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.nkinta_pu.camera_sbgc_controller.SampleApplication;
+import com.nkinta_pu.camera_sbgc_controller.control.GamePadControl;
 import com.nkinta_pu.camera_sbgc_controller.control.HeadTrackHelper;
 import com.nkinta_pu.camera_sbgc_controller.R;
 import com.nkinta_pu.camera_sbgc_controller.camera.utils.DisplayHelper;
@@ -46,6 +49,8 @@ public class CameraRecordActivity extends Activity {
 
     private final Set<String> mSupportedApiSet = new HashSet<String>();
 
+    private GamePadControl mGamePadControl = null;
+
     // private boolean connectFlag;
 
     @Override
@@ -56,15 +61,16 @@ public class CameraRecordActivity extends Activity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_camera_record);
 
-        SampleApplication application = (SampleApplication)getApplication();
-        HeadTrackHelper headTrackHelper = application.getHeadTrackHelper();
+        SampleApplication app = (SampleApplication)getApplication();
+        HeadTrackHelper headTrackHelper = app.getHeadTrackHelper();
         if (headTrackHelper != null) {
             headTrackHelper.reset();
         }
 
-        SampleApplication app = (SampleApplication) getApplication();
         mRemoteApi = app.getRemoteApi();
         connect();
+
+        mGamePadControl = app.getGamePadControl();
 
     }
 
@@ -282,8 +288,21 @@ public class CameraRecordActivity extends Activity {
         return shootingStatus.contains(currentStatus);
     }
 
+    @Override
+    public boolean dispatchGenericMotionEvent(MotionEvent e){
+
+        if (!((e.getSource() & InputDevice.SOURCE_DPAD)
+                != InputDevice.SOURCE_DPAD)) {
+            return super.dispatchGenericMotionEvent(e);
+        }
+
+        mGamePadControl.dispatchGenericMotionEvent(e);
+        // Toast.makeText(this, "xy -> " + String.format("%3.2f",xaxis) + " - " +  String.format("%3.2f",yaxis), Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
     private void startOpenConnectionAfterChangeCameraState() {
-        Log.d(TAG, "startOpenConectiontAfterChangeCameraState() exec");
+        Log.d(TAG, "startOpenConnectiontAfterChangeCameraState() exec");
         runOnUiThread(new Runnable() {
 
             @Override
